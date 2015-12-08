@@ -1,0 +1,102 @@
+#!/bin/bash
+
+help()
+{
+    echoI "Help: c | Binzo's customized 'cd'"
+    cat << Help
+usage: c [NUM] [-h|--help] [p] [r] [DIRECTORY]
+    缺省参数   Return to the parent directory.
+              返回上级目录，相当于命令"cd .."。
+    [NUM]     返回上级n个目录。如"c 3"相当于"cd ../../.."
+    [p]       Enter my (P)roject directory. 
+              进入我的项目主目录，相当于"cd /backup/Projects"
+    [r]       Enter (R)epo path of current project.
+              如果当前处在某个项目目录的子目录下，返回到项目根目录.
+              判断条件为".repo"所在目录
+    [DIRECTORY]  Enter a specific directory. 
+                 cd到一个指定的目录.
+Help
+}
+
+cd_repo()
+{
+my_pwd=`pwd`
+for i in {1..40}
+do
+    if [ -d .repo ]; then
+        break;
+    elif [[ `pwd` == / ]]; then
+        # 已经到了顶级目录都没有发现.repo目录，恢复到原来位置
+        echoW "路径中没有找到.repo目录！"
+        cd $my_pwd
+        break;
+    else
+        cd ..
+    fi
+done
+}
+
+function check_integer() {
+    var=$(echo $1 | bc 2>/dev/null)
+    if [ "$var" = "$1" ]; then
+        return 1
+    else
+        return 0
+    fi
+}
+
+function setproject() {
+    MY_PROJECT=
+    if [ -n "$1" ]; then
+        if [ -d $1 ]; then
+            if [[ $1 == /* ]]; then
+                MY_PROJECT=$1
+            else
+                MY_PROJECT=`pwd`/$1
+            fi
+        fi
+        echoI MY_PROJECT=$MY_PROJECT
+    else
+        echoE "目录不存在"
+    fi
+}
+
+function getproject() {
+    echo $MY_PROJECT
+}
+
+if [ -z $1 ]; then # 缺省参数
+    cd ..
+elif [ -d $1 ]; then # 有效路径
+    cd $1
+elif [ "$1" = "--help" -o "$1" = "-h" ]; then
+    help
+elif [ "$1" = "p" ]; then
+    if [ -n "$MY_PROJECT" ]; then
+        cd $MY_PROJECT
+    else
+        cd /backup/Projects
+    fi
+elif [ "$1" = "r" ]; then
+    cd_repo
+elif [ "$1" = "-" ]; then
+    # 返回上一次访问过的目录
+    cd -
+else
+    check_integer $1
+    arg_is_int=$?
+    # 参数为数字，返回N级目录
+    if [ "$arg_is_int" = "1" ]; then
+        let num=$1
+        while [ $num -gt 0 ]; do
+            # 如果到了顶级目录，直接跳出循环，避免数值过大耗时较长
+            if [[ `pwd` == / ]]; then
+                break;
+            fi
+            cd ..
+            let num=($num-1)
+        done
+    else
+        echoE "c $1: 没有此目录！"
+    fi
+fi

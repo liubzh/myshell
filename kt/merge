@@ -1,0 +1,257 @@
+#!/bin/bash
+
+# 使能 e(),i(),w()颜色函数
+. ~/mysh/my_echo
+
+# .git 是否存在，向父目录查找，返回1为是，0为否
+isGitRepository()
+{
+#if [[ `pwd` = /backup/Projects/* ]]; then
+    for i in {1..20}
+    do
+        if [ -d .git ]; then
+            return 1
+        elif [[ `pwd` = / ]]; then
+            return 0
+        else
+            cd ..
+        fi
+    done
+    return 0
+#fi
+}
+
+function print_help() {
+cat <<EOF
+merge: 将一个commit或者一个patch文件合并到某一项目或分支。
+  -h/--help:    打印帮助信息.
+  -c/--commit <commit_id>:  指定提交ID
+    例如： -c a9cf3fe24772222b68b0c620840db901ef389ec3
+  -p/--patch <patch_path>:   指定patch文件路径
+    例如： -p /backup/Projects/patch
+  -b/--branch <branch_name>:   指定合并修改的目标分支,即模块名称。
+    例如： -b L/csp/packages/apps/Mms
+    如果当前路径是一个git目录,目标路径与当前git目录相同，可以直接使用 -b .
+EOF
+}
+
+MYSHPATH="/home/liubzh/mysh/repo" # 此变量是当前脚本文件所在文件夹的绝对路径
+repos=$MYSHPATH/repo/
+init_command=
+selectedfile=
+all_branches_path=/backup/Projects/merge
+patchesPath=/home/liubzh/patches
+
+# 参数有效性验证，ok赋值1，非法赋值0
+isArgsValid=1
+parse_args ()
+{
+    args="$*"
+    flag=
+    mycommit=
+    mypatch=
+    mybranch=
+    for arg in $args; do
+        if [ "$arg" = "-p" -o "$arg" = "--patch" ]; then
+            #patch flag
+            flag=p
+        elif [ "$arg" = "-c" -o "$arg" = "--commit" ]; then
+            #commit flag
+            flag=c
+        elif [ "$arg" = "-b" -o "$arg" = "--branch" ]; then
+            #branch flag
+            flag=b
+        elif [ "$arg" = "-h" -o "$arg" = "--help" ]; then
+            # 若为help参数，直接打印帮助信息，并退出脚本
+            print_help
+            isArgsValid=0
+        else
+            if [[ $arg = -* ]]; then
+                # 非法参数,直接退出脚本
+                e_ "非法参数\"$arg\""
+                isArgsValid=0
+            fi
+            if [ "$flag" = "p" ]; then
+                mypatch+="$arg "
+            elif [ "$flag" = "c" ]; then
+                mycommit+="$arg "
+            elif [ "$flag" = "b" ]; then
+                mybranch="$arg"
+            fi
+        fi
+    done
+
+    # 参数有效性验证
+    if [ -z "$mypatch" -a -z "$mycommit" ]; then
+        e_ "-p/patch或-c/commit必须指定一个。"
+        isArgsValid=0
+    fi
+    if [ -n "$mypatch" -a -n "$mycommit" ]; then
+        e_ "-p/patch和-c/commit只能指定一个。"
+        isArgsValid=0
+    fi
+    if [ -n "$mypatch" -a -z "$mybranch" ]; then
+        e_ "指定了patch，同时也需要指定branch。"
+        isArgsValid=0
+    fi
+    if [ -n "$mycommit" -a -z "$mybranch" ]; then
+        e_ "指定了commit，同时也需要指定branch。"
+        isArgsValid=0
+    fi
+    #if [ "$mybranch" = "." -a ! -d .git ]; then
+    isGitRepository
+    if [ "$mybranch" = "." -a "$?" = "0" ]; then
+        e_ "你指定了'-b .'当前路径，但是当前路径不是git目录。"
+        isArgsValid=0
+    fi
+    # 若参数合法，打印解析后的参数显示到窗口
+    if [ "$isArgsValid" = "1" ]; then
+        if [ -n "$mycommit" ]; then
+            i_ "mycommit:$mycommit"
+        fi
+        if [ -n "$mypatch" ]; then
+            i_ "mypatch:$mypatch"
+            i_ "mybranch:$mybranch"
+        fi
+    fi
+}
+
+init ()
+{
+
+#if [ -f branches ]; then
+#    rm branches
+#fi
+# 过滤掉目录，只显示文件
+branches=
+for file in `ls $repos`; do
+    target_file=$repos/$file
+    if [ -f "$target_file" ]; then
+        #`head -n1 $target_file` >> branches
+        branches+="$file "
+    fi
+done
+PS3="请选择一个项目初始化: "
+select selection in $branches; do
+	i_ "你选择了: $selection"
+	break;
+done
+#rm branches
+#for file in `ls $CURRENTSHDIR/repo`; do
+#    if [[ $selection = $file* ]]; then
+#        selectedfile=$file
+#        break
+#    fi
+#done
+newfolder=$all_branches_path/$selection
+if [ -d $newfolder -a -d $newfolder/.repo ]; then
+    w_ "此项目已经初始化，可直接使用。"
+    cd $newfolder
+else
+    i_ "创建目录：$newfolder"
+    mkdir $newfolder
+    cd $newfolder
+    init_command=`tail -n1 $repos/$selection`
+    #init_command=`cat $repos/$selection`
+    $init_command
+fi
+
+}
+
+topatch ()
+{
+
+if [ ! -d $patchesPath ]; then
+    mkdir -p $patchesPath
+fi
+
+#commits=$1
+#commits=${commits//,/ }
+
+for file in `ls $patchesPath`; do
+    rm -rf $patchesPath/$file
+done
+
+for commit in $mycommit; do
+    git show $commit > $patchesPath/$commit.patch
+done
+
+}
+
+croot ()
+{
+
+for i in {1..20}
+do
+    #echo "$i"
+    #ls
+    if [ -d .repo ]; then
+        break;
+    fi
+    cd ..
+done
+
+}
+
+my_do ()
+{
+# 解析参数  示例： merge -p patch_path/s -c commit_id/s
+parse_args $*
+if [ "$isArgsValid" = "0" ]; then
+    #如果参数非法，打印帮助信息，然后直接返回
+    print_help
+    return
+fi
+
+#$1: commit ids. split with "."
+if [ -n "$mycommit" ]; then
+    topatch
+fi
+    repo list $mybranch > repo.temp
+    infor=`tail -n1 repo.temp`
+    path=`echo "$infor"|awk -F ":" '{print $1}'`
+    #i_ "path=$path"
+    project=`echo "$infor"|awk -F ":" '{print $2}'`
+    #i_ "project=$project"
+    syncprojects="$project"
+    #croot
+    #repo list tyconfig > repo.temp
+    #infor=`tail -n1 repo.temp`
+    #tyconfig=`echo "$infor"|awk -F ":" '{print $2}'`
+    #syncprojects="$syncprojects $tyconfig"
+    i_ "syncprojects=$syncprojects"
+    rm repo.temp
+    init
+    #repo sync 同步模块
+    for proj in $syncprojects; do
+        echo "Project: $proj"
+        repo sync $proj
+    done
+    #创建本地分支 mybranch
+    i_ "repo start mybranch --all"
+    repo start mybranch --all
+    cd $path
+if [ -n "$mycommit" ]; then
+    for file in `ls $patchesPath`; do
+        i_ "git apply -v $patchesPath/$file"
+        git apply -v $patchesPath/$file
+    done
+elif [ -n "$mypatch" ]; then
+    for ptch in $mypatch; do
+        i_ "git apply -v $ptch"
+        git apply -v $ptch
+    done
+fi
+    i_ "git diff"
+    git diff
+    #i_ "git status"
+    #git status
+    i_ "git add *"
+    git add *
+    i_ "git commit"
+    git commit
+    i_ "git upload . --re xiewy"
+    repo upload . --re xiewy
+}
+
+my_do $*

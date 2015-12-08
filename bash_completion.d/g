@@ -1,0 +1,28 @@
+#!/bin/bash
+# Written by liubzh.
+
+function _g() {
+    # "--exclude-dir="
+    my_opt="-h --help --include --include-dir --exclude --exclude-dir -C --context=2"
+    my_file_type="{apk,java,c,cpp,aidl,xml,mk,aidl,o,a,so,img,zip,txt,log,class} strings.xml AndroidManifest.xml config.xml"
+    local cur prev opts
+
+    COMPREPLY=()
+
+    cur="${COMP_WORDS[COMP_CWORD]}"
+    prev="${COMP_WORDS[COMP_CWORD-1]}"
+    opts="${my_opt}"
+
+    if [[ ${cur} == -* ]] ; then
+        show_file_types=false
+        COMPREPLY=( $(compgen -W "${opts}" -- ${cur}) )
+    fi
+    if [ "$prev" = "--include" -o "$prev" = "--exclude" ]; then
+        show_file_types=true
+    fi
+    if [ $show_file_types = true ]; then
+        COMPREPLY=( $(compgen -W "${my_file_type}" -- ${cur}) )
+    fi
+    return 0
+}
+complete -o default -F _g g

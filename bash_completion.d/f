@@ -1,0 +1,19 @@
+#!/bin/bash
+# Written by liubzh
+
+function _f() {
+    my_opt="-h --help -iname -name"
+    local cur prev opts
+
+    COMPREPLY=()
+
+    cur="${COMP_WORDS[COMP_CWORD]}"
+    prev="${COMP_WORDS[COMP_CWORD-1]}"
+    opts="${my_opt}"
+
+    if [[ ${cur} == -* ]] ; then
+        COMPREPLY=( $(compgen -W "${opts}" -- ${cur}) )
+        return 0
+    fi
+}
+complete -o default -F _f f

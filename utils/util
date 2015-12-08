@@ -1,0 +1,6 @@
+#!/bin/bash
+
+# 不限参数，判断参数个数
+function sizeof() {
+    echo $#
+}

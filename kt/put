@@ -1,0 +1,113 @@
+#/bin/sh
+# Author:liubzh
+
+upload ()
+{
+
+# $1: [local]  local target file to upload
+# $2: [user]  for user. example:liubzh
+# $3: [remote-dir]  remote directory name
+# $4: [file-name]  remote file name
+if [ -z "$4" ]; then
+    echoE "upload() 缺少参数"
+    return 1
+fi
+
+ftp -n<<! 
+open 10.10.100.100
+user write 123456
+mkdir $2
+prompt
+mkdir $2/$3
+binary
+put $1 $2/$3/$4
+close
+bye
+!
+
+}
+
+# $1: target file to upload to server
+# $2: for username. example:liubzh
+ftp_upload_file() {
+
+    TARGET_FILE=$1
+
+    # Only for file. not for directory.
+    if [ -z "$1" ]; then
+        echoE "参数错误！[参数1为空]"
+        return 1
+    elif [ -d "$1" ]; then
+        echoE "参数1为目录！[文件参数有效]"
+        return 1
+    elif [ ! -f "$1" ]; then
+        echoE "此文件不存在！"
+        return 1
+    fi
+
+    FOR_NAME="liubzh"
+    if [ -n "$2" ]; then
+        FOR_NAME="$2"
+    fi
+    echoI "For '$FOR_NAME'"
+
+    # Remote
+    #preffix=`date +%H.%M\'%S\'\'`
+    preffix=`date +%Hh%Mm%Ss`
+    REMOTE_DIR=$preffix
+
+    FILE_NAME=$(basename "$TARGET_FILE")
+    read -p "输入文件描述？[回车跳过]:" -t 10 ANSWER
+    if [ -n "$ANSWER" ]; then
+        REMOTE_DIR+='_'$ANSWER
+    fi
+    if [[ $1 = out/target/*/system/* ]]; then
+        TARGET_PUSH_PATH=/system/${TARGET_FILE#*/system/}
+        TARGET_PUSH_PATH=${TARGET_PUSH_PATH//\//\$}
+        REMOTE_DIR+='_'$TARGET_PUSH_PATH
+    else
+        REMOTE_DIR+="_$FILE_NAME"
+    fi
+    echoW "REMOTE_DIR=$REMOTE_DIR"
+    upload $1 $FOR_NAME $REMOTE_DIR $FILE_NAME
+    echoI "done."
+}
+
+# $1: Local file
+# $2: For username
+
+# Local
+TARGET=$1
+# Added for getting right path of out/target/ file. begin
+mypwd=`pwd`
+if [[ $TARGET = out/target/* ]]; then
+    echoW "Param starts with 'out/target/'"
+    # cd .repo directory. root of current project.
+    cd_repo
+fi
+# Added for getting right path of out/target/ file. end
+if [ -f "$TARGET" ]; then
+    ftp_upload_file $*
+elif [ -d "$TARGET" ]; then
+    DIR_NAME=$(basename "$TARGET")
+    ZIP_FILE=$TARGET/$DIR_NAME.zip
+    if [ -f "$ZIP_FILE" ]; then
+        read -p "目标为目录，压缩文件存在。上传？[回车开始上传]:" -t 10 ANSWER
+        if [ -z "$ANSWER" ]; then
+            ftp_upload_file $ZIP_FILE $2
+        fi
+    else
+        read -p "目标为目录，压缩并上传？[回车开始压缩上传]:" -t 10 ANSWER
+        if [ -z "$ANSWER" ]; then
+            zip -r $ZIP_FILE $TARGET/*
+            ftp_upload_file $ZIP_FILE $2
+            if [[ $ZIP_FILE != *release/* ]]; then
+                rm $ZIP_FILE
+            fi
+        fi
+    fi
+else
+    echoE "此文件不存在。"
+fi
+cd $mypwd
+

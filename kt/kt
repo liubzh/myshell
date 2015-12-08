@@ -1,0 +1,45 @@
+#!/bin/bash
+
+if [ ! -d .repo ]; then
+    repo_init
+    chk_return
+fi
+
+# pick up tymake
+TYMAKE=
+cd tymake
+read -p "Project filter.可输入部分项目名过滤[不区分大小写],回车显示所有：" ANSWER
+for item in `ls TB*.mk`; do
+    item=`echo $item|grep -i $ANSWER`
+    if [ -n "$item" ]; then
+        TYMAKEs+=" $item"
+    fi
+done
+PS3="选择tymake文件："
+select TYMAKE in $TYMAKEs; do
+    break;
+done
+cd ..
+
+# pick up tybuild
+TYBUILDs=
+cd tybuild
+for item in `ls TB*MAKE.BAT`; do
+    item=`echo $item|grep -i $ANSWER`
+    if [ -n "$item" ]; then
+        TYBUILDs+=" $item"
+    fi
+done
+PS3="选择tybuild文件："
+select TYBUILD in $TYBUILDs; do
+    break;
+done
+cd ..
+
+#同步代码
+repo_sync
+
+#编译
+my_cmd tybuild/start tybuild/$TYBUILD tymake/$TYMAKE wtprebuilt
+
+

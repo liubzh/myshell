@@ -1,0 +1,248 @@
+#!/bin/bash - 
+# Written by liubzh
+
+# global var MY_CMD
+function my_cmd () {
+    MY_CMD="$*"
+    echoI $MY_CMD
+    $MY_CMD
+    if (( 0 != $? )); then
+        echoE "Failed to execute: $MY_CMD"
+        return 1
+    fi
+    return 0
+}
+
+# used global var: server,REPO_XML
+function repo_init () {
+    if [ -z "$REPO_XML" -o -z "$server" ]; then
+        pick_up_repo_xml
+        chk_return
+    fi
+    cmd_init="repo init -u ssh://$server:29418/manifest.git -m $REPO_XML --repo-url=ssh://$server:29418/repo.git --repo-branch=master --no-repo-verify"
+    my_cmd $cmd_init
+    chk_return
+    repo_sync tybuild
+    chk_return
+    repo_sync tymake
+    chk_return
+    return 0
+}
+
+# generate folder $SERVER_REPOS_TMP
+# global var: server,SERVER_REPOS_TMP
+function read_repos_from_server () {
+    REPO_SERVERS=(10.10.100.11 10.10.100.21)
+    SERVER_REPOS_TMP=.server_repos_tmp
+    if [ -d "$SERVER_REPOS_TMP" ]; then
+        echoE "$SERVER_REPOS_TMP directory already exists. 目录已存在！"
+        ANSWER=
+        read -p "Delete it? ([Enter]/Y/y)删除？"
+        if [ -z "$ANSWER" -o "$ANSWER" = Y -o "$ANSWER" = y ]; then
+            rm -fr $SERVER_REPOS_TMP
+        fi
+    fi
+    if [ ! -d "$SERVER_REPOS_TMP" ]; then
+        mkdir $SERVER_REPOS_TMP
+        for server in ${REPO_SERVERS[@]}; do
+            my_cmd git clone ssh://${server}:29418/manifest.git $SERVER_REPOS_TMP/$server
+            chk_return
+        done
+    fi
+    return 0
+}
+
+# global var REPO_XML
+function pick_up_repo_xml () {
+    result=0
+    read_repos_from_server
+    chk_return
+    cd $SERVER_REPOS_TMP    
+    echoW "选择服务器"
+    PS3="Please choose server："
+    select server in `ls`; do
+        cd $server
+        break;
+    done
+    ANSWER=
+    echoW "过滤配置文件 示例:stm_L_msm8909"
+    read -p "[不区分大小写]，回车显示全部:" ANSWER
+    repo_items=
+    for repo_item in `ls`; do
+        repo_item=`echo $repo_item|grep -i $ANSWER`
+        if [ -n "$repo_item" ]; then
+            repo_items+=" $repo_item"
+        fi
+    done
+    if [ -n "$repo_items" ]; then
+        echoW "选择配置文件"
+        PS3="Please choose config xml:"
+        select REPO_XML in $repo_items; do
+            echoI $REPO_XML
+            break;
+        done
+    else
+        echoE No items found.
+        result=1
+    fi
+    cd ../..
+    # delete folder $SERVER_REPOS_TMP
+    rm -rf $SERVER_REPOS_TMP
+    return $result
+}
+
+# global var REPO_MODULE
+# $1 part of module name
+function pick_up_module() {
+    ANSWER=
+    if [ -z "$1" ]; then
+        echoW "过滤模块"
+        read -p "[不区分大小写],回车显示所有:" ANSWER
+    else
+        ANSWER=$1
+    fi
+    REPO_MODULES=
+    for line in `repo manifest|grep "\<project "|sed 's/name="/\\n/;s/.*\\n//'|sed 's/".*//g'`
+    do
+        line=`echo $line|grep -i $ANSWER`
+        if [ -n "$line" ]; then
+            REPO_MODULES+=" $line"
+        fi
+    done
+    if [ -z "$REPO_MODULES" ]; then
+        echoW No item is shown.
+        return 1
+    elif [ `sizeof $REPO_MODULES` = 1 ]; then
+        REPO_MODULE=$REPO_MODULES
+    else
+        echoW "选择模块"
+        PS3="Please choose module:"
+        select REPO_MODULE in $REPO_MODULES; do
+            break;
+        done
+    fi
+    return 0
+}
+
+# $1 module name. if there is no argument, sync all.
+function repo_sync() {
+    if [ ! -d .repo ]; then
+        echoE "当前目录不是repo目录,请执行repo_init"
+        return 1
+    fi
+    REPO_MODULE=
+    if [ -n "$1" ]; then
+        pick_up_module $*
+        chk_return
+    else
+        ANSWER=
+        echoW "同步方式"
+        read -p "回车/Y/y同步所有,1选取单个模块. ([Enter]/Y/y/1)?" -t 30 ANSWER
+        if [ "$ANSWER" = "1" ]; then
+            pick_up_module
+            chk_return
+        elif [ ! -z "$ANSWER" -a "$ANSWER" != "Y" -a "$ANSWER" != "y" ]; then
+            # 非法，退出同步方法
+            return 0
+        #else Y/y/null有效，继续执行
+        fi
+    fi
+    my_cmd repo sync $REPO_MODULE
+    chk_return
+    if [ -z "$REPO_MODULE" ]; then
+        REPO_MODULE="--all"
+    fi
+    my_cmd repo start mybranch $REPO_MODULE
+    chk_return
+    return 0
+}
+
+function repo_upload() {
+    my_cmd repo upload . --re xiewy
+    chk_return
+    return 0
+}
+
+function repo_go() {
+    TMP_PRODUCT_SH_FILE="/tmp/tmp_product"
+    if [ -f $TMP_PRODUCT_SH_FILE ]; then
+        rm $TMP_PRODUCT_SH_FILE
+    fi
+    REPO_XML=
+    server=
+    if [ ! -d .repo ]; then
+        repo_init
+        chk_return
+        echo $cmd_init >> $TMP_PRODUCT_SH_FILE
+    fi
+
+    # pick up tybuild
+    TYBUILD=
+    TYBUILDs=
+    cd tybuild
+    echoW "过滤产品 示例:TBW5767"
+    read -p "Filter product.产品过滤[不区分大小写]，回车显示所有：" ANSWER
+    for item in `ls TB*MAKE.BAT`; do
+        item=`echo $item|grep -i $ANSWER`
+        if [ -n "$item" ]; then
+            TYBUILDs+=" $item"
+        fi
+    done
+    PS3="选择tybuild文件："
+    select TYBUILD in $TYBUILDs; do
+        break;
+    done
+    cd ..
+
+    # pick up tymake
+    TYMAKE=
+    TYMAKEs=
+    cd tymake
+    for item in `ls TB*.mk`; do
+        item=`echo $item|grep -i $ANSWER`
+        if [ -n "$item" ]; then
+            TYMAKEs+=" $item"
+        fi
+    done
+    PS3="选择tymake文件："
+    select TYMAKE in $TYMAKEs; do
+        break;
+    done
+    cd ..
+
+    echo "repo sync" >> $TMP_PRODUCT_SH_FILE
+    echo "repo start mybranch --all" >> $TMP_PRODUCT_SH_FILE
+
+    cmd_compile="tybuild/start tybuild/$TYBUILD tymake/$TYMAKE wtprebuilt user"
+    echo $cmd_compile >> $TMP_PRODUCT_SH_FILE
+
+    # 打印所有命令
+    echoI ----------
+    cat $TMP_PRODUCT_SH_FILE
+
+    target_file=$MYSHELLDIR/products/${TYMAKE/.mk/.sh}
+    ANSWER=
+    if [ -f $target_file ]; then
+        read -p "更新此配置吗：(Enter/Y/y)" ANSWER
+    else
+        read -p "保存此配置吗：(Enter/Y/y)" ANSWER
+    fi
+    if [ -z "$ANSWER" -o "$ANSWER" = Y -o "$ANSWER" = y ]; then
+        if [ -f $target_file ]; then
+            rm $target_file
+        fi
+        mv $TMP_PRODUCT_SH_FILE $target_file
+        chmod +x $target_file
+    fi
+
+    echoW "是否同步?"
+    read -p "回车默认进行同步. ([Enter]/Y/y/)?" -t ANSWER
+    if [ -z "$ANSWER" -o "$ANSWER" = Y -o "$ANSWER" = y ]; then
+        #同步代码
+        repo_sync
+    else
+        return 0
+    fi
+
+    my_cmd $cmd_compile
+}

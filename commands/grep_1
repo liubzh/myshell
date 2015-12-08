@@ -1,0 +1,223 @@
+#!/bin/bash
+
+MY_EXCEPTS="external out release cts sdk ndk dalvik docs pdk"
+
+help()
+{
+    echoI "Help: g | Binzo's customized 'grep'"
+    cat << Help
+Usage: g <KEYWORD> [PATH(s)] [OPTIONS]
+    在当前目录下搜索所有文件中指定的关键字。
+    <KEYWORD>    查找关键字。
+    [PATH(s)]    查找文件或者目录，可指定一个或多个。
+                 [PATHs]必须在[OPTIONS]之前，
+                 否则可能会与--include或--exclude表达式产生混淆。
+                 示例：g liubzh res/values-zh-rCN res/values-zh-rTW
+                      在简体中文以及繁体中文中搜索
+OPTIONS:
+  -h, --help     显示帮助信息
+  -C, --context <N>        搜索出的关键字上下文显示N行
+  --include <PATTERNs>  search only files that match PATTERN
+                 例如：--include *.java *.c 只搜索java以及c类型文件
+                 注意：--include只约束文件表达式（目录无法匹配）
+  --exclude <PATTERNs>  skip files matching PATTERN
+                       例如：--exclude *.mk *.make 不搜索mk以及make类型文件
+  --exclude-dir <PATTERNs>  skip directories matching PATTERN
+                       例如：--exclude-dir res src 不搜索res以及src目录
+Help
+}
+
+# 解析参数并且进行有效性验证
+# return    返回是否解析成功，若有非法参数返回0，OK返回1
+function parse_and_check_args ()
+{
+    args="$*"
+    flag=
+    myinclude=
+    myexclude=
+    myexdirs=
+    mycontext=
+    myexcepts=
+    myincepts=
+    for arg in $args; do
+        if [ "$arg" = "--include" ]; then
+            #--include flag
+            flag=include
+        elif [ "$arg" = "--exclude-dir" ]; then
+            #--exclude-dir flag
+            flag=exclude-dir
+        elif [ "$arg" = "--exclude" ]; then
+            #--exclude flag
+            flag=exclude
+        elif [ "$arg" = "-C" -o "$arg" = "--context" ]; then
+            #--context flag
+            flag=context
+        elif [ "$arg" = "--Except" ]; then
+            #--Except flag
+            flag=Except
+        elif [ "$arg" = "-h" -o "$arg" = "--help" ]; then
+            help
+            # 打印帮助信息直接返回
+            return 0
+        else
+            if [[ $arg = -* ]]; then
+                # 非法参数,直接返回
+                echoE "$CUR_SH非法参数\"$arg\""
+                return 0
+            fi
+            if [ "$flag" = "include" ]; then
+                myinclude+="$arg "
+            elif [ "$flag" = "exclude-dir" ]; then
+                myexdirs+="$arg "
+            elif [ "$flag" = "exclude" ]; then
+                myexclude+="$arg "
+            elif [ "$flag" = "Except" ]; then
+                myexcepts+="$arg "
+            elif [ "$flag" = "context" ]; then
+                if [ -n "$mycontext" ]; then
+                    echoE "--context 参数错误，请检查是否指定了多个！"
+                    return 0
+                else
+                    mycontext+="$arg"
+                fi
+            elif [ -d $arg -o -f $arg ]; then
+                myincepts+="$arg "
+                echoE $myincepts
+            fi
+        fi
+    done
+
+    # --context 上下文显示默认值为0
+    if [ -z "$mycontext" ]; then
+        mycontext=0
+    fi
+
+    # 参数有效性验证
+    if [ -z "$1" ]; then
+        echoE "$CUR_SH参数错误，必须指定搜索关键字！"
+        return 0
+    fi
+    if [[ $1 == -* ]]; then
+        echoE "$CUR_SH第一个参数必须为搜索关键字！不应该为选项"
+        return 0
+    fi
+    # 打印解析后不为空的参数，并格式化为grep参数要求的格式：--include={*.java,*.c}
+    # 4 params of --include
+    inc_a=
+    inc_b=
+    inc_c=
+    inc_d=
+    # 4 params of --exclude
+    exc_a=
+    exc_b=
+    exc_c=
+    exc_d=
+    # 4 params of --exclude-dir
+    exdir_a=
+    exdir_b=
+    exdir_c=
+    exdir_d=
+    if [ -n "$myinclude" ]; then
+        let inc_count=0
+        for item in $myinclude; do
+            if [ -z "$inc_a" ]; then
+                inc_a=$item
+            elif [ -z "$inc_b" ]; then
+                inc_b=$item
+            elif [ -z "$inc_c" ]; then
+                inc_c=$item
+            elif [ -z "$inc_d" ]; then
+                inc_d=$item
+            else
+                echoE "$CUR_SH指定--include的个数必须小于4个:$myinclude"
+                return 0
+            fi
+            let inc_count=($inc_count+1)
+        done
+        #echoI --include={$myinclude}
+    fi
+    if [ -n "$myexclude" ]; then
+        let exc_count=0
+        for item in $myexclude; do
+            if [ -z "$exc_a" ]; then
+                exc_a=$item
+            elif [ -z "$exc_b" ]; then
+                exc_b=$item
+            elif [ -z "$exc_c" ]; then
+                exc_c=$item
+            elif [ -z "$exc_d" ]; then
+                exc_d=$item
+            else
+                echoE "$CUR_SH指定--exclude的个数必须小于4个:$myexclude"
+                return 0
+            fi
+            let exc_count=($exc_count+1)
+        done
+        #echoI --exclude={$myexclude}
+    fi
+    if [ -n "$myexdirs" ]; then
+        let exc_count=0
+        for item in $myexdirs; do
+            if [ -z "$exdir_a" ]; then
+                exdir_a=$item
+            elif [ -z "$exdir_b" ]; then
+                exdir_b=$item
+            elif [ -z "$exdir_c" ]; then
+                exdir_c=$item
+            elif [ -z "$exdir_d" ]; then
+                exdir_d=$item
+            else
+                echoE "$CUR_SH指定--exclude-dir的个数必须小于4个:$myexdirs"
+                return 0
+            fi
+            let exc_count=($exdirs_count+1)
+        done
+    fi
+
+    return 1
+}
+
+parse_and_check_args $*
+# 如果参数合法，执行
+if [ "$?" = "1" ]; then
+
+    # 如果当前目录是一个Android主目录，提示是否略过不必要的搜索目录
+    if [ -d .repo ]; then
+        read -p "当前为安卓源码主目录，是否略过cts,out,external等目录?([Enter]/N/n...)" -t 10 ANSWER
+        if [ -z "$ANSWER" ]; then
+            myexcepts+="$MY_EXCEPTS"
+        fi
+    fi
+
+    # 排除当前的某些目录或文件
+    if [ -n "$myincepts" ]; then
+        search_items=$myincepts
+    else
+        search_items=`ls`
+    fi
+    if [ -n "$myexcepts" ]; then
+        for item in $myexcepts; do
+            #如果以/结尾的，删掉词尾的斜杠
+            if [[ $item = */ ]]; then
+                item=${item%%\/}
+            fi
+            # 删除指定的所有项
+            search_items=${search_items/$item/}
+        done
+    fi
+
+    if [ -n "$myexcepts" -o -n "$myincepts" ]; then
+        echoW Search in:[ $search_items ]
+    fi
+
+    echoI ">>>>>>>>>>>>>>>>>>>> Binzo's grep >>>>>>>>>>>>>>>>>>>>"
+    # 执行命令
+    # 这个IF条件之所以区分--include参数，而没有刻意约束--exclude。因为--include为空即忽略所有，影响搜索结果，而--exclude为空没有影响
+    if [ -n "$myinclude" ]; then
+        #echoI "--include and --exclude"
+        grep -rniER --context=$mycontext --include={$inc_a,$inc_b,$inc_c,$inc_d} --exclude={$exc_a,$exc_b,$exc_c,$exc_d} --exclude-dir={$exdir_a,$exdir_b,$exdir_c,$exdir_d} $1 $search_items
+    else
+        #echoI "default"
+        grep -rni --context=$mycontext --exclude={$exc_a,$exc_b,$exc_c,$exc_d} --exclude-dir={$exdir_a,$exdir_b,$exdir_c,$exdir_d} $1 $search_items
+    fi
+fi

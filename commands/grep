@@ -1,0 +1,106 @@
+#!/bin/bash
+
+# Written by liubzh|Binzo.
+
+print_help()
+{
+    echoI "Help: g | Binzo's customized 'grep'"
+    cat << Help
+Usage: g <KEYWORD> [OPTIONS]
+    在当前目录下搜索所有文件中指定的关键字。
+    <KEYWORD>    查找关键字。
+    [PATH(s)]    查找文件或者目录，可指定一个或多个。
+                 [PATHs]必须在[OPTIONS]之前，
+                 否则可能会与--include或--exclude表达式产生混淆。
+                 示例：g liubzh res/values-zh-rCN res/values-zh-rTW
+                      在简体中文以及繁体中文中搜索
+    NOTE: You can view the bash_completion.d/g for details.
+OPTIONS:
+  -h, --help     显示帮助信息
+  -C, --context <N>        搜索出的关键字上下文显示N行
+  --include <PATTERN>  search only files that match PATTERN
+                 例如：--include *.java *.c 只搜索java以及c类型文件
+                 注意：--include只约束文件表达式（目录无法匹配）
+  --exclude <PATTERN>  skip files matching PATTERN
+                       例如：--exclude *.mk *.make 不搜索mk以及make类型文件
+  --exclude-dir <PATTERN>  skip directories matching PATTERN
+                       例如：--exclude-dir res src 不搜索res以及src目录
+                          res/将被认为非法参量
+  --include-dir <DIRECTORYs>  个人定制的参数，指定搜索目录
+                       例如：--include-dir src
+Help
+}
+
+# 解析参数并且进行有效性验证
+# return    返回是否解析成功，若有非法参数返回1，OK返回0
+function parse_and_check_args ()
+{
+    args="$*"
+    flag=
+    myinclude=
+    myincludedir=
+    myexclude=
+    myexcludedir=
+    myparams=
+    for arg in $args; do
+        if [ "$arg" = "--include" ]; then
+            #--include flag
+            flag=include
+        elif [ "$arg" = "--include-dir" ]; then
+            #--include-dir flag
+            flag=include-dir
+        elif [ "$arg" = "--exclude" ]; then
+            #--exclude flag
+            flag=exclude
+        elif [ "$arg" = "--exclude-dir" ]; then
+            #--exclude-dir flag
+            flag=exclude-dir
+        elif [ "$arg" = "-h" -o "$arg" = "--help" ]; then
+            print_help
+            # 打印帮助信息直接返回
+            return 0
+        else
+            if [ "$flag" = "include" ]; then
+                myparams+=" --include=*$arg "
+            elif [ "$flag" = "include-dir" ]; then
+                myincludedir+=" $arg "
+            elif [ "$flag" = "exclude" ]; then
+                myparams+=" --exclude=*$arg "
+            elif [ "$flag" = "exclude-dir" ]; then
+                # 目录参数不能包含/字符
+                if [[ $arg == *\/* ]]; then
+                    echoE "Dir '$arg' should not include '/'"
+                    return 1
+                fi
+                myparams+=" --exclude-dir=$arg "
+            else
+                myparams+=" $arg "
+            fi
+        fi
+    done
+
+    if [ -z "$myincludedir" ]; then
+        myparams+=" . "
+    fi
+
+    myparams+=" $myincludedir "
+
+    # 参数有效性验证
+    if [ -z "$1" ]; then
+        echoE "$CUR_SH参数错误，必须指定搜索关键字！"
+        return 1
+    fi
+    if [[ $1 == -* ]]; then
+        echoE "$CUR_SH第一个参数必须为搜索关键字！不应该为选项"
+        return 1
+    fi
+
+    return 0
+}
+
+# 如果参数不合法，直接返回
+parse_and_check_args $*
+chk_return
+
+echoW $myparams
+grep -rniRE $myparams

@@ -1,0 +1,65 @@
+#!/bin/bash
+
+help()
+{
+    echoI "Help: v | Binzo's customized 'vim'"
+    cat << Help
+Usage:
+    v <FILE>    要查看的文件路径
+    v : <FILE>  个人实现的自动补全路径(常用文件路径)
+                另见：bash_completion.d/
+Help
+}
+
+# 解析参数并且进行有效性验证
+# return    返回是否解析成功，若有非法参数返回0，OK返回1
+function parse_and_check_args ()
+{
+    args="$*"
+    flag=
+    for arg in $args; do
+        if [ "$arg" = "-h" -o "$arg" = "--help" ]; then
+            help
+            # 打印帮助信息直接返回
+            return 0
+        fi
+    done
+
+    if [[ $1 == \: ]]; then
+        if [ -z "$2" ]; then
+            echoE "没有指定路径！"
+            return 0
+        elif [ ! -f $2 ]; then
+            echoE "文件$2不存在！"
+            return 0
+        fi
+        return 1
+    fi
+
+    # 对于grep搜索带有行号的结果，类似"values/strings.xml:4005:"
+    # 直接添加行号参数
+    first_arg=$1
+    if [[ $first_arg == *\:* ]]; then
+        mypath=`echo $first_arg|awk -F ":" '{print $1}'`
+        myline=`echo $first_arg|awk -F ":" '{print $2}'`
+    fi
+
+    return 1
+}
+
+mypath=
+myline=
+first_arg=
+
+parse_and_check_args $*
+if [ "$?" = 0 ]; then
+    return
+fi
+
+if [[ $1 == \: ]]; then
+    vim $2
+elif [ -n "$mypath" -a -n "$myline" ]; then
+    vim $mypath +$myline
+else
+    vim $*
+fi

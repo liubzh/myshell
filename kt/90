@@ -1,0 +1,30 @@
+#/bin/sh
+
+TMP_PATH=/tmp/ftp90
+
+complete_folder_name ()
+{
+
+# $1: part of folder name.
+#     example:5767 completed:TBW5767_R&D_Release
+ftp -n<<! 
+open 10.10.100.90
+user RDR01 34mqx7
+nlist *$1* $TMP_PATH
+close
+bye
+!
+
+}
+
+if [ -n "$1" ]; then
+    complete_folder_name $*
+    echoI "\n请选择目录："
+    PS3=":"
+    select selection in `cat $TMP_PATH`; do
+        nautilus ftp://10.10.100.90/$selection
+        break;
+    done
+else
+    nautilus ftp://10.10.100.90
+fi

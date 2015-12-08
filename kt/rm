@@ -1,0 +1,39 @@
+#!/bin/bash
+# Written by liubzh.
+
+print_help()
+{
+    echoI "Help: Binzo's customized 'rm'"
+    cat << Help
+usage: rm <TARGET>
+    主要目的为了判断预编译目录是否为空，删除之前解除挂载
+    <TARGET>  File or Directory. 文件或目录
+Help
+}
+
+if [ "$1" = "-h" -o "$1" = "--help" ]; then
+    print_help
+    return 0
+fi
+
+if [ -n "$1" ]; then
+    if [[ $1 == *\/ ]]; then
+        prebuilt_path="$1""vendor/k-touch/prebuilt"
+    else
+        prebuilt_path="$1/vendor/k-touch/prebuilt"
+    fi
+    if [ -d $prebuilt_path ]; then
+        my_pwd=`pwd`
+        if [[ $prebuilt_path != \/* ]]; then
+            # 完整路径
+            prebuilt_path=$my_pwd/$prebuilt_path
+        fi
+        cd $prebuilt_path
+        if [ -n "`ls`" ]; then
+            echoW "prebuilt目录不为空,解除挂载"
+            cd $my_pwd
+            sudo umount $prebuilt_path
+        fi
+    fi
+    rm -rf $1
+fi

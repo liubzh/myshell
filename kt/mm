@@ -1,0 +1,21 @@
+#!/bin/bash
+
+function do_mm()
+{
+MMTEMP=/tmp/mm.temp
+MMRSLT=/tmp/mm.rslt
+mm > $MMTEMP
+cat $MMTEMP
+sed -n '/^Install:/p' $MMTEMP > $MMRSLT
+sed -i 's/Install: //' $MMRSLT
+for line in `cat $MMRSLT`; do
+    echo -e "编译结果：${MY_GREEN}$line${MY_WHITE}"
+    read -p "Upload to server?([Enter略过此项]/Y/y/...)" -t 20 ANSWER
+    if [ "$ANSWER" = "Y" -o "$ANSWER" = "y" ]; then
+        put $line
+        echo "YYYY $line"
+    fi
+done
+}
+
+do_mm

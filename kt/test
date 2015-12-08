@@ -1,0 +1,14 @@
+#!/bin/bash
+
+function my_cmd(){
+    echo $*
+    $*
+    if (( 0 != $? )); then
+        echoE 111
+        return 1
+    fi
+    return 0
+}
+
+my_cmd cd ..
+echoI $?
