@@ -83,7 +83,7 @@ mypwd=`pwd`
 if [[ $TARGET = *out/target/* ]]; then
     echoW "Param starts with 'out/target/'"
     # cd .repo directory. root of current project.
-    cd_repo
+    cd_repo_dir
 fi
 # Added for getting right path of out/target/ file. end
 if [ -f "$TARGET" ]; then
