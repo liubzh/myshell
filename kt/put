@@ -61,7 +61,7 @@ ftp_upload_file() {
     if [ -n "$ANSWER" ]; then
         REMOTE_DIR+='_'$ANSWER
     fi
-    if [[ $1 = out/target/*/system/* ]]; then
+    if [[ $1 = *out/target/*/system/* ]]; then
         TARGET_PUSH_PATH=/system/${TARGET_FILE#*/system/}
         TARGET_PUSH_PATH=${TARGET_PUSH_PATH//\//\$}
         REMOTE_DIR+='_'$TARGET_PUSH_PATH
@@ -80,7 +80,7 @@ ftp_upload_file() {
 TARGET=$1
 # Added for getting right path of out/target/ file. begin
 mypwd=`pwd`
-if [[ $TARGET = out/target/* ]]; then
+if [[ $TARGET = *out/target/* ]]; then
     echoW "Param starts with 'out/target/'"
     # cd .repo directory. root of current project.
     cd_repo
@@ -99,7 +99,9 @@ elif [ -d "$TARGET" ]; then
     else
         read -p "目标为目录，压缩并上传？[回车开始压缩上传]:" -t 10 ANSWER
         if [ -z "$ANSWER" ]; then
-            zip -r $ZIP_FILE $TARGET/*
+            cd $TARGET
+            zip -r $(basename $ZIP_FILE) ./*
+            cd -
             ftp_upload_file $ZIP_FILE $2
             if [[ $ZIP_FILE != *release/* ]]; then
                 rm $ZIP_FILE

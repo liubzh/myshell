@@ -1,0 +1,19 @@
+#!/bin/bash
+# Written by liubzh.
+
+function _adb() {
+    my_opt="shell install remount push pull logcat"
+    local cur prev opts
+
+    COMPREPLY=()
+
+    cur="${COMP_WORDS[COMP_CWORD]}"
+    prev="${COMP_WORDS[COMP_CWORD-1]}"
+    opts="${my_opt}"
+
+    if [[ ${prev} == adb ]] ; then
+        COMPREPLY=( $(compgen -W "${opts}" -- ${cur}) )
+    fi
+    return 0
+}
+complete -o default -F _adb adb

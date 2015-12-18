@@ -16,22 +16,19 @@ if [ "$1" = "-h" -o "$1" = "--help" ]; then
     return 0
 fi
 
-if [ -n "$1" ]; then
+if [ -d "$1" ]; then
     if [[ $1 == *\/ ]]; then
         prebuilt_path="$1""vendor/k-touch/prebuilt"
     else
         prebuilt_path="$1/vendor/k-touch/prebuilt"
     fi
     if [ -d $prebuilt_path ]; then
-        my_pwd=`pwd`
         if [[ $prebuilt_path != \/* ]]; then
             # 完整路径
             prebuilt_path=$my_pwd/$prebuilt_path
         fi
-        cd $prebuilt_path
-        if [ -n "`ls`" ]; then
+        if [ -n "`ls $prebuilt_path`" ]; then
             echoW "prebuilt目录不为空,解除挂载"
-            cd $my_pwd
             sudo umount $prebuilt_path
         fi
     fi

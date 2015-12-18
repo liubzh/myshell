@@ -2,7 +2,7 @@
 
 # My shell scripts evironment variable. It's important.
 # 我的Shell脚本路径环境变量，很重要。
-MYSHELLDIR="/home/liubzh/myshell"
+MYSHELLDIR="/home/binzo/myshell"
 
 # Source all of the sh files under the path param1. It's not recursive.
 # Source指定路径param1下所有sh文件，不是递归的。
@@ -45,6 +45,7 @@ alias n='source $MYCOMMANDDIR/nautilus $*'
 MYKTSH=$MYSHELLDIR/kt
 source $MYKTSH/repo
 alias put='source $MYKTSH/put $*'
+alias get='source $MYKTSH/get $*'
 alias merge='source $MYKTSH/merge $*'
 alias kt='source $MYKTSH/kt $*'
 alias rm-='source $MYKTSH/rm $*'

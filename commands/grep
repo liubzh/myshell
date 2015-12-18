@@ -28,6 +28,7 @@ OPTIONS:
                           res/将被认为非法参量
   --include-dir <DIRECTORYs>  个人定制的参数，指定搜索目录
                        例如：--include-dir src
+  --target <FILE(s)|DIRECTORY(s)>  例如： --target res/values 搜索res/values目录
 Help
 }
 
@@ -42,48 +43,37 @@ function parse_and_check_args ()
     myexclude=
     myexcludedir=
     myparams=
+    target=
     for arg in $args; do
-        if [ "$arg" = "--include" ]; then
-            #--include flag
-            flag=include
-        elif [ "$arg" = "--include-dir" ]; then
-            #--include-dir flag
-            flag=include-dir
-        elif [ "$arg" = "--exclude" ]; then
-            #--exclude flag
-            flag=exclude
-        elif [ "$arg" = "--exclude-dir" ]; then
-            #--exclude-dir flag
-            flag=exclude-dir
-        elif [ "$arg" = "-h" -o "$arg" = "--help" ]; then
+        if [[ $arg == -* ]]; then
+            flag=$arg
+            continue
+        fi
+        if [ "$flag" = "--include" ]; then
+            myparams+=" $flag=*$arg "
+        elif [ "$flag" = "--include-dir" ]; then
+            myincludedir+=" $arg "
+        elif [ "$flag" = "--exclude" ]; then
+            myparams+=" $flag=*$arg "
+        elif [ "$flag" = "--exclude-dir" ]; then
+            # 目录参数不能包含/字符
+            if [[ $arg == *\/* ]]; then
+                echoE "Dir '$arg' should not include '/'"
+                return 1
+            fi
+            myparams+=" --exclude-dir=$arg "
+        elif [ "$flag" = "--target" ]; then
+            target+=" $arg "
+        elif [ "$flag" = "-h" -o "$flag" = "--help" ]; then
             print_help
             # 打印帮助信息直接返回
             return 0
+        elif [[ $arg == -* ]]; then
+            myparams+=" $arg "
         else
-            if [ "$flag" = "include" ]; then
-                myparams+=" --include=*$arg "
-            elif [ "$flag" = "include-dir" ]; then
-                myincludedir+=" $arg "
-            elif [ "$flag" = "exclude" ]; then
-                myparams+=" --exclude=*$arg "
-            elif [ "$flag" = "exclude-dir" ]; then
-                # 目录参数不能包含/字符
-                if [[ $arg == *\/* ]]; then
-                    echoE "Dir '$arg' should not include '/'"
-                    return 1
-                fi
-                myparams+=" --exclude-dir=$arg "
-            else
-                myparams+=" $arg "
-            fi
+            continue
         fi
     done
-
-    if [ -z "$myincludedir" ]; then
-        myparams+=" . "
-    fi
-
-    myparams+=" $myincludedir "
 
     # 参数有效性验证
     if [ -z "$1" ]; then
@@ -102,5 +92,10 @@ function parse_and_check_args ()
 parse_and_check_args $*
 chk_return
 
-echoW $myparams
-grep -rniRE $myparams
+if [ -z "$target" ]; then
+    target="."
+fi
+echoW "Keyword : $1"
+echoW "Params  : $myparams"
+echoW "Target  : $target"
+grep -rniRE "$1" $myparams $target

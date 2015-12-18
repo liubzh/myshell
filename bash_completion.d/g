@@ -3,7 +3,7 @@
 
 function _g() {
     # "--exclude-dir="
-    my_opt="-h --help --include --include-dir --exclude --exclude-dir -C --context=2"
+    my_opt="-h --help --include --include-dir --exclude --exclude-dir --target -C --context=2"
     my_file_type="{apk,java,c,cpp,aidl,xml,mk,aidl,o,a,so,img,zip,txt,log,class} strings.xml AndroidManifest.xml config.xml"
     local cur prev opts
 
