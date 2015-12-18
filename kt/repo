@@ -158,6 +158,10 @@ function repo_sync() {
 }
 
 function repo_upload() {
+    my_cmd git fetch
+    chk_return
+    my_cmd git rebase m/master
+    chk_return
     my_cmd repo upload . --re xiewy
     chk_return
     return 0
