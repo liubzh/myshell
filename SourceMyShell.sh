@@ -2,7 +2,14 @@
 
 # My shell scripts evironment variable. It's important.
 # 我的Shell脚本路径环境变量，很重要。
-MYSHELLDIR="/home/binzo/myshell"
+mypwd=`pwd`
+cd ~
+MYSHELLDIR=`pwd`"/myshell"
+cd $mypwd
+if [ ! -d $MYSHELLDIR ]; then
+    echo -e "\\033[31m$MYSHELLDIR 目录不存在，操作失败\\033[0m"
+    return 0
+fi
 
 # Source all of the sh files under the path param1. It's not recursive.
 # Source指定路径param1下所有sh文件，不是递归的。
@@ -59,3 +66,9 @@ alias 90='source $MYKTSH/90 $*'
 # Other
 alias cq='clearquest &'
 alias vnccfg='vncconfig &'
+
+# python
+VIR_ENV_SH="/usr/local/bin/virtualenvwrapper.sh"
+if [ -f $VIR_ENV_SH ]; then
+    source $VIR_ENV_SH
+fi
