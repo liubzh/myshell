@@ -1,0 +1,13 @@
+
+set nobackup "Never backup.|从不备份。
+
+set number "Show line number.|显示行号。
+
+"------About Tab------begin---
+set tabstop=4 "Width of Tab.|Tab宽度
+set shiftwidth=4 "每次缩进插入的空格数。用于[>,<,>>,<<] 
+set expandtab "Expand tab.|将Tab展开，已N个空格代替
+set smartindent "自动缩进排版
+set smarttab "在行和段起始位置使用制表符。
+set cindent "使用C样式的缩进，尤其对{}大括号等处理。
+"------About Tab-------end----

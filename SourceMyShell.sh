@@ -72,3 +72,10 @@ VIR_ENV_SH="/usr/local/bin/virtualenvwrapper.sh"
 if [ -f $VIR_ENV_SH ]; then
     source $VIR_ENV_SH
 fi
+
+# use my customized vimrc
+MY_VIMRC=$MYSHELLDIR/vim/vimrc
+VIMRC_TARGET=~/.vimrc
+if [ ! -f $VIMRC_TARGET ]; then
+    ln -s $MY_VIMRC $VIMRC_TARGET 
+fi
