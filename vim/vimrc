@@ -1,7 +1,11 @@
 
+"------Enable plugins under pathogen.
+call pathogen#infect()
+
 set nobackup "Never backup.|从不备份。
 
 set number "Show line number.|显示行号。
+"set nonumber "Don't show line number.
 
 "------About Tab------begin---
 set tabstop=4 "Width of Tab.|Tab宽度
@@ -11,3 +15,22 @@ set smartindent "自动缩进排版
 set smarttab "在行和段起始位置使用制表符。
 set cindent "使用C样式的缩进，尤其对{}大括号等处理。
 "------About Tab-------end----
+
+"------Hot keys------BEGIN
+nnoremap <silent> <F5> :NERDTreeToggle<CR>
+nnoremap <silent> <F8> :TlistToggle<CR>
+"------Hot keys------END
+
+"------plugin:taglist------BEGIN
+"let Tlist_WinWidth=40        "设置taglist宽度
+let Tlist_Auto_Highlight_Tag=1
+let Tlist_Auto_Open=1
+let Tlist_Auto_Update=1
+let Tlist_Display_Tag_Scope=1  
+let Tlist_Exit_OnlyWindow=1  "如果Tlist窗口是最后一个窗口，则退出Vim.
+let Tlist_Enable_Dold_Column=1 
+let Tlist_File_Fold_Auto_Close=1  
+let Tlist_Show_One_File=1  
+let Tlist_Use_Right_Window=1  "右侧显示Tlist窗口
+let Tlist_Use_SingleClick=1
+"------plugin:taglist------END

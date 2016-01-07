@@ -73,9 +73,14 @@ if [ -f $VIR_ENV_SH ]; then
     source $VIR_ENV_SH
 fi
 
-# use my customized vimrc
-MY_VIMRC=$MYSHELLDIR/vim/vimrc
-VIMRC_TARGET=~/.vimrc
-if [ ! -f $VIMRC_TARGET ]; then
-    ln -s $MY_VIMRC $VIMRC_TARGET 
+# Customizing my own vim. BEGIN
+MY_VIM_DIR=$MYSHELLDIR/vim
+if [ ! -d ~/.vim ]; then
+    ln -ds $MY_VIM_DIR ~/.vim  # Link .vim directory.
+    echoI link .vim
 fi
+if [ ! -f ~/.vimrc ]; then
+    ln -s $MY_VIM_DIR/vimrc ~/.vimrc # Link .vimrc file.
+    echoI link .vimrc
+fi
+# Customizing my own vim. END
