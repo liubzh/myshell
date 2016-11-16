@@ -1,24 +1,18 @@
 #!/bin/bash
 
 # My shell scripts evironment variable. It's important.
-# 我的Shell脚本路径环境变量，很重要。
-mypwd=`pwd`
-cd ~
-MYSHELLDIR=`pwd`"/myshell"
-cd $mypwd
+MYSHELLDIR=$HOME/mysh
 if [ ! -d $MYSHELLDIR ]; then
     echo -e "\\033[31m$MYSHELLDIR 目录不存在，操作失败\\033[0m"
     return 0
 fi
 
-# Source all of the sh files under the path param1. It's not recursive.
-# Source指定路径param1下所有sh文件，不是递归的。
-# param1: specify the path to source.
-# param1: 指定要source的路径。
+# Source all of the sh files under the path $param1. It's not recursive.
+# param1: specify the file path to execute source.
 function my_source()
 {
     if [ -z "$1" ]; then
-        echo -e "\\033[31m参数错误！［Function:my_source of SourceMyShell.sh］\\033[0m"
+        echo -e "\\033[31m参数错误！［Function:my_source of source file.］\\033[0m"
         return 0
     fi
     for file in `ls $1`; do
@@ -27,13 +21,10 @@ function my_source()
 }
 
 # source the files in MYSHELLDIR/utils/
-# source目录utils下的文件。
 my_source $MYSHELLDIR/utils
 
 # Source the files in MYSHELLDIR/bash_completion.d/
 # For enable the args auto completion when I input my own commands.
-# source目录bash_completion.d下的所有文件。
-# 为了能够在我键入自己的命令时有参数自动补全功能。
 my_source $MYSHELLDIR/bash_completion.d
 
 # alias check returned error number from function.
@@ -47,6 +38,8 @@ alias f='source $MYCOMMANDDIR/find $*'
 alias v='source $MYCOMMANDDIR/vim $*'
 # costomize command 'nautilus'
 alias n='source $MYCOMMANDDIR/nautilus $*'
+alias share='source $MYCOMMANDDIR/share'
+alias add_phone='source $MYCOMMANDDIR/add_phone'
 
 # kt
 MYKTSH=$MYSHELLDIR/kt
@@ -60,7 +53,8 @@ alias mm-='source $MYKTSH/mm $*'
 
 # ftp servers:
 alias 99='nautilus ftp://10.10.100.99/liubzh'
-alias 100='nautilus ftp://10.10.100.100/liubzh'
+#alias 100='nautilus ftp://10.10.100.100/liubzh'
+alias 100='nautilus ftp://10.10.100.100'
 alias 90='source $MYKTSH/90 $*'
 
 # Other
@@ -73,14 +67,32 @@ if [ -f $VIR_ENV_SH ]; then
     source $VIR_ENV_SH
 fi
 
-# Customizing my own vim. BEGIN
-MY_VIM_DIR=$MYSHELLDIR/vim
-if [ ! -d ~/.vim ]; then
-    ln -ds $MY_VIM_DIR ~/.vim  # Link .vim directory.
-    echoI link .vim
+# java
+# 如果想对所有用户进行配置
+# 可以考虑写进 /etc/profile文件
+JAVA_HOME="$HOME/Development/java/jdk"
+JRE_HOME="$JAVA_HOME/jre"
+if [ -d "$JAVA_HOME" ]; then
+    export CLASSPATH=.:$JAVA_HOME/lib:$JAVA_HOME/jre/lib:$CLASSPATH
+    export PATH=$JAVA_HOME/bin:$JRE_HOME/bin:$PATH
 fi
-if [ ! -f ~/.vimrc ]; then
-    ln -s $MY_VIM_DIR/vimrc ~/.vimrc # Link .vimrc file.
-    echoI link .vimrc
+
+# eclipse for python
+ECLIPSE="$HOME/Development/python/eclipse/eclipse"
+if [ -f $ECLIPSE ]; then
+    alias eclipse='$MY_ECLIPSE'
 fi
-# Customizing my own vim. END
+
+# Android Studio
+ANDROID_SDK_HOME="$HOME/Android/Sdk"
+export PATH=$ANDROID_SDK_HOME/platform-tools:$PATH
+ANDROID_STUDIO="$HOME/Development/android-studio/bin/studio.sh"
+if [ -f $ANDROID_STUDIO ]; then
+    alias android_studio=$ANDROID_STUDIO
+fi
+
+# wechat
+WECHAT="$HOME/Applications/electronic-wechat/electronic-wechat"
+if [ -f $WECHAT ]; then
+    alias wechat="$WECHAT"
+fi

@@ -4,3 +4,21 @@
 function sizeof() {
     echo $#
 }
+
+# 判断软件包是否已安装
+function pkgInstalled() {
+    if [ -n "$1" ]; then
+        dpkg -l | grep "$1"
+        search=`dpkg -l | grep "$1"`
+        if [ -n "$search" ]; then
+            found=true
+            echoI "'$1'已安装"
+            return 1
+        else
+            echo "'$1'未安装"
+            return 0
+        fi
+    else
+        echoE "缺少参数，请指定PackageName"
+    fi
+}

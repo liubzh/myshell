@@ -1,6 +1,0 @@
-#!/bin/bash
-
-var="res/valuse/strings.xml:4005:"
-echo $var
-var=${var##/}
-echo $var

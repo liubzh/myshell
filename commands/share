@@ -1,0 +1,30 @@
+#/bin/sh
+
+# Addresses
+MY_ADDRESSES='
+    192.168.0.2
+    192.168.0.3
+    192.168.1.10
+    192.168.0.100
+'
+
+PS3="Please select server address:"
+select selection in $MY_ADDRESSES; do
+    break;
+done
+
+if [ "$selection" = "192.168.0.100" ]; then
+    nautilus smb://192.168.0.100/Share
+elif [ "$selection" = "192.168.0.2" ]; then
+    nautilus smb://192.168.0.2/Share
+elif [ "$selection" = "192.168.1.10" ]; then
+    DIR_SHARE="/mnt/Share"
+    # NOTE
+    # If there's any error when execute 'mount -t cifs xxx'
+    # You can install package below:
+    # sudo apt install cifs-utils
+    sudo mount -t cifs //192.168.1.10/Share $DIR_SHARE \
+        -o username="BINZO"
+    nautilus $DIR_SHARE
+    sudo umount $DIR_SHARE
+fi

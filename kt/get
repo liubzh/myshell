@@ -17,7 +17,7 @@ open $host
 user $user $pass
 cd $FOR_NAME
 prompt # set prompt off
-ls . $REMOTE_FOLDER_LIST_TEMPFILE
+ls . $REMOTE_FOLDER_LIST_TEMP
 close
 bye
 !
@@ -33,7 +33,7 @@ choose_folder ()
         # cut the content to find out folder name.
         folder="${line##* }"
         folders+="$folder "
-    done < $REMOTE_FOLDER_LIST_TEMPFILE
+    done < $REMOTE_FOLDER_LIST_TEMP
     read -p "Get latest folder [$folder]? ([Enter]/Y/y/...)" -t 10 ANSWER
     if [ "$ANSWER" = "Y" -o "$ANSWER" = "y" -o "$ANSWER" = "" ]; then
         REMOTE_FOLDER="$folder"
@@ -55,12 +55,12 @@ open $host
 user $user $pass
 binary # binary file.
 prompt # set prompt on
-nlist $FOR_NAME/$REMOTE_FOLDER $REMOTE_FILE_PATH_TEMPFILE
+nlist $FOR_NAME/$REMOTE_FOLDER $REMOTE_FILE_PATH_TEMP
 close
 bye
 !
 
-REMOTE_FILE_PATH=`cat $REMOTE_FILE_PATH_TEMPFILE`
+REMOTE_FILE_PATH=`cat $REMOTE_FILE_PATH_TEMP`
 
 }
 
@@ -97,9 +97,12 @@ adb_push() {
 
 REMOTE_FOLDER=
 REMOTE_FILE_PATH=
-TARGET_PATH="/home/binzo/get"
-REMOTE_FOLDER_LIST_TEMPFILE="$TARGET_PATH/_list"
-REMOTE_FILE_PATH_TEMPFILE="$TARGET_PATH/_file"
+TARGET_PATH="$HOME/get"
+if [ ! -d $TARGET_PATH ]; then
+    mkdir $TARGET_PATH
+fi
+REMOTE_FOLDER_LIST_TEMP="$TARGET_PATH/.list"
+REMOTE_FILE_PATH_TEMP="$TARGET_PATH/.file"
 
 # for specific username folder, the default is 'liubzh'
 FOR_NAME="liubzh"

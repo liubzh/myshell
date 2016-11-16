@@ -1,0 +1,32 @@
+#!/bin/bash
+
+help()
+{
+    echoI "Help: markdown | Binzo's customized 'markdown_py"
+    cat << Help
+usage: markdown <input-file> <output-file>
+    <input-file>     文件输入，一般为markdown文件。
+    <output-file>    文件输出，一般为html文件。
+Help
+}
+
+MARKDOWN_TMP=/tmp/markdown_py_tmp.html
+
+#markdown_py -e utf-8 -o html4 -x markdown.extensions.tables $1 > $2
+markdown_py -e utf-8 -o html4 -x toc -x tables -x footnotes -x fenced_code -x codehilite $1 > $MARKDOWN_TMP
+
+echo -e '<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0//EN" "http://www.w3.org/TR/REC-html40/strict.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+</head>\n\n
+' > $2
+
+cat $MARKDOWN_TMP >> $2
+
+echo -e '
+\n\n</html>
+' >> $2
+
+# <table> 样式
+sed -i 's/<table>/<table border="1">/g' $2
