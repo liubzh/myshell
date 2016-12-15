@@ -4,7 +4,7 @@
 
 FILE=$HOME/.bashrc
 
-STR="source $HOME/mysh/source"
+STR="source $HOME/myshell/source"
 ADD="
 #Added by Binzo. begin
 $STR
