@@ -1,0 +1,19 @@
+#!/bin/bash
+# Author:liubingzhao
+
+help()
+{
+    echoI "Help: switch_git| Switch git version."
+}
+
+sudo update-alternatives --config git
+
+# How to create the alternatives of git.
+# 如何创建可选的可执行文件。
+# sudo update-alternatives --install /usr/bin/git git ~/Applications/git/git_1.7 30
+# sudo update-alternatives --install /usr/bin/git git ~/Applications/git/git_1.9 40
+
+# Notice:
+# 需要注意的是：
+# 通常情况下，/usr/local/bin目录下的执行文件优先于/usr/bin目录下的。因此当前者下有git的话，那么链接到后者的是不能够生效的。如果我们想改变这些目录的优先级，可以参考系统中的/etc/environment文件，修改文件中环境变量的顺序即可更改优先级，但是建议不要更改。
+# 我的做法是：将/usr/local/bin下的git以及/usr/bin下的git全部移动到其它位置，这里是~/Applications/git目录，然后使用update-alternatives进行生成。
