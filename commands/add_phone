@@ -16,9 +16,9 @@ target_line=
 # 比较插拔设备前后lsusb的结果比较，比较出设备信息
 function gather_info() {
     read -p "请先拔下设备，然后按任意键继续。"
-#    lsusb > $lsusb_unpluged
+    lsusb > $lsusb_unpluged
     read -p "请再插入设备，然后按任意键继续。"
-#    lsusb > $lsusb_pluged
+    lsusb > $lsusb_pluged
     diff $lsusb_pluged $lsusb_unpluged > $lsusb_diff
     while read line; do
         if [[ $line == \<* ]]; then
