@@ -9,9 +9,17 @@ function _adb() {
 
     cur="${COMP_WORDS[COMP_CWORD]}"
     prev="${COMP_WORDS[COMP_CWORD-1]}"
-    opts="${my_opt}"
+    prev2="${COMP_WORDS[COMP_CWORD-2]}"
+    opts=""
 
     if [[ ${prev} == adb ]] ; then
+        opts=${my_opt}
+    fi
+    if [[ ${prev2} == push ]]; then
+        # 从文件data/adb_files中读取补全数据，可不断添加。
+        opts=`cat $MYSHELLDIR/data/adb_files`
+    fi
+    if [ -n "${opts}" ]; then
         COMPREPLY=( $(compgen -W "${opts}" -- ${cur}) )
     fi
     return 0

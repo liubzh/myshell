@@ -39,8 +39,8 @@ alias v='source $MYCOMMANDDIR/vim $*'
 # costomize command 'nautilus'
 alias n='source $MYCOMMANDDIR/nautilus $*'
 alias share='source $MYCOMMANDDIR/share'
-alias add_phone='source $MYCOMMANDDIR/add_phone'
-alias switch_git='source $MYCOMMANDDIR/switch_git'
+alias add-phone='source $MYCOMMANDDIR/add-phone'
+alias switch-git='source $MYCOMMANDDIR/switch-git'
 
 # kt
 MYKTSH=$MYSHELLDIR/kt
@@ -87,9 +87,9 @@ fi
 # Android Studio
 ANDROID_SDK_HOME="$HOME/Development/android/sdk"
 export PATH=$ANDROID_SDK_HOME/platform-tools:$ANDROID_SDK_HOME/tools:$PATH
-ANDROID_STUDIO="$HOME/Development/android-studio/bin/studio.sh"
+ANDROID_STUDIO="$HOME/Development/android/android-studio/bin/studio.sh"
 if [ -f $ANDROID_STUDIO ]; then
-    alias android_studio=$ANDROID_STUDIO
+    alias android-studio=$ANDROID_STUDIO
 fi
 
 # wechat

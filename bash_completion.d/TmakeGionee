@@ -1,0 +1,33 @@
+#!/bin/bash
+# Written by liubingzhao.
+
+function _TmakeGionee() {
+    local my_args_short="-i -p -u -n -r -t"
+    local my_args_long="--update-api --new --remake --project"
+    local my_modules="bootimage systemimage userdataimage update-api kernel otapackage modem"
+    local my_projects="G1605A G1602A"
+    local cur prev opts
+
+    COMPREPLY=()
+
+    cur="${COMP_WORDS[COMP_CWORD]}"
+    prev="${COMP_WORDS[COMP_CWORD-1]}"
+    opts=""
+
+    if [[ ${cur} == --* ]]; then
+        opts="${my_args_long}"
+    elif [[ ${cur} == -* ]]; then
+        opts="${my_args_short}"
+    elif [[ ${cur} == G* || ${cur} == B* ]]; then
+        opts="${my_projects}"
+    elif [[ ${prev} == *TmakeGionee ]] ; then
+        opts="${my_args_short}"
+    elif [[ ${prev} == -i ]] ; then
+        opts="${my_modules}"
+    fi
+    if [ -n "${opts}" ]; then
+        COMPREPLY=( $(compgen -W "${opts}" -- ${cur}) )
+    fi
+    return 0
+}
+complete -o default -F _TmakeGionee TmakeGionee

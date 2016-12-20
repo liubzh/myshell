@@ -37,6 +37,25 @@ else
 fi
 }
 
+# $1 寻找目录下存在$1的文件或目录
+function cd_dir()
+{
+    mypwd=`pwd`
+    while [ -n "$mypwd" ]; do
+        if [ -d $mypwd/$1 -o -f $mypwd/$1 ]; then
+            break;
+        else
+            mypwd=${mypwd%\/*}
+        fi
+    done
+    if [ -n "$mypwd" ]; then
+        cd $mypwd
+    else
+        # 没有发现.repo目录，恢复到原来位置
+        echoW "路径中没有找到.repo目录！"
+    fi
+}
+
 function check_integer() {
     var=$(echo $1 | bc 2>/dev/null)
     if [ "$var" = "$1" ]; then
@@ -80,7 +99,8 @@ elif [ "$1" = "p" ]; then
         cd $MY_PROJECT
     fi
 elif [ "$1" = "r" ]; then
-    cd_repo_dir
+    #cd_repo_dir
+    cd_dir TmakeGionee
 elif [ "$1" = "-" ]; then
     # 返回上一次访问过的目录
     cd -
