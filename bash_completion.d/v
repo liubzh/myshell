@@ -1,5 +1,20 @@
 #!/bin/bash
 
+# Create by liubingzhao.
+
+# Relatives:
+# command: $MYSHELLDIR/command/v
+# data: $MYSHELLDIR/data/v_files
+
+my_data_file=$MYSHELLDIR/data/v_files
+
+function catchFileNames() {
+    my_file_names=
+    while read line; do
+        my_file_names+="$(basename $line) "
+    done < $my_data_file
+}
+
 function _v() {
     my_opt="/etc/udev/rules.d/51-android.rules"
     local cur prev opts
@@ -11,6 +26,8 @@ function _v() {
     opts="${my_opt}"
 
     if [[ ${prev} == \: ]] ; then
+        catchFileNames
+        opts=$my_file_names
         COMPREPLY=( $(compgen -W "${opts}" -- ${cur}) )
         return 0
     fi

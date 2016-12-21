@@ -1,0 +1,35 @@
+#!/bin/bash
+
+# Created by liubingzhao on 20161220.
+
+# Relatives:
+# command: $MYSHELLDIR/command/add-f
+# command: $MYSHELLDIR/command/v
+# data: $MYSHELLDIR/data/v_files
+# completion: $MYSHELLDIR/bash_completion.d/v
+my_data_file=$MYSHELLDIR/data/v_files
+my_item=$1
+function help()
+{
+    echoI "Help: Add file path to file $my_data_file"
+    cat << Help
+Usage: add-f <file>
+将某个文件路径存储到文件，作为常用路径。通过"v :"显示已经存储的文件列表。
+Help
+}
+
+touch $my_data_file
+if [ -z "$1"  ]; then
+    echoE "缺少参数"
+    help
+elif [ -f "$1" ]; then
+    my_item=`pwd`/$my_item
+    # If item does not exist, then append to file. 
+    if [ -z "`grep $my_item $my_data_file`" ]; then
+        echo $my_item >> $my_data_file
+    fi
+else
+    echoE "File does not exist."
+fi
+
+source $MYSHELLDIR/bash_completion.d/v

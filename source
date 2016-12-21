@@ -41,6 +41,8 @@ alias n='source $MYCOMMANDDIR/nautilus $*'
 alias share='source $MYCOMMANDDIR/share'
 alias add-phone='source $MYCOMMANDDIR/add-phone'
 alias switch-git='source $MYCOMMANDDIR/switch-git'
+alias add-f='source $MYCOMMANDDIR/add-f'
+alias rm-f='source $MYCOMMANDDIR/rm-f'
 
 # kt
 MYKTSH=$MYSHELLDIR/kt

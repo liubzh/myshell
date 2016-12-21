@@ -1,0 +1,65 @@
+#!/bin/bash
+
+# Created by liubingzhao on 20161221.
+
+# Relatives:
+# command: $MYSHELLDIR/command/add-f
+# command: $MYSHELLDIR/command/v
+# data: $MYSHELLDIR/data/v_files
+my_data_file=$MYSHELLDIR/data/v_files
+my_item=
+keyword=
+function help()
+{
+    echoI "Help: Remove file path from file $my_data_file"
+    cat << Help
+Usage: rm-f <file>
+将某个文件路径存储到文件，作为常用路径。通过"v :"显示已经存储的文件列表。
+Help
+}
+
+# $1: keyword to search.
+function remove_item() {
+    result=
+    let count=0
+    while read line; do
+        if [[ $line == *$1* ]]; then
+            result+="$line "
+            let count=$count+1
+        fi
+    done < $my_data_file
+    if [ $count -eq 0 ]; then
+        # There's no result.
+        echoE None.
+    elif [ $count -eq 1 ]; then
+        # There's only 1 result.
+        sed -i "/$1/d" $my_data_file
+        echoI Deleted.
+    elif [ $count -gt 1 ]; then
+        result="ALL $result"
+        # There're 2 or more results.
+        select selection in $result; do
+            if [[ $selection == ALL ]]; then
+                # Delete ALL.
+                sed -i "/$1/d" $my_data_file
+            else
+                # Delete selection.
+                sed -i "/$selection/d" $my_data_file
+            fi
+            echoI Deleted.
+            break;
+        done
+    fi
+}
+
+touch $my_data_file
+if [ -z "$1"  ]; then
+    echoE "缺少参数"
+    help
+    return 0
+else
+    keyword=$1
+fi
+
+remove_item $1
+source $MYSHELLDIR/bash_completion.d/v
