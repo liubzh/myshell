@@ -1,33 +1,35 @@
 #!/bin/bash
 
-# Written by liubzh|Binzo.
+######## Script Information. BGN ########
+# Author: liubingzhao.
+# Date: 2016-12-27
+# Relative Completion: bash_completion.d/g
+######## Script Information. END ########
 
-print_help()
-{
+function print_help() {
     echoI "Help: g | Binzo's customized 'grep'"
     cat << Help
-Usage: g <KEYWORD> [OPTIONS]
+Usage: g <KEYWORD> [OPTIONS] [PATH(s)]
     在当前目录下搜索所有文件中指定的关键字。
     <KEYWORD>    查找关键字。
     [PATH(s)]    查找文件或者目录，可指定一个或多个。
-                 [PATHs]必须在[OPTIONS]之前，
-                 否则可能会与--include或--exclude表达式产生混淆。
-                 示例：g liubzh res/values-zh-rCN res/values-zh-rTW
-                      在简体中文以及繁体中文中搜索
+                 示例1：g liubzh res/values-zh-rCN res/values-zh-rTW
+                       在简体中文以及繁体中文中搜索
+                 示例2：g "liubzh " --include .java --include strings.xml
     NOTE: You can view the bash_completion.d/g for details.
 OPTIONS:
   -h, --help     显示帮助信息
+  -c, --count    只显示每个文件查询出有多少处
   -C, --context <N>        搜索出的关键字上下文显示N行
   --include <PATTERN>  search only files that match PATTERN
-                 例如：--include *.java *.c 只搜索java以及c类型文件
-                 注意：--include只约束文件表达式（目录无法匹配）
+                 例如：--include .java --include .c 只搜索所有java以及c类型文件
+                      --include string.xml         只搜索所有string.xml文件
+                 注意：--include只约束文件表达式（不会去匹配目录）
   --exclude <PATTERN>  skip files matching PATTERN
-                       例如：--exclude *.mk *.make 不搜索mk以及make类型文件
+                       例如：--exclude .mk --exclude .make 不搜索mk以及make类型文件
   --exclude-dir <PATTERN>  skip directories matching PATTERN
-                       例如：--exclude-dir res src 不搜索res以及src目录
+                       例如：--exclude-dir res --exclude-dir src 不搜索res以及src目录
                           res/将被认为非法参量
-  --include-dir <DIRECTORYs>  个人定制的参数，指定搜索目录
-                       例如：--include-dir src
   --target <FILE(s)|DIRECTORY(s)>  例如： --target res/values 搜索res/values目录
 Help
 }
@@ -36,66 +38,76 @@ Help
 # return    返回是否解析成功，若有非法参数返回1，OK返回0
 function parse_and_check_args ()
 {
-    args="$*"
-    flag=
-    myinclude=
-    myincludedir=
-    myexclude=
-    myexcludedir=
     myparams=
     target=
-    for arg in $args; do
-        if [[ $arg == -* ]]; then
-            flag=$arg
-            continue
-        fi
-        if [ "$flag" = "--include" ]; then
-            myparams+=" $flag=*$arg "
-        elif [ "$flag" = "--include-dir" ]; then
-            myincludedir+=" $arg "
-        elif [ "$flag" = "--exclude" ]; then
-            myparams+=" $flag=*$arg "
-        elif [ "$flag" = "--exclude-dir" ]; then
-            # 目录参数不能包含/字符
-            if [[ $arg == *\/* ]]; then
-                echoE "Dir '$arg' should not include '/'"
-                return 1
-            fi
-            myparams+=" --exclude-dir=$arg "
-        elif [ "$flag" = "--target" ]; then
-            target+=" $arg "
-        elif [ "$flag" = "-h" -o "$flag" = "--help" ]; then
-            print_help
-            # 打印帮助信息直接返回
-            return 0
-        elif [[ $arg == -* ]]; then
-            myparams+=" $arg "
-        else
-            continue
-        fi
+    while [ $# -gt 0 ];do
+        case $1 in
+            -h|--help|\?)
+                print_help
+                return 1    # exit.
+                ;;
+            --include)
+                shift
+                myparams+=" --include=*$1*"
+                shift
+                ;;
+            --exclude)
+                shift
+                myparams+=" --exclude=*$1*"
+                shift
+                ;;
+            --exclude-dir)
+                shift
+                # dir argument can not be a path, it should be a name.
+                # so it can't contain character.
+                if [[ $1 == */* ]]; then
+                    echoE "Dir '$1' should not contain '/'"
+                    return 1
+                fi
+                myparams+=" --exclude-dir=*$1*"
+                shift
+                ;;
+            *)
+                if [ -d $1 -o -f $1 ]; then
+                    # If argument is a file path or directory path, add it to $target.
+                    target+=" $1"
+                else
+                    # The arguments that we can not parse, append to $myparams directly.
+                    myparams+=" $1"
+                fi
+                shift
+                ;;
+        esac
     done
 
     # 参数有效性验证
-    if [ -z "$1" ]; then
-        echoE "$CUR_SH参数错误，必须指定搜索关键字！"
+    if [ -z "${keyword}" ]; then
+        echoE "Illegal argument.\nKeyword is lost."
         return 1
     fi
-    if [[ $1 == -* ]]; then
-        echoE "$CUR_SH第一个参数必须为搜索关键字！不应该为选项"
+    if [[ ${keyword} == -* ]]; then
+        echoE "Illegal argument.\nThe first argument should be the keyword you are searching.\nIt can not start with '-' or '--'"
         return 1
     fi
 
     return 0
 }
 
-# 如果参数不合法，直接返回
-parse_and_check_args $*
+keyword="$1"
+if [[ $1 == -h || $1 == --help || $1 == ? ]]; then
+    print_help
+    return 0
+else
+    # shift first argument. because we have saved it to $keyword.
+    shift
+fi
+ 
+# Check arguments.
+parse_and_check_args $@
 chk_return
 
-if [ -z "$target" ]; then
-    target="."
+if [ -z "${target}" ]; then
+    target=" ."
 fi
-echoW "Keyword : $1"
-echoW "Params  : $myparams"
-echoW "Target  : $target"
-grep -rniRE "$1" $myparams $target
+echoW "Command: grep -rniRE \"${keyword}\"${myparams}${target}"
+grep -rniRE "${keyword}" ${myparams} ${target}

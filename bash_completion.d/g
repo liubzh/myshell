@@ -1,27 +1,38 @@
 #!/bin/bash
-# Written by liubzh.
+
+######## Script Information. BGN ########
+# Author: liubingzhao.
+# Date: 2016-12-27
+# Relative Command: commands/grep 
+######## Script Information. END ########
 
 function _g() {
-    # "--exclude-dir="
-    my_opt="-h --help --include --include-dir --exclude --exclude-dir --target -C --context=2"
-    my_file_type="{apk,java,c,cpp,aidl,xml,mk,aidl,o,a,so,img,zip,txt,log,class} strings.xml AndroidManifest.xml config.xml"
-    local cur prev opts
+    # Arguments start with '-'
+    local my_opt_short="-h -C2 -c"
+    # Arguments start with '--'
+    local my_opt_long="--help --count --include --exclude --exclude-dir --target --context=2"
+    local my_log_file="crash_log kernel_log events_log main_log radio_log radio_log"
+    local my_file_type=".{java,c,cpp,aidl,xml,mk,zip,txt,log} strings.xml AndroidManifest.xml config.xml styles.xml themes.xml ${my_log_file}"
 
     COMPREPLY=()
 
-    cur="${COMP_WORDS[COMP_CWORD]}"
-    prev="${COMP_WORDS[COMP_CWORD-1]}"
-    opts="${my_opt}"
+    local cur="${COMP_WORDS[COMP_CWORD]}"
+    local prev="${COMP_WORDS[COMP_CWORD-1]}"
+    local opts=
 
-    if [[ ${cur} == -* ]] ; then
-        show_file_types=false
+    # Arguments start with '--' and '-'
+    if [[ ${cur} == --* ]] ; then
+        opts=${my_opt_long}
+    elif [[ ${cur} == -* ]]; then
+        opts=${my_opt_short}
+    fi
+
+    if [[ $prev == --include || $prev == --exclude ]]; then
+        opts=${my_file_type}
+    fi
+
+    if [ -n "${opts}" ]; then
         COMPREPLY=( $(compgen -W "${opts}" -- ${cur}) )
-    fi
-    if [ "$prev" = "--include" -o "$prev" = "--exclude" ]; then
-        show_file_types=true
-    fi
-    if [ $show_file_types = true ]; then
-        COMPREPLY=( $(compgen -W "${my_file_type}" -- ${cur}) )
     fi
     return 0
 }
