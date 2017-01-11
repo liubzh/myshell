@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # My shell scripts evironment variable. It's important.
-MYSHELLDIR=$HOME/myshell
+export MYSHELLDIR=$HOME/myshell
 if [ ! -d $MYSHELLDIR ]; then
     echo -e "\\033[31m$MYSHELLDIR 目录不存在，操作失败\\033[0m"
     return 0
@@ -41,18 +41,19 @@ alias n='source $MYCOMMANDDIR/nautilus $*'
 alias share='source $MYCOMMANDDIR/share'
 alias add-phone='source $MYCOMMANDDIR/add-phone'
 alias switch-git='source $MYCOMMANDDIR/switch-git'
+alias switch-locale='source $MYCOMMANDDIR/switch-locale'
 alias add-f='source $MYCOMMANDDIR/add-f'
 alias rm-f='source $MYCOMMANDDIR/rm-f'
 
 # kt
-MYKTSH=$MYSHELLDIR/kt
-source $MYKTSH/repo
-alias put='source $MYKTSH/put $*'
-alias get='source $MYKTSH/get $*'
-alias merge='source $MYKTSH/merge $*'
-alias kt='source $MYKTSH/kt $*'
-alias rm-='source $MYKTSH/rm $*'
-alias mm-='source $MYKTSH/mm $*'
+#MYKTSH=$MYSHELLDIR/kt
+#source $MYKTSH/repo
+#alias put='source $MYKTSH/put $*'
+#alias get='source $MYKTSH/get $*'
+#alias merge='source $MYKTSH/merge $*'
+#alias kt='source $MYKTSH/kt $*'
+#alias rm-='source $MYKTSH/rm $*'
+#alias mm-='source $MYKTSH/mm $*'
 
 # ftp servers:
 alias 99='nautilus ftp://10.10.100.99/liubzh'

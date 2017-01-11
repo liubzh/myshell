@@ -1,0 +1,92 @@
+#!/bin/bash
+
+######## Script Information. BGN ########
+# Author: liubingzhao.
+# Date: 2017-01-09
+# Relative Completion: bash_completion.d/g
+######## Script Information. END ########
+
+# All the global variables in this script.
+function init_global_variables() {
+    selection=
+}
+
+function print_help() {
+    echoI "Help: switch-locale| Switch default locale."
+    cat << Help
+    switch-locale [Option]
+Help
+}
+
+function parse_and_check_args () {
+    while [ $# -gt 0 ]; do
+        case "$1" in
+        -h|--help|\?)
+            print_help
+            return 1    # exit.
+            ;;
+        *)
+            shift
+            ;;
+        esac
+    done
+}
+
+# Return 0: found
+# Return 1: invalid argument
+# Return 2: not found
+function find_string_by_line() {
+    if [ -z "$1" ]; then
+        echo "(find_string_by_line)" $(gettext -s 'Invalid argument.')
+        return 1
+    fi
+    locale -a|while read line; do
+        if [ $line = $1 ]; then
+            return 0
+        fi
+    done
+    return 2
+}
+
+# "$@": All of the options.
+function select_item_from() {
+    if [ -z "$*" ]; then
+        echo "(select_item_from)" $(gettext -s 'Invalid argument.')
+        return 1
+    fi
+    while [ -z "$selection" ]; do PS3=$(gettext -s 'Please select one:')
+        select selection in "$@"; do
+            break
+        done
+    done
+}
+
+function main() {
+    init_global_variables
+
+    # Check arguments.
+    parse_and_check_args "$@"
+    chk_return
+
+    if [ -z "$1" ]; then
+        select_item_from zh_CN.utf8 en_US.utf8
+        chk_return
+        export LANG="$selection"
+        echo "export LANG=$selection"
+    else
+        find_string_by_line "$@"
+        case $? in
+        0)
+            export LANG="$1"
+            echo "export LANG=$1"
+            ;;
+        2)
+            echo $(gettext -s "Invalid locale:") $1
+            ;;
+        *)
+            ;;
+        esac
+    fi
+}
+
+main "$@"

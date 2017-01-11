@@ -1,0 +1,34 @@
+
+#: a:6
+msgid "Can't cd to $var."
+msgstr "无法进入目录 $var."
+
+#: a:7
+msgid "Enter the value: "
+msgstr "请输入值 : "
+
+#  The string are dumped with the variable names, not with the %s syntax,
+#+ similar to C programs.
+#+ This is a very cool feature if the programmer uses
+#+ variable names that make sense!
+
+msgid "Update"
+msgstr "更新"
+
+msgid "Invalid argument."
+msgstr "无效参数。"
+
+msgid "Please select one:"
+msgstr "请选择："
+
+# gn/make
+msgid "Compile all? (y/n)"
+msgstr "整编吗? (y/n)"
+
+# commands/add-phone
+msgid "Replug the usb cable again."
+msgstr "重新插拔设备使其生效。"
+
+# commands/switch-locale
+msgid "Invalid locale:"
+msgstr "无效的locale:"

@@ -7,30 +7,35 @@
 ######## Script Information. END ########
 
 function print_help() {
-    echoI "Help: g | Binzo's customized 'grep'"
     cat << Help
-Usage: g <KEYWORD> [OPTIONS] [PATH(s)]
-    在当前目录下搜索所有文件中指定的关键字。
-    <KEYWORD>    查找关键字。
-    [PATH(s)]    查找文件或者目录，可指定一个或多个。
-                 示例1：g liubzh res/values-zh-rCN res/values-zh-rTW
-                       在简体中文以及繁体中文中搜索
-                 示例2：g "liubzh " --include .java --include strings.xml
-    NOTE: You can view the bash_completion.d/g for details.
-OPTIONS:
-  -h, --help     显示帮助信息
-  -c, --count    只显示每个文件查询出有多少处
-  -C, --context <N>        搜索出的关键字上下文显示N行
-  --include <PATTERN>  search only files that match PATTERN
-                 例如：--include .java --include .c 只搜索所有java以及c类型文件
-                      --include string.xml         只搜索所有string.xml文件
-                 注意：--include只约束文件表达式（不会去匹配目录）
-  --exclude <PATTERN>  skip files matching PATTERN
-                       例如：--exclude .mk --exclude .make 不搜索mk以及make类型文件
-  --exclude-dir <PATTERN>  skip directories matching PATTERN
-                       例如：--exclude-dir res --exclude-dir src 不搜索res以及src目录
-                          res/将被认为非法参量
-  --target <FILE(s)|DIRECTORY(s)>  例如： --target res/values 搜索res/values目录
+$(gettext -s "g | Binzo's customized 'grep'")
+$(gettext -s 'Usage: g <KEYWORD> [OPTIONS]... [FILE]...')
+$(gettext -s "Search the keyword in specific file or directory")
+$(gettext -s "Example:")
+  g 'hello world' menu.h main.c
+  g liubzh res/values-zh-rCN res/values-zh-rTW
+  g 'liubzh ' --include .java --include strings.xml
+$(gettext -s "You can view the bash_completion.d/g for more details about completion")
+
+  <KEYWORD>            $(gettext -s "The keyword you want to search")
+  [FILE]               $(gettext -s "The file(s) or directory(s) you want to search in")
+
+$(gettext -s "OPTIONS"):
+  -h, --help, ?        $(gettext -s "Display this help")
+  -c, --count          $(gettext -s "Print only a count of matching lines per FILE")
+  -C, --context <N>    $(gettext -s "Print N lines of output context")
+  --include <PATTERN>  $(gettext -s "Search only files that match PATTERN")
+                       $(gettext -s "Example:")
+                         --include .java --include .c
+                         --include string.xml
+  --exclude <PATTERN>  $(gettext -s "Skip files matching PATTERN")
+                       $(gettext -s "Example:")
+                         --exclude .mk --exclude .make
+  --exclude-dir <PATTERN>  $(gettext -s "Skip directories matching PATTERN")
+                       $(gettext -s "Example:")
+                         --exclude-dir .git --exclude-dir .svn
+                       $(gettext -s "It can not be:")
+                         --exclude-dir res/value
 Help
 }
 
@@ -40,8 +45,14 @@ function parse_and_check_args ()
 {
     myparams=
     target=
+    if [[ $1 == -h || $1 == --help || $1 == ? ]]; then
+        print_help
+        return 1
+    else
+        keyword="$1";shift # Shift the first argument(keyword) off.
+    fi
     while [ $# -gt 0 ];do
-        case $1 in
+        case "$1" in
             -h|--help|\?)
                 print_help
                 return 1    # exit.
@@ -93,21 +104,31 @@ function parse_and_check_args ()
     return 0
 }
 
-keyword="$1"
-if [[ $1 == -h || $1 == --help || $1 == ? ]]; then
-    print_help
-    return 0
-else
-    # shift first argument. because we have saved it to $keyword.
-    shift
-fi
- 
-# Check arguments.
-parse_and_check_args $@
-chk_return
+# Internationalization and localization
+# Set local language support. only for zh_CN.
+# Reference directory: /usr/local/share/locale_
+function set_localization() {
+    export TEXTDOMAINDIR=$MYSHELLDIR/lang/locale
+    export TEXTDOMAIN=grep
+}
 
-if [ -z "${target}" ]; then
-    target=" ."
-fi
-echoW "Command: grep -rniRE \"${keyword}\"${myparams}${target}"
-grep -rniRE "${keyword}" ${myparams} ${target}
+function unset_localization() {
+    export TEXTDOMAINDIR=
+    export TEXTDOMAIN=
+}
+
+set_localization
+
+# Check arguments.
+parse_and_check_args "$@"
+case "$?" in
+0)
+    if [ -z "${target}" ]; then
+        target=" ."
+    fi
+    echoW "Command: grep -rniR \"${keyword}\"${myparams}${target}"
+    grep -rniR "${keyword}" ${myparams} --exclude-dir=.git ${target}
+    ;;
+esac
+
+unset_localization

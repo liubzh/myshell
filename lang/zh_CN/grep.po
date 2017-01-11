@@ -1,0 +1,46 @@
+
+msgid "g | Binzo's customized 'grep'"
+msgstr "g | Binzo 定制化的 ‘grep’"
+
+msgid "Usage: g <KEYWORD> [OPTIONS]... [FILE]..."
+msgstr "用法： g <关键字> [选项]... [文件]..."
+
+msgid "Search the keyword in specific file or directory"
+msgstr "在指定文件或目录中搜索关键字"
+
+msgid "The keyword you want to search"
+msgstr "搜索关键字"
+
+msgid "The file(s) or directory(s) you want to search in"
+msgstr "搜索目标文件或者目录，可指定多个"
+
+msgid "OPTIONS"
+msgstr "选项"
+
+msgid "Example:"
+msgstr "例如："
+
+msgid "You can view the bash_completion.d/g for more detail about completion"
+msgstr "你可以打开 bash_completion.d/g 查看更多关于补全的信息"
+
+msgid "Display this help"
+msgstr "查看帮助"
+
+msgid "Print only a count of matching lines per FILE"
+msgstr "只打印每个FILE 中的匹配行数目"
+
+msgid "Print N lines of output context"
+msgstr "打印输出文本NUM 行"
+
+msgid "It can not be:"
+msgstr "不能写成："
+
+msgid "Skip files matching PATTERN"
+msgstr "跳过所有匹配 PATTERN 的文件"
+
+msgid "Skip directories matching PATTERN"
+msgstr "跳过所有匹配 PATTERN 的目录"
+
+msgid "Search only files that match PATTERN"
+msgstr "只查找匹配 PATTERN 的文件"
+
