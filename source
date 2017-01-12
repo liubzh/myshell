@@ -20,6 +20,16 @@ function my_source()
     done
 }
 
+LOCALIZATION_ENABLED=true
+# Config the supporting of localization
+function gettxt() {
+    if $LOCALIZATION_ENABLED; then
+        gettext -s "$@"
+    else
+        echo "$@"
+    fi
+}
+
 # source the files in MYSHELLDIR/utils/
 my_source $MYSHELLDIR/utils
 

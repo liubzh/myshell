@@ -12,9 +12,11 @@ function init_global_variables() {
 }
 
 function print_help() {
-    echoI "Help: switch-locale| Switch default locale."
+    echoI $(gettxt "switch-locale | Binzo's customized command switching locale.")
     cat << Help
-    switch-locale [Option]
+$(gettxt 'Usage:') switch-locale [LOCALE]
+$(gettxt "LOCALE can be C zh_CN.utf8 en_US.utf8 and so on,")
+$(gettxt "You can execute 'locale -a' to view all supported locales.")
 Help
 }
 
@@ -37,7 +39,7 @@ function parse_and_check_args () {
 # Return 2: not found
 function find_string_by_line() {
     if [ -z "$1" ]; then
-        echo "(find_string_by_line)" $(gettext -s 'Invalid argument.')
+        echo "(find_string_by_line)" $(gettxt 'Invalid argument.')
         return 1
     fi
     locale -a|while read line; do
@@ -51,18 +53,32 @@ function find_string_by_line() {
 # "$@": All of the options.
 function select_item_from() {
     if [ -z "$*" ]; then
-        echo "(select_item_from)" $(gettext -s 'Invalid argument.')
+        echo "(select_item_from)" $(gettxt 'Invalid argument.')
         return 1
     fi
-    while [ -z "$selection" ]; do PS3=$(gettext -s 'Please select one:')
+    while [ -z "$selection" ]; do PS3=$(gettxt 'Please select one:')
         select selection in "$@"; do
             break
         done
     done
 }
 
+# Internationalization and localization
+# Set local language support. only for zh_CN.
+# Reference directory: /usr/local/share/locale
+function set_localization() {
+    export TEXTDOMAINDIR="${MYSHELLDIR}/lang/locale"
+    export TEXTDOMAIN="switch-locale"
+}
+
+function unset_localization() {
+    unset TEXTDOMAINDIR
+    unset TEXTDOMAIN
+}
+
 function main() {
     init_global_variables
+    set_localization
 
     # Check arguments.
     parse_and_check_args "$@"
@@ -81,12 +97,14 @@ function main() {
             echo "export LANG=$1"
             ;;
         2)
-            echo $(gettext -s "Invalid locale:") $1
+            echo $(gettxt "Invalid locale:") $1
             ;;
         *)
             ;;
         esac
     fi
+
+    unset_localization
 }
 
 main "$@"

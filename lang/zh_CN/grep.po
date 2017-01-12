@@ -44,3 +44,11 @@ msgstr "跳过所有匹配 PATTERN 的目录"
 msgid "Search only files that match PATTERN"
 msgstr "只查找匹配 PATTERN 的文件"
 
+msgid "Illegal argument, please specify the keyword"
+msgstr "参数错误，请指定搜索关键字"
+
+msgid "should not contain '/'"
+msgstr "不能包含字符 ‘/’"
+
+msgid "Command"
+msgstr "执行命令"

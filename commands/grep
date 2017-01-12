@@ -6,49 +6,53 @@
 # Relative Completion: bash_completion.d/g
 ######## Script Information. END ########
 
+# All the global variables in this script.
+function init_global_variables() {
+    myparams=
+    target=
+    keyword=
+    target=
+}
+
 function print_help() {
     cat << Help
-$(gettext -s "g | Binzo's customized 'grep'")
-$(gettext -s 'Usage: g <KEYWORD> [OPTIONS]... [FILE]...')
-$(gettext -s "Search the keyword in specific file or directory")
-$(gettext -s "Example:")
+$(gettxt "g | Binzo's customized 'grep'")
+$(gettxt 'Usage: g <KEYWORD> [OPTIONS]... [FILE]...')
+$(gettxt "Search the keyword in specific file or directory")
+$(gettxt "Example:")
   g 'hello world' menu.h main.c
   g liubzh res/values-zh-rCN res/values-zh-rTW
   g 'liubzh ' --include .java --include strings.xml
-$(gettext -s "You can view the bash_completion.d/g for more details about completion")
+$(gettxt "You can view the bash_completion.d/g for more details about completion")
 
-  <KEYWORD>            $(gettext -s "The keyword you want to search")
-  [FILE]               $(gettext -s "The file(s) or directory(s) you want to search in")
+  <KEYWORD>            $(gettxt "The keyword you want to search")
+  [FILE]               $(gettxt "The file(s) or directory(s) you want to search in")
 
-$(gettext -s "OPTIONS"):
-  -h, --help, ?        $(gettext -s "Display this help")
-  -c, --count          $(gettext -s "Print only a count of matching lines per FILE")
-  -C, --context <N>    $(gettext -s "Print N lines of output context")
-  --include <PATTERN>  $(gettext -s "Search only files that match PATTERN")
-                       $(gettext -s "Example:")
+$(gettxt "OPTIONS"):
+  -h, --help, ?        $(gettxt "Display this help")
+  -c, --count          $(gettxt "Print only a count of matching lines per FILE")
+  -C, --context <N>    $(gettxt "Print N lines of output context")
+  --include <PATTERN>  $(gettxt "Search only files that match PATTERN")
+                       $(gettxt "Example:")
                          --include .java --include .c
                          --include string.xml
-  --exclude <PATTERN>  $(gettext -s "Skip files matching PATTERN")
-                       $(gettext -s "Example:")
+  --exclude <PATTERN>  $(gettxt "Skip files matching PATTERN")
+                       $(gettxt "Example:")
                          --exclude .mk --exclude .make
-  --exclude-dir <PATTERN>  $(gettext -s "Skip directories matching PATTERN")
-                       $(gettext -s "Example:")
+  --exclude-dir <PATTERN>  $(gettxt "Skip directories matching PATTERN")
+                       $(gettxt "Example:")
                          --exclude-dir .git --exclude-dir .svn
-                       $(gettext -s "It can not be:")
+                       $(gettxt "It can not be:")
                          --exclude-dir res/value
 Help
 }
 
-# 解析参数并且进行有效性验证
-# return    返回是否解析成功，若有非法参数返回1，OK返回0
+# Parse and validate the arguments.
+# return 0: ok
+# return 1: invalid or print help.
 function parse_and_check_args ()
 {
-    myparams=
-    target=
-    if [[ $1 == -h || $1 == --help || $1 == ? ]]; then
-        print_help
-        return 1
-    else
+    if [[ $1 != -h && $1 != --help && $1 != ? ]]; then
         keyword="$1";shift # Shift the first argument(keyword) off.
     fi
     while [ $# -gt 0 ];do
@@ -70,9 +74,10 @@ function parse_and_check_args ()
             --exclude-dir)
                 shift
                 # dir argument can not be a path, it should be a name.
-                # so it can't contain character.
+                # so it can't contain character /.
                 if [[ $1 == */* ]]; then
-                    echoE "Dir '$1' should not contain '/'"
+                    var="$1"
+                    echoE "'${1}'" $(gettxt "should not contain '/'")
                     return 1
                 fi
                 myparams+=" --exclude-dir=*$1*"
@@ -91,44 +96,48 @@ function parse_and_check_args ()
         esac
     done
 
-    # 参数有效性验证
     if [ -z "${keyword}" ]; then
-        echoE "Illegal argument.\nKeyword is lost."
+        echoE $(gettxt "Illegal argument, please specify the keyword")
         return 1
     fi
-    if [[ ${keyword} == -* ]]; then
-        echoE "Illegal argument.\nThe first argument should be the keyword you are searching.\nIt can not start with '-' or '--'"
-        return 1
-    fi
+    #if [[ ${keyword} == -* ]]; then
+    #    echoE "Illegal argument.\nThe first argument should be the keyword you are searching.\nIt can not start with '-' or '--'"
+    #    return 1
+    #fi
 
     return 0
 }
 
 # Internationalization and localization
 # Set local language support. only for zh_CN.
-# Reference directory: /usr/local/share/locale_
+# Reference directory: /usr/local/share/locale
 function set_localization() {
-    export TEXTDOMAINDIR=$MYSHELLDIR/lang/locale
-    export TEXTDOMAIN=grep
+    export TEXTDOMAINDIR="${MYSHELLDIR}/lang/locale"
+    export TEXTDOMAIN="grep"
 }
 
 function unset_localization() {
-    export TEXTDOMAINDIR=
-    export TEXTDOMAIN=
+    unset TEXTDOMAINDIR
+    unset TEXTDOMAIN
 }
 
-set_localization
+function main() {
+    init_global_variables
+    set_localization
 
-# Check arguments.
-parse_and_check_args "$@"
-case "$?" in
-0)
-    if [ -z "${target}" ]; then
-        target=" ."
-    fi
-    echoW "Command: grep -rniR \"${keyword}\"${myparams}${target}"
-    grep -rniR "${keyword}" ${myparams} --exclude-dir=.git ${target}
-    ;;
-esac
+    # Check arguments.
+    parse_and_check_args "$@"
+    case "$?" in
+    0)
+        if [ -z "${target}" ]; then
+            target=" ."
+        fi
+        echoW "$(gettxt "Command"): grep -rniR \"${keyword}\"${myparams}${target}"
+        grep -rniR "${keyword}" ${myparams} --exclude-dir=.git ${target}
+        ;;
+    esac
 
-unset_localization
+    unset_localization
+}
+
+main "$@"

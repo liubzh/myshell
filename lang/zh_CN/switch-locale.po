@@ -1,0 +1,23 @@
+msgid "Update"
+msgstr "更新"
+
+msgid "Invalid argument."
+msgstr "无效参数。"
+
+msgid "Please select one:"
+msgstr "请选择："
+
+msgid "Invalid locale:"
+msgstr "无效的locale:"
+
+msgid "switch-locale | Binzo's customized command switching locale."
+msgstr "switch-locale | Binzo 定制化的切换 locale 命令"
+
+msgid "LOCALE can be C zh_CN.utf8 en_US.utf8 and so on,"
+msgstr "LOCALE 可以是 C zh_CN.utf8 en_US.utf8 等，"
+
+msgid "You can execute 'locale -a' to view all supported locales."
+msgstr "你可以执行命令 ‘locale -a’ 查看所有 locale。"
+
+msgid "Usage:"
+msgstr "用法："
