@@ -37,6 +37,9 @@ my_source $MYSHELLDIR/utils
 # For enable the args auto completion when I input my own commands.
 my_source $MYSHELLDIR/bash_completion.d
 
+# Add executive files to PATH
+export PATH=${MYSHELLDIR}/sh:$PATH
+
 # alias check returned error number from function.
 alias chk_return='if (( 0 != $? )); then return 1; fi'
 
