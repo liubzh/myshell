@@ -43,6 +43,7 @@ alias chk_return='if (( 0 != $? )); then return 1; fi'
 # Commands.
 MYCOMMANDDIR=$MYSHELLDIR/commands
 alias c='source $MYCOMMANDDIR/cd $*'
+alias b='cd -'
 alias g='source $MYCOMMANDDIR/grep $*'
 alias f='source $MYCOMMANDDIR/find $*'
 alias v='source $MYCOMMANDDIR/vim $*'
@@ -54,6 +55,7 @@ alias switch-git='source $MYCOMMANDDIR/switch-git'
 alias switch-locale='source $MYCOMMANDDIR/switch-locale'
 alias add-f='source $MYCOMMANDDIR/add-f'
 alias rm-f='source $MYCOMMANDDIR/rm-f'
+alias adb='source $MYCOMMANDDIR/adb'
 
 # kt
 #MYKTSH=$MYSHELLDIR/kt

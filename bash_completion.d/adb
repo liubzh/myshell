@@ -1,8 +1,15 @@
 #!/bin/bash
-# Written by liubzh.
+
+######## Script Information. BGN ########
+# Author: liubingzhao.
+# Date: 2016-12-27
+# Relative Command: commands/adb
+######## Script Information. END ########
 
 function _adb() {
-    my_opt="shell install remount push pull logcat"
+    local my_opt="push pull sync shell emu logcat forward reverse jdwp install install-multiple uninstall bugreport restore disable-verity enable-verity keygen help version wait-for start-server kill-server get-state get-serialno get-devpath remount reboot sideload root unroot usb tcpip ppp reconnect"
+    local v_opts="brief color long printable process raw tag thread threadtime time usec"
+    local logcat_opts="-s -r -n -v -D -c -t -T -g -L -b -B -S -G -p -P"
     local cur prev opts
 
     COMPREPLY=()
@@ -14,14 +21,24 @@ function _adb() {
 
     if [[ ${prev} == adb ]] ; then
         opts=${my_opt}
+    elif [[ ${prev} == -v && ${prev2} == logcat ]]; then
+        opts=${v_opts}
+    elif [[ ${prev} == logcat && ${cur} == -* ]]; then
+        opts=${logcat_opts}
     fi
     if [[ ${prev2} == push ]]; then
-        # 从文件data/adb_files中读取补全数据，可不断添加。
-        opts=`cat $MYSHELLDIR/data/adb_files`
+        # If command is "adb push", and argument is like *out*/system/*,
+        # autocut and complete the next argument.
+        if [ -n "${prev}" ]; then
+            if [[ ${prev} == *out*/system/* ]]; then
+                opts=system/${prev#*/system/}
+            fi
+        fi
     fi
     if [ -n "${opts}" ]; then
         COMPREPLY=( $(compgen -W "${opts}" -- ${cur}) )
     fi
     return 0
 }
+
 complete -o default -F _adb adb

@@ -16,7 +16,7 @@ function init_global_variables() {
 
 function print_help() {
     cat << Help
-$(gettxt "add-phone | Binzo's command to add usb access permission to file") $TARGET"
+$(gettxt "add-phone | Binzo's command to add usb access permission to file") $TARGET
 $(gettxt "If we don't have permission to access usb device, add-phone can help us to finish the configuration.")
 Help
 }
