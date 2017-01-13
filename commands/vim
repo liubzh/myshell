@@ -5,8 +5,7 @@
 # completion: $MYSHELLDIR/bash_completion.d/v
 my_data_file=$MYSHELLDIR/data/v_files
 
-help()
-{
+function print_help() {
     echoI "Help: v | Binzo's customized 'vim'"
     cat << Help
 Usage:
@@ -24,7 +23,7 @@ function parse_and_check_args ()
     flag=
     for arg in $args; do
         if [ "$arg" = "-h" -o "$arg" = "--help" ]; then
-            help
+            print_help
             # 打印帮助信息直接返回
             return 0
         fi

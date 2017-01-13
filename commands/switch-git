@@ -1,9 +1,14 @@
 #!/bin/bash
 # Author:liubingzhao
 
-help()
-{
+function print_help() {
     echoI "Help: switch_git| Switch git version."
+    cat << Help
+Execute: sudo update-alternatives --config git
+How to create the alternatives of git?
+    sudo update-alternatives --install /usr/bin/git git ~/Applications/git/git_1.7 30
+    sudo update-alternatives --install /usr/bin/git git ~/Applications/git/git_1.9 40
+Help
 }
 
 sudo update-alternatives --config git

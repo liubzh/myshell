@@ -1,9 +1,11 @@
 #!/bin/bash
 
-MY_EXCEPTS="external out release cts sdk ndk dalvik docs pdk"
+# All the global variables in this script.
+function init_global_variables() {
+    MY_EXCEPTS="external out release cts sdk ndk dalvik docs pdk"
+}
 
-help()
-{
+function print_help() {
     echoI "Help: f | Binzo's customized 'find'"
     cat << Help
 Usage:
@@ -15,11 +17,12 @@ Usage:
 Help
 }
 
-# 解析参数并且进行有效性验证
-# return    返回是否解析成功，若有非法参数返回0，OK返回1
-function parse_and_check_args ()
-{
-    args="$*"
+
+# Parse and validate the arguments.
+# return 0: ok
+# return 1: invalid or print help.
+function parse_and_check_args () {
+    args="$@"
     flag=
     for arg in $args; do
         if [ "$arg" = "-h" -o "$arg" = "--help" ]; then
@@ -41,5 +44,9 @@ function parse_and_check_args ()
     return 1
 }
 
-parse_and_check_args $*
+function main() {
+    parse_and_check_args "$@"
 
+}
+
+main "$@"

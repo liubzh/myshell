@@ -3,16 +3,16 @@
 ######## Script Information. BGN ########
 # Author: liubingzhao.
 # Date: 2016-12-27
-# Relative Command: commands/grep 
+# Relative Command: commands/grep
 ######## Script Information. END ########
 
 function _g() {
     # Arguments start with '-'
-    local my_opt_short="-h -C2 -c"
+    local my_opt_short="-C2 -c -h"
     # Arguments start with '--'
-    local my_opt_long="--help --count --include --exclude --exclude-dir --target --context=2"
+    local my_opt_long="--help --count --include --exclude --exclude-dir --context=2"
     local my_log_file="crash_log kernel_log events_log main_log radio_log radio_log"
-    local my_file_type=".{java,c,cpp,aidl,xml,mk,zip,txt,log} strings.xml AndroidManifest.xml config.xml styles.xml themes.xml ${my_log_file}"
+    local my_file_type=".{aidl,c,cpp,java,log,mk,sh,txt,xml,zip} strings.xml AndroidManifest.xml config.xml styles.xml themes.xml ${my_log_file}"
 
     COMPREPLY=()
 
