@@ -1,54 +1,62 @@
 #!/bin/bash
 
-help()
-{
-    echoI "Help: Add device to file /etc/udev/rules.d/51-android.rules"
+######## Script Information. BGN ########
+# Author: liubingzhao.
+# Date: 2016-01-12
+######## Script Information. END ########
+
+# All the global variables in this script.
+function init_global_variables() {
+    target_line=
+    idVendor=
+    idProduct=
+    TARGET=/etc/udev/rules.d/51-android.rules
+    CONTENT=
+}
+
+function print_help() {
     cat << Help
-当没有adb设备的访问权限的时候，需要配置设备信息，此脚本可帮助我们来完成配置。
+$(gettxt "add-phone | Binzo's command to add usb access permission to file") $TARGET"
+$(gettxt "If we don't have permission to access usb device, add-phone can help us to finish the configuration.")
 Help
 }
 
-lsusb_pluged=/tmp/lsusb_pluged
-lsusb_unpluged=/tmp/lsusb_unpluged
-lsusb_diff=/tmp/lsusb_diff
-target_line=
+# Parse and validate the arguments.
+# return 0: ok
+# return 1: print help.
+function parse_and_check_args ()
+{
+    while [ $# -gt 0 ];do
+        case "$1" in
+            -h|--help|\?)
+                print_help
+                return 1    # exit.
+                ;;
+            *)
+                shift
+                ;;
+        esac
+    done
+}
 
-# 比较插拔设备前后lsusb的结果比较，比较出设备信息
+# use 'diff' command to gather usb device infomation.
 function gather_info() {
-    read -p "请先拔下设备，然后按任意键继续。"
+    local lsusb_pluged=/tmp/lsusb_pluged
+    local lsusb_unpluged=/tmp/lsusb_unpluged
+    local lsusb_diff=/tmp/lsusb_diff
+
+    read -p "$(gettxt 'Please unplug the usb cable, and then press any key...')"
     lsusb > $lsusb_unpluged
-    read -p "请再插入设备，然后按任意键继续。"
+    read -p "$(gettxt 'Please replug the usb cable, and then press any key...')"
     lsusb > $lsusb_pluged
     diff $lsusb_pluged $lsusb_unpluged > $lsusb_diff
     while read line; do
         if [[ $line == \<* ]]; then
             target_line=$line
-            echo $line
+            echo diff line: $line
         fi
     done < $lsusb_diff
 }
-
-#function choose_device() {
-#    # 执行lsusb命令，将结果存入临时文件
-#    tmp=/tmp/lsusb
-#    lsusb > $tmp
-#    # 按行遍历文件内容，行号一并输出
-#    let i=1
-#    while read line; do
-#        echo $i : $line
-#        let i=i+1
-#    done < $tmp
-#    let i=i-1
-#    # 让用户选择设备，即行号。
-#    read -p "Please choose usb device [1,$i] :" ANSWER
-#    while [ $ANSWER -gt $i -o $ANSWER -lt 1 ]; do
-#        read -p "Invalid. Choose again [1,$i] :" ANSWER
-#    done
-#    # 想办法执行 sed -n 3p file 命令
-#    arg_line=$ANSWER'p'
-#    cmd="sed -n $arg_line $tmp"
-#    CHOSEN=`$cmd`
-#}
 
 function cut_string() {
     target_line=${target_line#* ID }
@@ -57,25 +65,44 @@ function cut_string() {
     idProduct=`echo $target_line|awk -F ":" '{print $2}'`
 }
 
+# Internationalization and localization
+# Set local language support. only for zh_CN.
+# Reference directory: /usr/local/share/locale
+function set_localization() {
+    export TEXTDOMAINDIR="${MYSHELLDIR}/lang/locale"
+    export TEXTDOMAIN="add-phone"
+}
 
-idVendor=
-idProduct=
-#choose_device
-gather_info
-if [ -z "$target_line" ]; then
-    echoW "没有捕捉到设备信息。"
-    return 0
-fi
-cut_string
-echo "idVendor=$idVendor; idProduct=$idProduct; OWNER=$USER"
+function unset_localization() {
+    unset TEXTDOMAINDIR
+    unset TEXTDOMAIN
+}
 
-TARGET=/etc/udev/rules.d/51-android.rules
-echoW "请复制如下内容到剪贴板，然后按任意键即可打开51-android.rules文件进行粘贴操作或者手动编辑。"
-echoW "Please select and copy the content below, and then press any key to open '51-android.rules' file to paste or edit manually."
-CONTENT="SUBSYSTEM==\"usb\", ATTR{idVendor}==\"$idVendor\", ATTR{idProduct}==\"$idProduct\", MODE=\"0600\", OWNER=\"$USER\""
-#sudo sed -i "$a\$CONTENT" $TARGET
-echoI $CONTENT
-read
-sudo vim $TARGET
-echoW "重新插拔设备使其生效。"
-echoW "Replug the usb device again."
+function main() {
+    init_global_variables
+    set_localization
+
+    parse_and_check_args "$@"
+    chk_return
+
+    gather_info
+    if [ -z "${target_line}" ]; then
+        echoE $(gettxt "Not gathered this usb device information.")
+        return 0
+    fi
+    cut_string
+    CONTENT="SUBSYSTEM==\"usb\", ATTR{idVendor}==\"${idVendor}\", ATTR{idProduct}==\"${idProduct}\", MODE=\"0600\", OWNER=\"${USER}\""
+    if [ -n "$(grep ${idVendor} ${TARGET}|grep ${idProduct}|grep ${USER})" ]; then
+        echo $(gettxt "Do not need to config, you already have the permission to access device") "${idVendor}:${idProduct}"
+        echo $(gettxt "If you still can not access the device, replug usb cable and try again.")
+        return 0
+    fi
+    echoW $(gettxt "Please select and copy the content below, and then press any key to open '51-android.rules' file to paste or edit manually.")
+    echoI $CONTENT
+    read
+    sudo vim $TARGET
+    echoW $(gettext -s "You have to replug the usb cable again.")
+    unset_localization
+}
+
+main "$@"

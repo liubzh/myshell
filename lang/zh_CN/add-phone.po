@@ -1,0 +1,26 @@
+msgid "add-phone | Binzo's command to add usb access permission to file"
+msgstr "add-phone | Binzo 的命令，添加 USB 设备访问权限到文件"
+
+msgid "If we don't have permission to access usb device, add-phone can help us to finish the configuration."
+msgstr "当没有设备的访问权限的时候，需要配置设备信息，此脚本可帮助我们来完成配置。"
+
+msgid "Please unplug the usb cable, and then press any key..."
+msgstr "请先拔下 USB 设备，然后按任意键继续..."
+
+msgid "Please replug the usb cable, and then press any key..."
+msgstr "请再插入 USB 设备，然后按任意键继续..."
+
+msgid "Not gathered this usb device information."
+msgstr "没有捕捉到设备信息。"
+
+msgid "You have to replug the usb cable again."
+msgstr "请重新插拔 USB 设备使配置生效"
+
+msgid "Please select and copy the content below, and then press any key to open '51-android.rules' file to paste or edit manually."
+msgstr "请复制如下内容到剪贴板，然后按任意键即可打开 51-android.rules 文件进行粘贴操作或者手动编辑。"
+
+msgid "Do not need to config, you already have the permission to access device"
+msgstr "无需配置，你已有权限访问设备"
+
+msgid "If you still can not access the device, replug usb cable and try again."
+msgstr "如果你仍无法访问设备，重新插拔设备试试。"
