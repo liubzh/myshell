@@ -1,45 +1,71 @@
 
-"------Enable plugins under pathogen.
+"------plugin:pathogen------BEGIN
 execute pathogen#infect()
+"------plugin:pathogen------END
+
 syntax on
 filetype plugin indent on
+filetype plugin on
 
-set nobackup "Never backup.|从不备份。
+set nocp
 
-set number "Show line number.|显示行号。
-"set nonumber "Don't show line number.
+set nobackup        "Never backup.|从不备份。
+
+set number          "Show line number.
+"set nonumber       "Don't show line number.
+
+set ic              "(ignorecase 的缩写) 忽略大小写
+"set noic           "(noignorecase 的缩写) 不忽略大小写
+" /\CWord           "区分大小写的查找
+" /\cword           "不区分大小写的查找
 
 "------About Tab------begin---
-set tabstop=4 "Width of Tab.|Tab宽度
-set shiftwidth=4 "每次缩进插入的空格数。用于[>,<,>>,<<] 
-set expandtab "Expand tab.|将Tab展开，已N个空格代替
-set smartindent "自动缩进排版
-set smarttab "在行和段起始位置使用制表符。
-set cindent "使用C样式的缩进，尤其对{}大括号等处理。
+set tabstop=4       "Width of Tab.|Tab宽度
+set shiftwidth=4    "每次缩进插入的空格数。用于[>,<,>>,<<]
+set expandtab       "Expand tab.|将Tab展开，已N个空格代替
+set smartindent     "自动缩进排版
+set smarttab        "在行和段起始位置使用制表符。
+set cindent         "使用C样式的缩进，尤其对{}大括号等处理。
 "------About Tab-------end----
 
+"------Tags------BEGIN
+"set tags+=~/.vim/tags/cpp
+"------Tags------END
+
 "------Hot keys------BEGIN
-nnoremap <silent> <F5> :NERDTreeToggle<CR>
-nnoremap <silent> <F8> :TlistToggle<CR>
+" about system hotkey Ctrl-s & Ctrl-q
+" Ctrl-s            " 锁定屏幕
+" Ctrl-q            " 解除锁定屏幕
+"nnoremap <silent> <F5> :NERDTreeToggle<CR>
+"nnoremap <silent> <F8> :TlistToggle<CR>
+map <F5> :NERDTreeToggle<CR>
+map <F8> :TlistToggle<CR>
+" Visual mode, press Ctrl-c to copy text to system clipboard.
+" vim-gui-common is required. 'sudo apt-get install vim-gui-common'
+map <C-F12> :!ctags -R --c++-kinds=+p --fields=+iaS --extra=+q .<CR>
+vmap <C-c> "+y
+" Insert mode, press Ctrl-v to paste text from system clipboard.
+" vim-gui-common is required. 'sudo apt-get install vim-gui-common'
+map <C-v> <Esc>"+p
 "------Hot keys------END
 
 "------plugin:taglist------BEGIN
 "let Tlist_WinWidth=40        "设置taglist宽度
 let Tlist_Auto_Highlight_Tag=1
-let Tlist_Auto_Open=1
+"let Tlist_Auto_Open=1
 let Tlist_Auto_Update=1
-let Tlist_Display_Tag_Scope=1  
+let Tlist_Display_Tag_Scope=1
 let Tlist_Exit_OnlyWindow=1  "如果Tlist窗口是最后一个窗口，则退出Vim.
-let Tlist_Enable_Dold_Column=1 
-let Tlist_File_Fold_Auto_Close=1  
-let Tlist_Show_One_File=1  
+let Tlist_Enable_Dold_Column=1
+let Tlist_File_Fold_Auto_Close=1
+let Tlist_Show_One_File=1
 let Tlist_Use_Right_Window=1  "右侧显示Tlist窗口
 let Tlist_Use_SingleClick=1
 "------plugin:taglist------END
 
 "------plugin:MiniBufExplorer------BEGIN
-let g:miniBufExplMapWindowNavVim = 1 
-let g:miniBufExplMapWindowNavArrows = 1 
-let g:miniBufExplMapCTabSwitchBufs = 1 
-let g:miniBufExplModSelTarget = 1 
+let g:miniBufExplMapWindowNavVim = 1
+let g:miniBufExplMapWindowNavArrows = 1
+let g:miniBufExplMapCTabSwitchBufs = 1
+let g:miniBufExplModSelTarget = 1
 "------plugin:MiniBufExplorer------END
