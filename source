@@ -2,8 +2,8 @@
 
 # My shell scripts evironment variable. It's important.
 export MYSHELLDIR=$HOME/myshell
-if [ ! -d $MYSHELLDIR ]; then
-    echo -e "\\033[31m$MYSHELLDIR 目录不存在，操作失败\\033[0m"
+if [ ! -d ${MYSHELLDIR} ]; then
+    echo -e "\\033[31m${MYSHELLDIR} 目录不存在，操作失败\\033[0m"
     return 0
 fi
 
@@ -31,11 +31,9 @@ function gettxt() {
 }
 
 # source the files in MYSHELLDIR/utils/
-my_source $MYSHELLDIR/utils
-
-# Source the files in MYSHELLDIR/bash_completion.d/
-# For enable the args auto completion when I input my own commands.
-my_source $MYSHELLDIR/bash_completion.d
+#my_source ${MYSHELLDIR}/utils
+source ${MYSHELLDIR}/utils/util
+source ${MYSHELLDIR}/utils/colored_echo.sh
 
 # Add executive files to PATH
 export PATH=${MYSHELLDIR}/sh:$PATH
@@ -44,21 +42,21 @@ export PATH=${MYSHELLDIR}/sh:$PATH
 alias chk_return='if (( 0 != $? )); then return 1; fi'
 
 # Commands.
-MYCOMMANDDIR=$MYSHELLDIR/commands
-alias c='source $MYCOMMANDDIR/cd $*'
+MYCOMMANDDIR="${MYSHELLDIR}/commands"
+alias c='source ${MYCOMMANDDIR}/cd "$@"'
 alias b='cd -'
-alias g='source $MYCOMMANDDIR/grep $*'
-alias f='source $MYCOMMANDDIR/find $*'
-alias v='source $MYCOMMANDDIR/vim $*'
+alias g='source ${MYCOMMANDDIR}/grep "$@"'
+alias f='source ${MYCOMMANDDIR}/find "$@"'
+alias v='source ${MYCOMMANDDIR}/vim "$@"'
 # costomize command 'nautilus'
-alias n='source $MYCOMMANDDIR/nautilus $*'
-alias share='source $MYCOMMANDDIR/share'
-alias add-phone='source $MYCOMMANDDIR/add-phone'
-alias switch-git='source $MYCOMMANDDIR/switch-git'
-alias switch-locale='source $MYCOMMANDDIR/switch-locale'
-alias add-f='source $MYCOMMANDDIR/add-f'
-alias rm-f='source $MYCOMMANDDIR/rm-f'
-alias adb='source $MYCOMMANDDIR/adb'
+alias n='source ${MYCOMMANDDIR}/nautilus "$@"'
+alias share='source ${MYCOMMANDDIR}/share'
+alias add-phone='source ${MYCOMMANDDIR}/add-phone'
+alias switch-git='source ${MYCOMMANDDIR}/switch-git'
+alias switch-locale='source ${MYCOMMANDDIR}/switch-locale'
+alias add-f='source ${MYCOMMANDDIR}/add-f'
+alias rm-f='source ${MYCOMMANDDIR}/rm-f'
+alias adb='source ${MYCOMMANDDIR}/adb'
 
 # kt
 #MYKTSH=$MYSHELLDIR/kt
@@ -77,8 +75,17 @@ alias 100='nautilus ftp://10.10.100.100'
 alias 90='source $MYKTSH/90 $*'
 
 # Other
-alias cq='clearquest &'
-alias vnccfg='vncconfig &'
+#alias cq='clearquest &'
+#alias vnccfg='vncconfig &'
+
+# bash_completion.d
+# Source the files in MYSHELLDIR/bash_completion.d/
+MYCOMPLETEDIR=${MYSHELLDIR}/bash_completion.d
+source ${MYCOMPLETEDIR}/adb
+source ${MYCOMPLETEDIR}/g
+source ${MYCOMPLETEDIR}/f
+source ${MYCOMPLETEDIR}/TmakeGionee
+source ${MYCOMPLETEDIR}/v
 
 # python
 VIR_ENV_SH="/usr/local/bin/virtualenvwrapper.sh"
