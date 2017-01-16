@@ -22,3 +22,18 @@ function pkgInstalled() {
         echoE "缺少参数，请指定PackageName"
     fi
 }
+
+# Return 0: valid.
+# Return 1: invalid.
+function chkInt() {
+    case "$1" in
+    [0-9]*)
+        echo "$1 is a positive integer."
+        return 0
+        ;;
+    *)
+        echoE "$1 is not a positive integer."
+        return 1
+        ;;
+    esac
+}

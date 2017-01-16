@@ -94,21 +94,21 @@ function main() {
             echo "-----------POOL-----------"
             echo ${POOL}
             echo "--------------------------"
-            read -p "Input the count you want to pick, press any key to pick only one: " COUNT
+            read -p "Input the number you want to pick, press <Enter> to pick only one: " COUNT
             if [ -z "${COUNT}" ]; then
                 COUNT=1
             fi
             chkInt ${COUNT}
             if [ $? -eq 1 ]; then
                 # COUNT is not a number.
-                read -p "Press any key to continue..."
+                read -p "Press <Enter> to continue..."
                 continue
             else
                 # COUNT is a number.
                 let num=`expr ${COUNT}`
                 if [ ${num} -gt ${#POOL_ARRAY[@]} -o ${num} -le 0 ]; then
                     echo "The number should be in the range (0,${#POOL_ARRAY[@]})"
-                    read -p "Press any key to continue..."
+                    read -p "Press <Enter> to continue..."
                     continue
                 fi
                 while [ ${num} -gt 0 ]; do
@@ -119,7 +119,7 @@ function main() {
             echo "----------WINNER----------"
             echo ${WINNER}
             echo "--------------------------"
-            read -p "Press any key to continue, 'Ctrl-c' to exit..."
+            read -p "Press <Enter> to continue, 'Ctrl-c' to exit..."
         else
             echo "The pool is empty, can not pick!"
             break

@@ -45,15 +45,15 @@ function gather_info() {
     local lsusb_unpluged=/tmp/lsusb_unpluged
     local lsusb_diff=/tmp/lsusb_diff
 
-    read -p "$(gettxt 'Please unplug the usb cable, and then press any key...')"
+    read -p "$(gettxt 'Please unplug the usb cable, and then press <Enter>...')"
     lsusb > $lsusb_unpluged
-    read -p "$(gettxt 'Please replug the usb cable, and then press any key...')"
+    read -p "$(gettxt 'Please replug the usb cable, and then press <Enter>...')"
     lsusb > $lsusb_pluged
     diff $lsusb_pluged $lsusb_unpluged > $lsusb_diff
     while read line; do
         if [[ $line == \<* ]]; then
             target_line=$line
-            echo diff line: $line
+            echo $(gettxt 'Device info:') $line
         fi
     done < $lsusb_diff
 }
@@ -97,7 +97,7 @@ function main() {
         echo $(gettxt "If you still can not access the device, replug usb cable and try again.")
         return 0
     fi
-    echoW $(gettxt "Please select and copy the content below, and then press any key to open '51-android.rules' file to paste or edit manually.")
+    echoW $(gettxt "Please select and copy the content below, and then press <Enter> to open '51-android.rules' file to paste or edit manually.")
     echoI $CONTENT
     read
     sudo vim $TARGET

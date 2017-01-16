@@ -15,3 +15,6 @@ sudo apt-get install ctags
 
 # SuperTab
 git clone https://github.com/ervandew/supertab.git ~/.vim/bundle/supertab
+
+# For copying and pasting from system clipboard.
+sudo apt-get install vim-gui-common
