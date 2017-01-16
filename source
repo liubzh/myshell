@@ -43,20 +43,20 @@ alias chk_return='if (( 0 != $? )); then return 1; fi'
 
 # Commands.
 MYCOMMANDDIR="${MYSHELLDIR}/commands"
-alias c='source ${MYCOMMANDDIR}/cd "$@"'
 alias b='cd -'
-alias g='source ${MYCOMMANDDIR}/grep "$@"'
+alias c='source ${MYCOMMANDDIR}/cd "$@"'
 alias f='source ${MYCOMMANDDIR}/find "$@"'
-alias v='source ${MYCOMMANDDIR}/vim "$@"'
-# costomize command 'nautilus'
+alias g='source ${MYCOMMANDDIR}/grep "$@"'
 alias n='source ${MYCOMMANDDIR}/nautilus "$@"'
-alias share='source ${MYCOMMANDDIR}/share'
+alias v='source ${MYCOMMANDDIR}/vim "$@"'
+alias adb='source ${MYCOMMANDDIR}/adb'
+alias add-f='source ${MYCOMMANDDIR}/add-f'
 alias add-phone='source ${MYCOMMANDDIR}/add-phone'
+alias rm-f='source ${MYCOMMANDDIR}/rm-f'
+alias share='source ${MYCOMMANDDIR}/share'
 alias switch-git='source ${MYCOMMANDDIR}/switch-git'
 alias switch-locale='source ${MYCOMMANDDIR}/switch-locale'
-alias add-f='source ${MYCOMMANDDIR}/add-f'
-alias rm-f='source ${MYCOMMANDDIR}/rm-f'
-alias adb='source ${MYCOMMANDDIR}/adb'
+alias switch-proj='source ${MYCOMMANDDIR}/switch-proj'
 
 # kt
 #MYKTSH=$MYSHELLDIR/kt
@@ -82,8 +82,9 @@ alias 90='source $MYKTSH/90 $*'
 # Source the files in MYSHELLDIR/bash_completion.d/
 MYCOMPLETEDIR=${MYSHELLDIR}/bash_completion.d
 source ${MYCOMPLETEDIR}/adb
-source ${MYCOMPLETEDIR}/g
 source ${MYCOMPLETEDIR}/f
+source ${MYCOMPLETEDIR}/g
+source ${MYCOMPLETEDIR}/switch-proj
 source ${MYCOMPLETEDIR}/TmakeGionee
 source ${MYCOMPLETEDIR}/v
 

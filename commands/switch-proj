@@ -1,0 +1,81 @@
+#!/bin/bash
+
+######## Script Information. BGN ########
+# Author: liubingzhao.
+# Date: 2017-01-16
+# Relative Completion: bash_completion.d/switch-proj
+######## Script Information. END ########
+
+# All the global variables in this script.
+function init_global_variables() {
+    PRE_TEXTDOMAINDIR=$TEXTDOMAINDIR
+    PRE_TEXTDOMAIN=$TEXTDOMAIN
+}
+
+function print_help() {
+    cat << Help
+$(gettxt "switch-proj | Binzo's command to switch gn project.")
+$(gettxt 'Usage:') switch-proj <PROJECT>
+Help
+}
+
+# Parse and validate the arguments.
+# return 0: ok
+# return 1: invalid or print help.
+function parse_and_check_args ()
+{
+    while [ $# -gt 0 ];do
+        case "$1" in
+        -h|--help|\?)
+            print_help
+            return 1    # exit.
+            ;;
+        *)
+            shift
+            ;;
+        esac
+    done
+}
+
+# Internationalization and localization
+# Set local language support. only for zh_CN.
+# Reference directory: /usr/local/share/locale
+function set_localization() {
+    export TEXTDOMAINDIR="${MYSHELLDIR}/lang/locale"
+    export TEXTDOMAIN="switch-proj"
+}
+
+function unset_localization() {
+    if [ -z "$PRE_TEXTDOMAINDIR" ]; then
+        unset TEXTDOMAINDIR
+    fi
+    if [ -z "$PRE_TEXTDOMAIN" ]; then
+        unset TEXTDOMAIN
+    fi
+}
+
+function main() {
+    init_global_variables
+
+    # Check arguments.
+    parse_and_check_args "$@"
+    case "$?" in
+    1)
+        return 1
+        ;;
+    *)
+        ;;
+    esac
+    
+    if [ -n "$1" ]; then
+        export MY_GN_PROJ="$1"
+        echo "export MY_GN_PROJ=$1"
+    else
+        echo $(gettxt "There is no argument!")
+        print_help
+    fi
+}
+
+set_localization
+main "$@"
+unset_localization

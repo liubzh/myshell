@@ -1,0 +1,41 @@
+#!/bin/bash
+
+######## Script Information. BGN ########
+# Author: liubingzhao.
+# Date: 2016-01-16
+# Relative Command: commands/switch-proj
+######## Script Information. END ########
+
+function _switch-proj() {
+    local gn_projects="G1605A G1602A"
+    local cur prev opts
+
+    COMPREPLY=()
+
+    cur="${COMP_WORDS[COMP_CWORD]}"
+    prev="${COMP_WORDS[COMP_CWORD-1]}"
+    opts="$gn_projects"
+
+    local symbol_file="TmakeGionee"
+    local config_dir="gionee/config"
+    if [ -f ${symbol_file} -a -d ${config_dir} ]; then
+        local tmp_file="/tmp/gn_proj_list"
+        local exclude_item="gn_common"
+        local line=
+        ls ${config_dir}|grep .mk > ${tmp_file}
+        opts=
+        while read line; do
+            line=${line%.*}
+            if [[ $line == gn_common ]]; then
+                continue
+            fi
+            opts="${opts} ${line}"
+        done < ${tmp_file}
+    fi
+
+    if [ -n "${opts}" ]; then
+        COMPREPLY=( $(compgen -W "${opts}" -- ${cur}) )
+    fi
+    return 0
+}
+complete -o default -F _switch-proj switch-proj
