@@ -1,0 +1,8 @@
+msgid "switch-proj | Binzo's command to switch gn project."
+msgstr "switch-proj | Binzo 的命令，切换项目名。"
+
+msgid "Usage:"
+msgstr "用法："
+
+msgid "There is no argument!"
+msgstr "缺少参数！"

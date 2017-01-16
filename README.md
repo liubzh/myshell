@@ -4,6 +4,7 @@ How to enable myshell?
 Execute the file init.sh will enable myshell.
 
 commands:
+
 Command	      | Description
 --------------|--------------
 adb           | Completing argument for adb push and so on.
@@ -16,7 +17,8 @@ switch-locale | Binzo's command for switching locale, it changes env variable LA
 switch-proj   | Binzo's command for switching gn project.
 vim           | Binzo's customized 'vim' command.
 
-bash_completion.d:
+completion.d:
+
 File          | Description
 --------------|--------------
 adb           | Binzo's completion script for command adb.
@@ -27,6 +29,7 @@ TmakeGionee   | Binzo's completion script for command TmakeGionee.
 v             | Binzo's completing script for command v.
 
 sh:
+
 File          | Description
 --------------|--------------
 lottery.sh    | Binzo's shell script for choosing item(s) randomly.
