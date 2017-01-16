@@ -31,8 +31,7 @@ Help
 # Parse and validate the arguments.
 # Return 0: ok
 # Return 1: invalid or print help.
-function parse_and_check_args ()
-{
+function parse_and_check_args () {
     if [ -z "$1" ]; then
         print_help
         return 1

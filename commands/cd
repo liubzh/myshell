@@ -2,8 +2,7 @@
 
 ######## Script Information. BGN ########
 # Author: liubingzhao.
-# Date: 2016-12-27
-# Relative Command: commands/grep
+# Date: 2015-12-08
 ######## Script Information. END ########
 
 print_help()
@@ -61,15 +60,6 @@ function cd_dir()
     fi
 }
 
-function check_integer() {
-    var=$(echo $1 | bc 2>/dev/null)
-    if [ ${var} = $1 ]; then
-        return 1
-    else
-        return 0
-    fi
-}
-
 function setproject() {
     if [ -n "$1" ]; then
         if [ -d $1 ]; then
@@ -110,10 +100,9 @@ elif [ "$1" = "-" ]; then
     # 返回上一次访问过的目录
     cd -
 else
-    check_integer $1
-    arg_is_int=$?
+    chkInt "$1"
     # 参数为数字，返回N级目录
-    if [[ $arg_is_int == 1 ]]; then
+    if [[ $? == 0 ]]; then
         mypwd=`pwd`
         let num=$1
         while [ ${num} -gt 0 ]; do

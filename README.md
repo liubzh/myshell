@@ -1,10 +1,32 @@
-# myshell
-My shell scripts
+Binzo's own shell scripts
 
-文件描述：
+How to enable myshell?
+Execute the file init.sh will enable myshell.
 
-文件          | 描述
---------------|------------
-init.sh       | 只需第一次配置mysh时手动执行
-d|vim         | 我的vim文件夹，链接到~/.vim目录
-vim/vimrc     | 我的.vimrc配置文件，链接到~/.vimrc文件
+commands:
+Command	      | Description
+--------------|--------------
+adb           | Completing argument for adb push and so on.
+add-phone     | Binzo's command to add usb access permission to file /etc/udev/rules.d/51-android.rules.
+cd            | Binzo's customized 'cd' command.
+find          | Binzo's customized 'find' command.
+grep          | Binzo's customized 'grep' command.
+switch-git    | Binzo's command for switching different git version.
+switch-locale | Binzo's command for switching locale, it changes env variable LANG.
+switch-proj   | Binzo's command for switching gn project.
+vim           | Binzo's customized 'vim' command.
+
+bash_completion.d:
+File          | Description
+--------------|--------------
+adb           | Binzo's completion script for command adb.
+f             | Binzo's completion script for command f.
+g             | Binzo's completion script for command g.
+switch-proj   | Binzo's completion script for command switch-proj.
+TmakeGionee   | Binzo's completion script for command TmakeGionee.
+v             | Binzo's completing script for command v.
+
+sh:
+File          | Description
+--------------|--------------
+lottery.sh    | Binzo's shell script for choosing item(s) randomly.

@@ -28,11 +28,11 @@ function pkgInstalled() {
 function chkInt() {
     case "$1" in
     [0-9]*)
-        echo "$1 is a positive integer."
+        #echo "$1 is a positive integer."
         return 0
         ;;
     *)
-        echoE "$1 is not a positive integer."
+        #echoE "$1 is not a positive integer."
         return 1
         ;;
     esac
