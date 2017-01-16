@@ -1,0 +1,191 @@
+#!/bin/bash
+
+# Created by liubingzhao|Binzo on 20161223.
+
+# Relatives:
+# completion: $MYSHELLDIR/bash_completion.d/TmakeGionee
+print_help()
+{
+    echoI "Help: TmakeGionee | Liubingzhao customized 'TmakeGionee' which added help functionality."
+    cat << Help
+Usage: TmakeGionee <arg> [?]
+    当参数或命令不知道如何使用时，可以输出对应帮助信息。
+    <arg>    需要查看帮助信息的参数。
+    NOTE: You can view the bash_completion.d/adb for details.
+Help
+}
+
+function help_logcat_n() {
+    cat << Help
+        -n, --new             : Clean and perform a full build.
+Help
+}
+
+function help_logcat_r() {
+    cat << Help
+        -r, --remake          : retry perform a build.
+Help
+}
+function help_logcat_u() {
+    cat << Help
+        -u, --update_api      : update-api.
+Help
+}
+
+function help_logcat_c() {
+    cat << Help
+        -c, --copy_target     : copy target to release only.
+Help
+}
+
+function help_logcat_C() {
+    cat << Help
+        -C, --copy_gionee     : copy gionee code to alps dir
+Help
+}
+
+function help_logcat_all() {
+    cat << Help
+        --all,                : build Modem and AP imager(modem+ap new)
+Help
+}
+
+function help_logcat_s() {
+    cat << Help
+        -s, --sign            : sign image
+Help
+}
+
+function help_logcat_setup_ccache() {
+    cat << Help
+       --setup_ccache        : Set CCACHE for faster incremental builds
+Help
+}
+
+function help_logcat_i() {
+    cat << Help
+        -i, --image  <bootimage|systemimage|userdataimage|update-api|kernel|otapackage|modem> 
+            :Specify image to be build/re-build (bootimage|systemimage|userdataimage|recoveryimage).
+            :Specify module to be build/re-build (kernel|otapackage).
+Help
+}
+
+function help_logcat_p() {
+    cat << Help
+        -p, --project  <packages/app/Email/>
+            :Specif Project pathdir to be build
+Help
+}
+
+function help_logcat_l() {
+    cat << Help
+      -l, -listp    : List the available project.
+Help
+}
+
+function help_logcat_h() {
+    cat << Help
+	  -h,  -help    : Print this message and exit.
+Help
+}
+
+function help_logcat_t() {
+    cat << Help
+	  #-t, -tee      : Print log information on the standard-out.
+Help
+}
+
+function help_logcat_q() {
+    cat << Help
+	  #-q, -quiet    : Don't print log information on the standard-out.
+Help
+}
+
+function help_logcat_j() {
+    cat << Help
+	  #-j [N], cpu [N]
+	  #              : Allow N jobs to compile at once,you must add a space between Options and [N].
+Help
+}
+
+function help_logcat_m() {
+    cat << Help
+	  #-m [MODULE]   : Only compile the [MODULE], you must add a space between Options and [MODULE].
+Help
+}
+
+# 解析参数并且进行有效性验证
+# return    返回是否解析成功，若有非法参数返回1，OK返回0
+function parse_and_check_args ()
+{
+    # TmakeGionee.
+    if [[ $1 == logcat && $3 == \? ]]; then
+        if [[ $2 == -s ]]; then
+            help_logcat_s
+            return 1
+        elif [[ $2 == -f ]]; then
+            help_logcat_f
+            return 1
+        elif [[ $2 == -r ]]; then
+            help_logcat_r
+            return 1
+        elif [[ $2 == -n ]]; then
+            help_logcat_n
+            return 1
+        elif [[ $2 == -v ]]; then
+            help_logcat_v
+            return 1
+        elif [[ $2 == -D ]]; then
+            help_logcat_D
+            return 1
+        elif [[ $2 == -c ]]; then
+            help_logcat_c
+            return 1
+        elif [[ $2 == -d ]]; then
+            help_logcat_d
+            return 1
+        elif [[ $2 == -c ]]; then
+            help_logcat_c
+            return 1
+        elif [[ $2 == -t ]]; then
+            help_logcat_t
+            return 1
+        elif [[ $2 == -T ]]; then
+            help_logcat_T
+            return 1
+        elif [[ $2 == -g ]]; then
+            help_logcat_g
+            return 1
+        elif [[ $2 == -L ]]; then
+            help_logcat_L
+            return 1
+        elif [[ $2 == -b ]]; then
+            help_logcat_b
+            return 1
+        elif [[ $2 == -B ]]; then
+            help_logcat_B
+            return 1
+        elif [[ $2 == -S ]]; then
+            help_logcat_S
+            return 1
+        elif [[ $2 == -G ]]; then
+            help_logcat_G
+            return 1
+        elif [[ $2 == -B ]]; then
+            help_logcat_B
+            return 1
+        elif [[ $2 == -p ]]; then
+            help_logcat_p
+            return 1
+        elif [[ $2 == -P ]]; then
+            help_logcat_P
+            return 1
+
+        fi
+    fi
+}
+
+parse_and_check_args $*
+chk_return
+
+$ANDROID_SDK_HOME/platform-tools/adb $*

@@ -1,0 +1,122 @@
+#!/bin/bash
+
+######## Script Information. BGN ########
+# Author: liubingzhao.
+# Date: 2017-01-03
+######## Script Information. END ########
+
+TARGET_DIR=
+TARGET_PROJ=
+TARGET_SH=~/Projects/task.sh
+PROJECTS_ROOT=~/Projects
+COMPILE_PRODUCT=
+
+function input_project_dir {
+    while [ true ]; do
+        read -p "输入要创建的文件夹名称：" TARGET_DIR
+        if [ -z "${TARGET_DIR}" ]; then
+            echo "不能为空！"
+        else
+            if [ -d "${PROJECTS_ROOT}/${TARGET_DIR}" ]; then
+                echo "此目录已经存在，请重新输入！"
+            else
+                break
+            fi
+        fi
+    done
+}
+
+function project_dir() {
+    if [ -z "$1" ]; then
+        echo "没有指定目标文件夹!"
+        input_project_dir
+    elif [ -d "${PROJECTS_ROOT}/$1" ]; then
+        ls -F ${PROJECTS_ROOT}
+        echo "此文件夹已存在！"
+        input_project_dir
+    else
+        TARGET_DIR=$1
+    fi
+    export MY_PROJ_DIR=${TARGET_DIR}
+    echo "export MY_PROJ_DIR=${TARGET_DIR}"
+}
+
+
+function input_project_name() {
+    while [ true ]; do
+        read -p "输入项目名称：" TARGET_PROJ
+        if [ -z "${TARGET_PROJ}" ]; then
+            echo "不能为空！"
+        else
+            break
+        fi
+    done
+}
+
+function product_name() {
+    if [ -z "$1" ]; then
+        read -p "输入要编译的产品名称，若与项目同名，请直接按回车：" COMPILE_PRODUCT
+        if [ -z "${COMPILE_PRODUCT}" ]; then
+            COMPILE_PRODUCT=${TARGET_PROJ}
+        fi
+    else
+        COMPILE_PRODUCT=$1
+    fi
+}
+
+function project_name() {
+    if [ -z "$1" ]; then
+        input_project_name
+    else
+        TARGET_PROJ=$1
+    fi
+    export MY_GN_PROJ=${TARGET_PROJ}
+    echo "export MY_GN_PROJ=${TARGET_PROJ}"
+}
+
+# $1: project directory name.
+# $2: project name to sync.
+# $3: product name to compile.
+function main() {
+    project_dir "$1"
+    project_name "$2"
+    product_name "$3"
+    #if [ -z "${MY_PROJ_DIR}" ]; then
+    #    echo "MY_PROJ_DIR 未指定，请执行：project_dir"
+    #    return 1
+    #elif [ -z "${MY_GN_PROJ}" ]; then
+    #    echo "MY_GN_PROJ 未指定，请执行：project_name"
+    #    return 1 
+    #fi
+    if [ ! -f ${TARGET_SH} ]; then
+        echo '#!/bin/bash' >> ${TARGET_SH}
+    fi
+    echo '' >> ${TARGET_SH}
+    echo '# ------------Task----------' >> ${TARGET_SH}
+    #echo "export MY_PROJ_DIR=${MY_PROJ_DIR}" >> ${TARGET_SH}
+    echo "export MY_GN_PROJ=${MY_GN_PROJ}" >> ${TARGET_SH}
+    #echo 'echo MY_PROJ_DIR=${MY_PROJ_DIR}' >> ${TARGET_SH}
+    #echo 'echo MY_GN_PROJ=${MY_GN_PROJ}' >> ${TARGET_SH}
+    echo 'cd ~/Projects' >> ${TARGET_SH}
+    echo "if [ ! -d ${TARGET_DIR} ]; then" >> ${TARGET_SH}
+    echo "    mkdir ${TARGET_DIR}" >> ${TARGET_SH}
+    echo 'fi' >> ${TARGET_SH}
+    echo '# Want to remove directory? Write it below.' >> ${TARGET_SH}
+    echo '#rm -rf dir' >> ${TARGET_SH}
+    echo "cd ${MY_PROJ_DIR}" >> ${TARGET_SH}
+    #echo 'echo cd ${MY_PROJ_DIR}' >> ${TARGET_SH}
+    echo '~/Projects/repo_repoinit_conf' >> ${TARGET_SH}
+    echo 'cd L*' >> ${TARGET_SH}
+    echo 'cd android*' >> ${TARGET_SH}
+    echo "./TmakeGionee -t ${COMPILE_PRODUCT} -n" >> ${TARGET_SH}
+    echo '# Shutdown computer when finished?' >> ${TARGET_SH}
+    echo '#sudo shutdown -h now' >> ${TARGET_SH}
+    chmod +x ${TARGET_SH}
+    echo "${TARGET_SH} generated, please check and execute it, or source it."
+    # Clear the env vars.
+    #unset MY_PROJ_DIR
+    unset MY_GN_PROJ
+    vim ${TARGET_SH}
+}
+
+main "$@"

@@ -43,20 +43,25 @@ alias chk_return='if (( 0 != $? )); then return 1; fi'
 
 # Commands.
 MYCOMMANDDIR="${MYSHELLDIR}/commands"
-alias b='cd -'
-alias c='source ${MYCOMMANDDIR}/cd "$@"'
-alias f='source ${MYCOMMANDDIR}/find "$@"'
-alias g='source ${MYCOMMANDDIR}/grep "$@"'
-alias n='source ${MYCOMMANDDIR}/nautilus "$@"'
-alias v='source ${MYCOMMANDDIR}/vim "$@"'
-alias adb='source ${MYCOMMANDDIR}/adb'
-alias add-f='source ${MYCOMMANDDIR}/add-f'
-alias add-phone='source ${MYCOMMANDDIR}/add-phone'
-alias rm-f='source ${MYCOMMANDDIR}/rm-f'
-alias share='source ${MYCOMMANDDIR}/share'
-alias switch-git='source ${MYCOMMANDDIR}/switch-git'
-alias switch-locale='source ${MYCOMMANDDIR}/switch-locale'
-alias switch-proj='source ${MYCOMMANDDIR}/switch-proj'
+alias b="cd -"
+alias c="source ${MYCOMMANDDIR}/cd"
+alias f="source ${MYCOMMANDDIR}/find"
+alias g="source ${MYCOMMANDDIR}/grep"
+alias n="source ${MYCOMMANDDIR}/nautilus"
+alias v="source ${MYCOMMANDDIR}/vim"
+alias adb="source ${MYCOMMANDDIR}/adb"
+alias add-f="source ${MYCOMMANDDIR}/add-f"
+alias add-phone="source ${MYCOMMANDDIR}/add-phone"
+alias rm-f="source ${MYCOMMANDDIR}/rm-f"
+alias share="source ${MYCOMMANDDIR}/share"
+alias switch-git="source ${MYCOMMANDDIR}/switch-git"
+alias switch-locale="source ${MYCOMMANDDIR}/switch-locale"
+
+# gn
+MYGNDIR="${MYSHELLDIR}/gn"
+alias m="source ${MYGNDIR}/make"
+alias new-task="source ${MYGNDIR}/new-task"
+alias switch-proj="source ${MYGNDIR}/switch-proj"
 
 # kt
 #MYKTSH=$MYSHELLDIR/kt

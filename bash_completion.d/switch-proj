@@ -7,7 +7,7 @@
 ######## Script Information. END ########
 
 function _switch-proj() {
-    local gn_projects="G1605A G1602A"
+    local gn_projects="G1605A G1602A G1602A_platform"
     local cur prev opts
 
     COMPREPLY=()
