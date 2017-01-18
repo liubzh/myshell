@@ -97,7 +97,7 @@ function main() {
     echo "export MY_GN_PROJ=${MY_GN_PROJ}" >> ${TARGET_SH}
     #echo 'echo MY_PROJ_DIR=${MY_PROJ_DIR}' >> ${TARGET_SH}
     #echo 'echo MY_GN_PROJ=${MY_GN_PROJ}' >> ${TARGET_SH}
-    echo 'cd ~/Projects' >> ${TARGET_SH}
+    echo "cd ~/Projects" >> ${TARGET_SH}
     echo "if [ ! -d ${TARGET_DIR} ]; then" >> ${TARGET_SH}
     echo "    mkdir ${TARGET_DIR}" >> ${TARGET_SH}
     echo 'fi' >> ${TARGET_SH}

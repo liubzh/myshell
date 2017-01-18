@@ -3,50 +3,73 @@
 # All the global variables in this script.
 function init_global_variables() {
     MY_EXCEPTS="external out release cts sdk ndk dalvik docs pdk"
+    keyword=
+    target=
+    myparams="-iname"
 }
 
 function print_help() {
-    echoI "Help: f | Binzo's customized 'find'"
+    echoI "Help: f | Binzo's customized 'find' command."
     cat << Help
-Usage:
-    f <KEYWORD> 仅限一个参数
-                在当前目录下搜索所有文件中指定的关键字。
-    f . [OPTIONS]
-                多个参数直接调用find原始命令并执行
-
+Usage: f <PATTERN> [DIR]... [OPTION]...
+<PATTERN>       The keyword you want to search.
+[DIR]           Target directory you want to search in.
+[OPTION]        Same as original 'find' command.
 Help
 }
-
 
 # Parse and validate the arguments.
 # return 0: ok
 # return 1: invalid or print help.
 function parse_and_check_args () {
-    args="$@"
-    flag=
-    for arg in $args; do
-        if [ "$arg" = "-h" -o "$arg" = "--help" ]; then
-            help
-            # 打印帮助信息直接返回
-            return 0
-        fi
-    done
-
-    if [ -z "$1" ]; then
-        echoE "没有参数！"
-    # 只有一个参数
-    elif [ -n "$1" -a -z "$2" ]; then
-        find . -iname $1
-    else
-        find $*
+    if [ -z "$*" ]; then
+        echoE "There is no argument."
+        return 1
     fi
-
-    return 1
+    if [[ $1 != -h && $1 != --help && $1 != ? ]]; then
+        keyword="$1";shift # Shift the first argument(keyword) off.
+    fi
+    while [ $# -gt 0 ];do
+        case "$1" in
+        -h|--help|\?)
+            print_help
+            return 1    # exit.
+            ;;
+        -name)
+            # If there's an argument is -name, replace -iname directly.
+            myparams="${myparams} -name"
+            myparams=${myparams#-iname }
+            shift
+            ;;
+        *)
+            if [ -d "$1" ]; then
+                # If argument is a directory path, add it to $target.
+                target="${target} $1"
+            else
+                # The arguments that we can not parse, append to $myparams directly.
+                myparams="${myparams} $1"
+            fi
+            shift
+            ;;
+        esac
+    done
 }
 
 function main() {
+    init_global_variables
     parse_and_check_args "$@"
-
+    case "$?" in
+    1)
+        return 1
+        ;;
+    *)
+        ;;
+    esac
+    if [ -z "${target}" ]; then
+        target="."
+    fi
+    echoW "find ${target} ${myparams} \"*${keyword}\""
+    find ${target} ${myparams} "*${keyword}*" -not -path "*/.git*"
 }
 
 main "$@"
