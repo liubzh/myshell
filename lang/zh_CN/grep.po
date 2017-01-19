@@ -52,3 +52,6 @@ msgstr "不能包含字符 ‘/’"
 
 msgid "Command"
 msgstr "执行命令"
+
+msgid "Case sensitive, remove given argument -i"
+msgstr "区分大小写，取消给定参数-i"
