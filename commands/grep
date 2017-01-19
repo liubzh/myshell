@@ -8,7 +8,7 @@
 
 # All the global variables in this script.
 function init_global_variables() {
-    myparams=
+    myparams="-rniR"
     target=
     keyword=
     target=
@@ -61,14 +61,18 @@ function parse_and_check_args ()
                 print_help
                 return 1    # exit.
                 ;;
+            --noi)
+                myparams=${myparams/i/}
+                shift
+                ;;
             --include)
                 shift
-                myparams+=" --include=*$1*"
+                myparams="${myparams} --include=*$1*"
                 shift
                 ;;
             --exclude)
                 shift
-                myparams+=" --exclude=*$1*"
+                myparams="${myparams} --exclude=*$1*"
                 shift
                 ;;
             --exclude-dir)
@@ -80,16 +84,16 @@ function parse_and_check_args ()
                     echoE "'${1}'" $(gettxt "should not contain '/'")
                     return 1
                 fi
-                myparams+=" --exclude-dir=*$1*"
+                myparams="${myparams} --exclude-dir=*$1*"
                 shift
                 ;;
             *)
                 if [ -d $1 -o -f $1 ]; then
                     # If argument is a file path or directory path, add it to $target.
-                    target+=" $1"
+                    target="${target} $1"
                 else
                     # The arguments that we can not parse, append to $myparams directly.
-                    myparams+=" $1"
+                    myparams="${myparams} $1"
                 fi
                 shift
                 ;;
@@ -132,8 +136,8 @@ function main() {
         if [ -z "${target}" ]; then
             target=" ."
         fi
-        echoW "$(gettxt "Command"): grep -rniR \"${keyword}\"${myparams}${target}"
-        grep -rniR "${keyword}" ${myparams} --exclude-dir=.git ${target}
+        echoW "$(gettxt "Command"): grep \"${keyword}\" ${myparams}${target}"
+        grep "${keyword}" ${myparams} --exclude-dir=.git ${target}
         ;;
     esac
 
