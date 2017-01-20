@@ -15,6 +15,7 @@ function init_global_variables() {
     COUNT=
     # The items which have been picked.
     WINNER=
+    PUTBACK=false
 }
 
 function print_help() {
@@ -38,7 +39,7 @@ function parse_and_check_args () {
     fi
     if [ -f "$1" ]; then
         POOL=$(cat "$1")
-        return 0 # Normal return.
+        shift
     fi
     while [ $# -gt 0 ];do
         case "$1" in
@@ -46,8 +47,30 @@ function parse_and_check_args () {
             print_help
             return 1    # exit.
             ;;
+        --putback)
+            PUTBACK=true
+            shift
+            ;;
+        --noputback)
+            PUTBACK=false
+            shift
+            ;;
+        --dice)
+            PUTBACK=true
+            POOL="1 2 3 4 5 6"
+            shift
+            ;;
+        --coin)
+            PUTBACK=true
+            POOL="Heads Tails"
+            shift
+            ;;
         *)
-            POOL="${POOL} $1"
+            if [ -z "${POOL}" ]; then
+                POOL="$1"
+            else
+                POOL="${POOL} $1"
+            fi
             shift
             ;;
         esac
@@ -59,10 +82,12 @@ function pick() {
     local random=$((${RANDOM}%${#POOL_ARRAY[@]}))
     #echo "Random number is ${random}"
     result=${POOL_ARRAY[${random}]}
-    WINNER+="${result} "
-    POOL_ARRAY[${random}]=
-    POOL=${POOL_ARRAY[*]}
-    POOL_ARRAY=(${POOL})
+    WINNER+=" ${result}"
+    if ! ${PUTBACK}; then
+        POOL_ARRAY[${random}]=
+        POOL=${POOL_ARRAY[*]}
+        POOL_ARRAY=(${POOL})
+    fi
 }
 
 # Return 0: is a number.
@@ -80,6 +105,7 @@ function chkInt() {
 }
 
 function main() {
+    init_global_variables
     parse_and_check_args "$@"
     case "$?" in
     1)
@@ -90,10 +116,10 @@ function main() {
     while [ true ]; do
         if [ -n "${POOL}" ]; then
             WINNER=
-            echo "-----------POOL-----------"
-            echo ${POOL}
-            echo "--------------------------"
-            read -p "Input the number you want to pick, press <Enter> to pick only one: " COUNT
+            echo "POOL{" ${POOL} "}"
+            if ! ${PUTBACK}; then
+                read -p "How many do you want to pick (default is 1): " COUNT
+            fi
             if [ -z "${COUNT}" ]; then
                 COUNT=1
             fi
@@ -106,7 +132,7 @@ function main() {
                 # COUNT is a number.
                 let num=`expr ${COUNT}`
                 if [ ${num} -gt ${#POOL_ARRAY[@]} -o ${num} -le 0 ]; then
-                    echo "The number should be in the range (0,${#POOL_ARRAY[@]})"
+                    echo "The number should be in the range [1,${#POOL_ARRAY[@]}]"
                     read -p "Press <Enter> to continue..."
                     continue
                 fi
@@ -115,10 +141,13 @@ function main() {
                     let num=`expr ${num} - 1`
                 done
             fi
-            echo "----------WINNER----------"
-            echo ${WINNER}
-            echo "--------------------------"
-            read -p "Press <Enter> to continue, 'Ctrl-c' to exit..."
+            echo "WINNER|" ${WINNER}
+            read -p "Continue (y/n)? " ANSWER
+            if [[ -z ${ANSWER} || ${ANSWER} == y || ${ANSWER} == Y ]]; then
+                continue
+            else
+                return 1
+            fi
         else
             echo "The pool is empty, can not pick!"
             break

@@ -17,7 +17,9 @@ function init_global_variables() {
     PRE_TEXTDOMAIN=$TEXTDOMAIN
     my_cmd=
     mnt_target=~/Server/mnt
-    extract_target=~/Version
+    DIR_VERSION=~/Version
+    DIR_LOG=~/Log
+    extract_target=
     server_info=${MYSHELLDATADIR}/mnt/info
 }
 
@@ -89,29 +91,59 @@ function main() {
     fi
 
     local url="$1"
+    local m_file=
     local server=
-    if [[ $1 == *10.8.0.22/* ]]; then
-        server="10.8.0.22"
-        my_cmd="$(grep ${server} ${server_info})${url#*${server}} ${mnt_target}"
-    elif [[ $1 == *10.8.0.23* ]]; then
-        server="10.8.0.23"
-        my_cmd="$(grep ${server} ${server_info})${url#*${server}} ${mnt_target}"
+    if [[ ${url} == *.0.22/* ]]; then
+        server=".0.22"
+    elif [[ ${url} == *.0.23/* ]]; then
+        server=".0.23"
+    elif [[ ${url} == *.0.162/* ]]; then
+        server=".0.162"
+    elif [[ ${url} == *.10.22/* ]]; then
+        server=".10.22"
     fi
+    if [[ ${url} == *.zip || ${url} == *.rar || *.7z || *.mp4 ]]; then
+        m_file=$(basename "${url}")
+        url=${url%*${m_file}}
+    fi
+    my_cmd="$(grep ${server} ${server_info})${url#*${server}} ${mnt_target}"
 
     if [ -n "${my_cmd}" ]; then
         echoW ${my_cmd}
         ${my_cmd}
         chk_return
         cd ${mnt_target}
-        if [ -f *.7z ]; then
-            local file_7z="`ls *.7z`"
-            read -p "${file_7z} is detected, extract it to ${extract_target}(y/n)? " ANSWER
+
+        if [ -n "${m_file}" ]; then
+            extract_target=${DIR_LOG}
+            read -p "${m_file} is detected, cp it to ${extract_target}(y/n)? " ANSWER
             if [[ ${ANSWER} == y || ${ANSWER} == Y ]]; then
-                extract_target="${extract_target}/${file_7z}"
+                extract_target="${extract_target}/${m_file%.*}"
                 if [ ! -d "${extract_target}" ]; then
                     mkdir -p ${extract_target}
                 else
-                    echo "Directory ${file_7z} exists already, you have to extract manually."
+                    echo "Dir ${extract_target} already exists, you have to extract manually."
+                    return 1
+                fi
+                if [ ! -f "${extract_target}/${m_file}" ]; then
+                    cp ${m_file} "${extract_target}/${m_file}"
+                    chk_return
+                else
+                    echo "File ${m_file} already exists."
+                fi
+                cd ${extract_target}
+                nautilus .
+            fi
+        elif [ -f *.7z ]; then
+            local file_7z="`ls *.7z`"
+            extract_target=${DIR_VERSION}
+            read -p "${file_7z} is detected, extract it to ${extract_target}(y/n)? " ANSWER
+            if [[ ${ANSWER} == y || ${ANSWER} == Y ]]; then
+                extract_target="${extract_target}/${file_7z%.7z*}"
+                if [ ! -d "${extract_target}" ]; then
+                    mkdir -p ${extract_target}
+                else
+                    echo "Dir ${extract_target} already exists, you have to extract manually."
                     return 1
                 fi
                 7z e ${file_7z} -o${extract_target}
