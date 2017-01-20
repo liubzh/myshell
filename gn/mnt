@@ -103,13 +103,16 @@ function main() {
         ${my_cmd}
         chk_return
         cd ${mnt_target}
-        local file_7z=`ls *.7z`
-        if [ -n "${file_7z}" ]; then
-            read -p "${file_7z} is detected, extract it to ${extract_target}?(y/n)" ANSWER
+        if [ -f *.7z ]; then
+            local file_7z="`ls *.7z`"
+            read -p "${file_7z} is detected, extract it to ${extract_target}(y/n)? " ANSWER
             if [[ ${ANSWER} == y || ${ANSWER} == Y ]]; then
                 extract_target="${extract_target}/${file_7z}"
                 if [ ! -d "${extract_target}" ]; then
                     mkdir -p ${extract_target}
+                else
+                    echo "Directory ${file_7z} exists already, you have to extract manually."
+                    return 1
                 fi
                 7z e ${file_7z} -o${extract_target}
                 cd ${extract_target}
