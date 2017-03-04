@@ -27,13 +27,17 @@ function input_project_dir {
 }
 
 function project_dir() {
+    local proj_dir="${PROJECTS_ROOT}/$1"
     if [ -z "$1" ]; then
-        echo "没有指定目标文件夹!"
+        echo "No project dir specified!"
         input_project_dir
-    elif [ -d "${PROJECTS_ROOT}/$1" ]; then
-        ls -F ${PROJECTS_ROOT}
-        echo "此文件夹已存在！"
-        input_project_dir
+    elif [ -d "${proj_dir}" ]; then
+        for item in /*; do
+            # dir is not empty.
+            ls -F ${PROJECTS_ROOT}
+            echo "${1} is not empty."
+            input_project_dir
+        done
     else
         TARGET_DIR=$1
     fi
@@ -78,44 +82,101 @@ function project_name() {
 # $2: project name to sync.
 # $3: product name to compile.
 function main() {
-    project_dir "$1"
-    project_name "$2"
-    product_name "$3"
-    #if [ -z "${MY_PROJ_DIR}" ]; then
-    #    echo "MY_PROJ_DIR 未指定，请执行：project_dir"
-    #    return 1
-    #elif [ -z "${MY_GN_PROJ}" ]; then
-    #    echo "MY_GN_PROJ 未指定，请执行：project_name"
-    #    return 1 
-    #fi
+    #project_dir "$1"
+    #project_name "$2"
+    #product_name "$3"
+    local proj_dir=~/Projects/$1
+    local project="$2"
+    local product="$3"
+    if [ -z "${1}" -o -z "${2}" ]; then
+        echo "Usage: new-task proj_dir project product"
+        return 1
+    fi
+    if [ ! -d ${proj_dir} ]; then
+        mkdir ${proj_dir}
+    fi
+    if [ ${project} -a -z "${product}" ]; then
+        read -p "let product=${project}?(y/n)" ANSWER
+        if [[ ${ANSWER} == y || ${ANSWER} == Y ]]; then
+            product=${project}
+        else
+            return 1
+        fi
+    fi
+    local export_sh=${proj_dir}/export.sh
+    if [ -f ${export_sh} ]; then
+        cat ${export_sh}
+        read -p "Do you want to replace it?(y/n)" ANSWER
+        if [[ ${ANSWER} == n || ${ANSWER} == N ]]; then
+            return 1
+        fi
+    fi
+    echo "export MY_GN_PROJDIR=${proj_dir}" > ${export_sh}
+    echo "export MY_GN_PROJ=${project}" >> ${export_sh}
+    echo "export MY_GN_PROD=${product}" >> ${export_sh}
+    chmod +x ${export_sh}
+
     if [ ! -f ${TARGET_SH} ]; then
         echo '#!/bin/bash' >> ${TARGET_SH}
+        echo 'LOG_FILE=~/mytasklog' >> ${TARGET_SH}
     fi
-    echo '' >> ${TARGET_SH}
-    echo '# ------------Task----------' >> ${TARGET_SH}
-    #echo "export MY_PROJ_DIR=${MY_PROJ_DIR}" >> ${TARGET_SH}
-    echo "export MY_GN_PROJ=${MY_GN_PROJ}" >> ${TARGET_SH}
-    #echo 'echo MY_PROJ_DIR=${MY_PROJ_DIR}' >> ${TARGET_SH}
-    #echo 'echo MY_GN_PROJ=${MY_GN_PROJ}' >> ${TARGET_SH}
-    echo "cd ~/Projects" >> ${TARGET_SH}
-    echo "if [ ! -d ${TARGET_DIR} ]; then" >> ${TARGET_SH}
-    echo "    mkdir ${TARGET_DIR}" >> ${TARGET_SH}
-    echo 'fi' >> ${TARGET_SH}
+    echo >> ${TARGET_SH}
+    echo '# ------------Task----------START' >> ${TARGET_SH}
+    echo 'echo ---new task---: $(date) >> ${LOG_FILE}' >> ${TARGET_SH}
+    echo "cd ${PROJECTS_ROOT}" >> ${TARGET_SH}
     echo '# Want to remove directory? Write it below.' >> ${TARGET_SH}
     echo '#rm -rf dir' >> ${TARGET_SH}
-    echo "cd ${MY_PROJ_DIR}" >> ${TARGET_SH}
-    #echo 'echo cd ${MY_PROJ_DIR}' >> ${TARGET_SH}
-    echo '~/Projects/repo_repoinit_conf' >> ${TARGET_SH}
+    echo "cd ${proj_dir}" >> ${TARGET_SH}
+    echo "source export.sh" >> ${TARGET_SH}
+    local isNewDir=true
+    for item in ${proj_dir}/*; do
+        if [[ ${item} != */export.sh ]]; then
+            isNewDir=false
+            break
+        fi
+    done
+    if [[ ${isNewDir} == true ]]; then
+        echo 'echo repo sync: $(date) >> ${LOG_FILE}' >> ${TARGET_SH}
+        echo "${PROJECTS_ROOT}/repo_repoinit_conf" >> ${TARGET_SH}
+    fi
     echo 'cd L*' >> ${TARGET_SH}
     echo 'cd android*' >> ${TARGET_SH}
-    echo "./TmakeGionee -t ${COMPILE_PRODUCT} -n" >> ${TARGET_SH}
-    echo '# Shutdown computer when finished?' >> ${TARGET_SH}
-    echo '#sudo shutdown -h now' >> ${TARGET_SH}
+    if [[ ${isNewDir} == false ]]; then
+        read -p 'fetch,clean?(y/n)' ANSWER
+        if [[ ${ANSWER} == y || ${ANSWER} == Y ]]; then
+            echo 'echo git clean: $(date) >> ${LOG_FILE}' >> ${TARGET_SH}
+            echo "repo forall -pvc git clean -df > /dev/null" >> ${TARGET_SH}
+            echo 'echo git checkout: $(date) >> ${LOG_FILE}' >> ${TARGET_SH}
+            echo 'repo forall -pvc git checkout .' >> ${TARGET_SH}
+            echo 'echo git fetch: $(date) >> ${LOG_FILE}' >> ${TARGET_SH}
+            echo "repo forall -pvc git fetch > /dev/null" >> ${TARGET_SH}
+        fi
+    fi
+    read -p 'Checkout to the newest tag?(y/n)' ANSWER
+    if [[ ${ANSWER} == y || ${ANSWER} == Y ]]; then
+        echo 'newest_tag=`git tag | grep ^${MY_GN_PROJ}- | tail -n1`' >> ${TARGET_SH}
+        echo 'echo git branch: $(date) >> ${LOG_FILE}' >> ${TARGET_SH}
+        echo 'repo forall -pvc git branch my-${newest_tag} ${newest_tag}' >> ${TARGET_SH}
+        echo 'echo git checkout to branch: $(date) >> ${LOG_FILE}' >> ${TARGET_SH}
+        echo 'repo forall -pvc git checkout my-${newest_tag} > /dev/null' >> ${TARGET_SH}
+    fi
+    read -p "Compile user version?(y/n)" ANSWER
+    if [[ ${ANSWER} == y || ${ANSWER} == Y ]]; then
+        echo "./TmakeGionee -v user ${product} -n" >> ${TARGET_SH}
+    else
+        echo "./TmakeGionee -t ${product} -n" >> ${TARGET_SH}
+    fi
+    echo '# ------------Task----------END' >> ${TARGET_SH}
+    echo >> ${TARGET_SH}
+    read -p "Shutdown computer finally?(y/n)" ANSWER
+    sed -i '/^echo shutdown:*/d' ${TARGET_SH} # delete all lines contain 'echo shutdown:'
+    sed -i '/^sudo shutdown*/d' ${TARGET_SH} # delete all lines contain 'sudo shutdown'
+    if [[ ${ANSWER} == y || ${ANSWER} == Y ]]; then
+        echo 'echo shutdown: $(date) >> ${LOG_FILE}' >> ${TARGET_SH}
+        echo 'sudo shutdown -h now' >> ${TARGET_SH} # append this line to the end of file.
+    fi
     chmod +x ${TARGET_SH}
     echo "${TARGET_SH} generated, please check and execute it, or source it."
-    # Clear the env vars.
-    #unset MY_PROJ_DIR
-    unset MY_GN_PROJ
     vim ${TARGET_SH}
 }
 

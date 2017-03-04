@@ -90,8 +90,10 @@ function main() {
     fi
     if [ -n "${my_cmd}" ]; then
         echoW ${my_cmd}
-        read -p "Press <Enter> to execute this command: "
-        ${my_cmd}
+        read -p "Execute this command(y/n)?" ANSWER
+        if [[ ${ANSWER} == y || ${ANSWER} == Y ]]; then
+            ${my_cmd}
+        fi
     fi
 }
 

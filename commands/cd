@@ -102,11 +102,11 @@ elif [ "$1" = "-" ]; then
 else
     chkInt "$1"
     # 参数为数字，返回N级目录
-    if [[ $? == 0 && $1 < 20 ]]; then
+    if (( $? == 0 && $1 < 20 )); then
         mypwd=`pwd`
         let num=$1
         while [ ${num} -gt 0 ]; do
-            echo ${mypwd}
+            #echo ${mypwd}
             mypwd=${mypwd%\/*}
             let num=`expr ${num} - 1`
             if [ -z "${mypwd}" ]; then

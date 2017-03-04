@@ -22,7 +22,7 @@ set ic              "(ignorecase 的缩写) 忽略大小写
 "------About Tab------begin---
 set tabstop=4       "Width of Tab.|Tab宽度
 set shiftwidth=4    "每次缩进插入的空格数。用于[>,<,>>,<<]
-set expandtab       "Expand tab.|将Tab展开，已N个空格代替
+set expandtab       "Expand tab.|将Tab展开，以N个空格代替
 set smartindent     "自动缩进排版
 set smarttab        "在行和段起始位置使用制表符。
 set cindent         "使用C样式的缩进，尤其对{}大括号等处理。
@@ -30,6 +30,7 @@ set cindent         "使用C样式的缩进，尤其对{}大括号等处理。
 
 "------Tags------BEGIN
 "set tags+=~/.vim/tags/cpp
+set tags+=~/.vim/tags/*
 "------Tags------END
 
 "------Hot keys------BEGIN
@@ -46,7 +47,7 @@ map <C-F12> :!ctags -R --c++-kinds=+p --fields=+iaS --extra=+q .<CR>
 vmap <C-c> "+y
 " Insert mode, press Ctrl-v to paste text from system clipboard.
 " vim-gui-common is required. 'sudo apt-get install vim-gui-common'
-map <C-v> <Esc>"+p
+map <C-p> <Esc>"+p
 "------Hot keys------END
 
 "------plugin:taglist------BEGIN
@@ -69,3 +70,7 @@ let g:miniBufExplMapWindowNavArrows = 1
 let g:miniBufExplMapCTabSwitchBufs = 1
 let g:miniBufExplModSelTarget = 1
 "------plugin:MiniBufExplorer------END
+
+"------dictionary------BEGIN
+set dictionary+=~/myshell/vim/dict/android.dict
+"------dictionary------END

@@ -70,6 +70,15 @@ function unset_localization() {
     fi
 }
 
+function rename_file() {
+    local string="$1"
+    string=${string// /_} # replace space to _
+    string=${string//[!0-9A-za-z-,._]/-} # replace unknown characters.
+    if [[ ${1} != ${string} ]]; then
+        mv "$1" ${string}
+    fi
+}
+
 function main() {
     init_global_variables
 
@@ -83,9 +92,9 @@ function main() {
         ;;
     esac
 
-    if [[ `pwd` == ${mnt_target} ]]; then
+    if [[ `pwd` == ${mnt_target}* ]]; then
         echo "Escape from ${mnt_target}."
-        cd ..
+        cd ~
     fi
 
     if [ ! -d ${mnt_target} ]; then
@@ -117,7 +126,7 @@ function main() {
         m_file=$(basename "${url}")
         url=${url%*${m_file}}
     fi
-    my_cmd="$(grep ${server} ${server_info})${url#*${server}} ${mnt_target}"
+    my_cmd="$(grep ${server//./\\.} ${server_info})${url#*${server}} ${mnt_target}"
     echoW ${my_cmd}
 
     read -p "Continue <Enter>? " ANSWER
@@ -129,9 +138,11 @@ function main() {
     chk_return
     cd ${mnt_target}
 
-    if [ -n "${m_file}" ]; then
+    if [ -d ${m_file} ]; then
+        cd ${m_file}
+    elif [ -n "${m_file}" ]; then
         if [ ! -f ${m_file} ]; then
-            echo "File ${m_file} does not exist."
+            echo "No such file or directory: ${m_file}"
             return 1
         fi
         target_dir="${DIR_LOG}/${m_file%.*}"
@@ -146,7 +157,7 @@ function main() {
                 return 1
             fi
             if [ ! -f "${target_file}" ]; then
-                cp "${m_file}" "${target_file}"
+                cp -v "${m_file}" "${target_file}"
                 chk_return
                 if [[ ${m_file} == *.zip ]]; then
                     unzip "${target_file}" -d "${target_dir}"
@@ -161,9 +172,14 @@ function main() {
                 echo "File ${m_file} already exists."
             fi
             cd ${target_dir}
+            for item in *; do
+                rename_file "${item}"
+            done
             nautilus .
         fi
-    elif [[ ${server} == .0.22 ]]; then
+    fi
+    if [[ ${server} == .0.22 ]]; then
+        # Server to download versions.
         if [ -f *.7z ]; then
             local file_7z="`ls *.7z`"
             extract_target="${DIR_VERSION}/${file_7z%.7z*}"
