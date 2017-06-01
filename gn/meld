@@ -62,6 +62,11 @@ function main() {
                     break
                 done
             done
+        elif [ ${count} -eq 1 ]; then
+            FILE_PATH_2=${results}
+        elif [ ${count} -eq 0 ]; then
+            echo "gionee 库中没有此文件"
+            return 1
         fi
         #echo FILE_PATH_1=${FILE_PATH_1}
         #echo FILE_PATH_2=${FILE_PATH_2}
