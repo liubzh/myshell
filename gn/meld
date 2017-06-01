@@ -1,0 +1,74 @@
+#!/bin/bash
+
+######## Script Information. BGN ########
+# Author: liubingzhao.
+# Date: 2017-06-01
+######## Script Information. END ########
+
+function print_help() {
+    cat << Help
+说明：定制化的 meld 命令，引导式选择不同项目和文件进行比较。
+Help
+}
+
+function init_global_vars() {
+    FILE_PATH_1=
+    FILE_PATH_2=
+    MELD_CMD=/usr/bin/meld
+    PROJECTS_ROOT=~/Projects
+}
+
+# Parse and validate the arguments.
+# return 0: ok
+# return 1: invalid or print help.
+function parse_and_check_args ()
+{
+    while [ $# -gt 0 ];do
+        case "$1" in
+        -h|--help|\?)
+            print_help ${command_name}
+            return 1    # exit.
+            ;;
+        *)
+            shift
+            ;;
+        esac
+    done
+}
+
+function main() {
+    init_global_vars
+    parse_and_check_args "$@"
+    if [ $? -ne 0 ]; then return; fi
+    if [ $# -eq 1 -a -f "$1" ]; then
+        FILE_PATH_1="$1"
+        echo "选择一个项目:"
+        selection=
+        while [ -z "${selection}" ]; do
+            select selection in `ls ${PROJECTS_ROOT}`; do
+                :
+                break
+            done
+        done
+        local target=${PROJECTS_ROOT}/${selection}/L*/a*/gionee
+        local results=$(find ${target} -name "$(basename ${FILE_PATH_1})")
+        local count=$(printf "${results}\n" | wc -l)
+        if [ ${count} -gt 1 ]; then
+            echo "在 ${selection} 的 gionee 库下有多个查询结果，请选择："
+            selection=
+            while [ -z "${selection}" ]; do
+                select selection in $(printf "${results}\n" | sed "s:^.*/gionee/:: "); do
+                    FILE_PATH_2=${target}/${selection}
+                    break
+                done
+            done
+        fi
+        #echo FILE_PATH_1=${FILE_PATH_1}
+        #echo FILE_PATH_2=${FILE_PATH_2}
+        ${MELD_CMD} ${FILE_PATH_1} ${FILE_PATH_2}
+    else
+        ${MELD_CMD} "$@"
+    fi
+}
+
+main "$@"

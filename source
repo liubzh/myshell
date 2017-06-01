@@ -64,6 +64,7 @@ alias m="source ${MYGNDIR}/make"
 alias new-task="source ${MYGNDIR}/new-task"
 alias switch-proj="source ${MYGNDIR}/switch-proj"
 alias mnt="source ${MYGNDIR}/mnt"
+alias meld="source ${MYGNDIR}/meld"
 
 # kt
 #MYKTSH=$MYSHELLDIR/kt
