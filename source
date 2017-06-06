@@ -38,6 +38,7 @@ source ${MYSHELLDIR}/utils/colored_echo.sh
 
 # Add executive files to PATH
 export PATH=${MYSHELLDIR}/sh:$PATH
+export PATH=${MYSHELLDIR}/sh_gn:$PATH
 
 # alias check returned error number from function.
 alias chk_return='if (( 0 != $? )); then return 1; fi'
