@@ -52,6 +52,38 @@ function unset_localization() {
     fi
 }
 
+function check_mk_dir() {
+    local mypwd=`pwd`
+    local dst_file=
+    while [ -n "${mypwd}" ]; do
+        dst_file=${mypwd}/Android.mk
+        if [ -f "${dst_file}" ]; then
+            MK_DIR=${mypwd}
+            break;
+        else
+            mypwd=${mypwd%\/*}
+        fi
+    done
+}
+
+# $1 由当前目录向上遍历每一级目录，查找文件 export.sh
+function source_export() {
+    local dst_file=export.sh
+    local mypwd=`pwd`
+    while [ -n "${mypwd}" ]; do
+        if [ -f "${mypwd}/${dst_file}" ]; then
+            cat ${mypwd}/${dst_file}
+            read -p "source ${mypwd}/${dst_file}? (y/n)" ANSWER
+            if [[ ${ANSWER} == y || ${ANSWER} == Y ]]; then
+                source ${mypwd}/${dst_file}
+            fi
+            break;
+        else
+            mypwd=${mypwd%\/*}
+        fi
+    done
+}
+
 function main() {
     init_global_variables
 
@@ -66,17 +98,23 @@ function main() {
     esac
 
     if [ -z "${MY_GN_PROJ}" ]; then
-        echo "MY_GN_PROJ is null, please execute 'switch-proj' to set it."
-        return 1
+        source_export
+    fi
+    if [ ! -f Android.mk ]; then
+        check_mk_dir
     fi
     local my_cmd=
-    if [ -f Android.mk ]; then
+    if [ -f ${MK_DIR}/Android.mk ]; then
         # If Android.mk exists in current directory
-        local mk_dir=`pwd`
-        c r
+        cd_dir TmakeGionee
         local root_dir=`pwd`
-        mk_dir=${mk_dir#*$root_dir/}
-        my_cmd="./TmakeGionee -t ${MY_GN_PROJ} -p ${mk_dir}"
+        MK_DIR=${MK_DIR#*${root_dir}/}
+        # 在这里当前路径指定为android目录，方便复制编译结果(adb push out/xxx/.jar)。
+        my_cmd="./TmakeGionee -t ${MY_GN_PROJ} -p ${MK_DIR}"
+        local log_file=/tmp/mk.log
+        ${my_cmd} | tee ${log_file}
+        echo --------
+        grep "^Install:" ${log_file}
     elif [ -f TmakeGionee ]; then
         # If currently in the android project root directory.
         if [ -z "$1" ]; then
@@ -87,12 +125,12 @@ function main() {
         elif [ -f $1/Android.mk ]; then
             my_cmd="./TmakeGionee -t ${MY_GN_PROJ} -p $1"
         fi
-    fi
-    if [ -n "${my_cmd}" ]; then
-        echoW ${my_cmd}
-        read -p "Execute this command(y/n)?" ANSWER
-        if [[ ${ANSWER} == y || ${ANSWER} == Y ]]; then
-            ${my_cmd}
+        if [ -n "${my_cmd}" ]; then
+            echoW ${my_cmd}
+            read -p "Execute this command(y/n)?" ANSWER
+            if [[ ${ANSWER} == y || ${ANSWER} == Y ]]; then
+                ${my_cmd}
+            fi
         fi
     fi
 }
