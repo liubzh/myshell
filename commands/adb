@@ -99,11 +99,43 @@ function parse_and_check_args ()
     done
 }
 
+# 连接多个设备情况需选择
+function choose_adb_device() {
+    local devices=
+    while read line; do
+        if [[ ${line} == *\ device\ * ]]; then
+            line=${line// /_}
+            local device_id=${line%%_*}
+            local device=${line#*device:}
+            devices="${devices} ${device}__${device_id}"  # 约定分隔符__
+        fi
+    done < <(${ADB} devices -l)
+    local count=$(echo ${devices} | grep -o "__" | wc -l)  # 约定分隔符__
+    local selection=
+    if [ ${count} -eq 1 ]; then
+        # 如果只有一个可访问设备，则无需选择
+        selection=${devices}
+    else
+        echo "多个设备请选择"
+    fi
+    while [ -z "${selection}" ]; do
+        select selection in ${devices}; do
+            :
+            break
+        done
+    done
+    selection=${selection##*__}  # 约定分隔符__
+    TARGET_DEVICE=" -s ${selection} "
+}
+
 function main() {
+    ADB=$ANDROID_SDK_HOME/platform-tools/adb
     parse_and_check_args "$@"
     chk_return
 
-    $ANDROID_SDK_HOME/platform-tools/adb "$@"
+    TARGET_DEVICE=
+    choose_adb_device
+    ${ADB} ${TARGET_DEVICE} "$@"
 }
 
 main "$@"
