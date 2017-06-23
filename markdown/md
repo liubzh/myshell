@@ -166,14 +166,6 @@ main() {
 
     markDiagrams ${FILE_IN}
 
-    CSS_HIGHTLIGHT=/home/liubingzhao/Development/github/highlight/styles/atom-one-dark.css
-    JS_HIGHTLIGHT=/home/liubingzhao/Development/github/highlight/highlight.pack.js
-    JS_SNAPSVG=/home/liubingzhao/Development/github/Snap.svg/dist/snap.svg-min.js
-    JS_UNDERSCORE=/home/liubingzhao/Development/github/underscore/underscore-min.js
-    JS_SEQUENCE_DIAGRAMS=/home/liubingzhao/Development/github/js-sequence-diagrams/dist/sequence-diagram-min.js
-    JS_WEBFONT=/home/liubingzhao/Development/github/webfontloader/src/core/webfont.js
-    CSS_SEQUENCE_DIAGRAM=/home/liubingzhao/Development/github/js-sequence-diagrams/dist/sequence-diagram-min.css
-
 cat > ${FILE_OUT} << CODE
 <!doctype html>
 <html>
@@ -182,7 +174,7 @@ cat > ${FILE_OUT} << CODE
 	    <meta name="viewport" content="width=device-width, initial-scale=1, minimal-ui">
 	    <title>${TITLE}</title>
 
-        <!-- github markdown css. begin -->
+        <!-- 排版样式.START -->
 	    <link rel="stylesheet" href="${DIR_SCRIPT}/github-markdown_customized.css">
 	    <style>
 		    body {
@@ -193,36 +185,25 @@ cat > ${FILE_OUT} << CODE
 			    padding: 45px;
 		    }
 	    </style>
-        <!-- github markdown css. end -->
+        <!-- 排版样式.END -->
 
+        <!-- 代码高亮库.START -->
         <link rel="stylesheet" href="${DIR_SCRIPT}/monokai_sublime.min.css">
         <script src="${DIR_SCRIPT}/highlight.min.js"></script>
         <script >hljs.initHighlightingOnLoad();</script>
+        <!-- 代码高亮库.END -->
 
+        <!-- 时序图绘制库.START -->
         <script src="${DIR_SCRIPT}/webfont.js"></script>
         <script src="${DIR_SCRIPT}/snap.svg-min.js"></script>
         <script src="${DIR_SCRIPT}/underscore-min.js"></script>
         <script src="${DIR_SCRIPT}/sequence-diagram-min.js"></script>
+        <!-- 时序图绘制库.END -->
 
+        <!-- 流程图绘制库.START -->
         <script src="${DIR_SCRIPT}/raphael.min.js"></script>
         <script src="${DIR_SCRIPT}/flowchart-latest.js"></script>
-
-        <!--
-        <link rel="stylesheet" href="${CSS_HIGHTLIGHT}" />
-        <script src="${JS_HIGHTLIGHT}"></script>
-        <script >hljs.initHighlightingOnLoad();</script>
-
-        <script src="${JS_WEBFONT}"></script>
-        <script src="${JS_SNAPSVG}"></script>
-        <script src="${JS_UNDERSCORE}"></script>
-        <script src="${JS_SEQUENCE_DIAGRAMS}"></script>
-        <link href="${CSS_SEQUENCE_DIAGRAM}" rel="stylesheet"/>
-        -->
-
-        <!-- flowchart. begin -->
-        <script src="${DIR_SCRIPT}/raphael.min.js"></script>
-        <script src="${DIR_SCRIPT}/flowchart-latest.js"></script>
-        <!-- flowchart. end -->
+        <!-- 流程图绘制库.END -->
     </head>
     <body>
 	    <article class="markdown-body">
@@ -233,16 +214,8 @@ markdown2 --encoding=utf-8 --html4tags --extras=fenced-code-blocks,cuddled-lists
 parseDiagrams ${FILE_OUT}
 
 cat >> ${FILE_OUT} << CODE
-
-<div id="diagram">Diagram will be placed here</div>
-<script> 
-  var d = Diagram.parse("A->B: Does something");
-  var options = {theme: 'simple'};
-  d.drawSVG('diagram', options);
-</script>
-
         <br>
-        <hr style="height:1px;border:none;border-top:1px dashed #999999;" />
+        <hr style="height:1px;border:none;border-top:1px dashed #f6f8fa;" />
         <p>Originally created by <a href="liubingzhao@aliyun.com" title="liubingzhao@aliyun.com">Binzo</a>.</p>
     </body>
 </html>
