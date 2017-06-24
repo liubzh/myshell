@@ -32,6 +32,10 @@ FILE_OUT="$2"
 DIR_SCRIPT="$(dirname $0)/scripts"
 TITLE="Binzo's Article"
 
+CONTAINS_CODE_BLOCK=false
+CONTAINS_SEQUENCE_DIAGRAM=false
+CONTAINS_FLOWCHART=false
+
 function checkArgs () {
     while [ $# -gt 0 ];do
         case "$1" in
@@ -47,7 +51,7 @@ function checkArgs () {
 
     if [ -z "${FILE_IN}" ]; then
         # 如果 FILE_IN 缺省，判断当前目录下是否存在唯一 md 文件
-        local mds=$(find . -name *.md)
+        local mds=$(find . -name "*.md")
         local count=$(echo ${mds} | wc -w)
         if [ ${count} -eq 1 ]; then
             FILE_IN=${mds}
@@ -77,16 +81,18 @@ markDiagrams() {
     ifs=$IFS; IFS="\n"
     while read -r line; do
         if [[ ${line} == \`\`\`sequence ]]; then
+            CONTAINS_SEQUENCE_DIAGRAM=true
             line="\`\`\`\n[[[sequence]]]"
             processing=true
         elif [[ ${line} == \`\`\`flow ]]; then
+            CONTAINS_FLOWCHART=true
             line="\`\`\`\n[[[flow]]]"
             processing=true
-        elif [[ ${line} == \`\`\` ]]; then
-            if ${processing}; then
-                line="[[[end]]]\n\`\`\`"
-                processing=false
-            fi
+        elif [[ ${line} == \`\`\` && ${processing} == true ]]; then
+            line="[[[end]]]\n\`\`\`"
+            processing=false
+        elif [[ ${line} == \`\`\`* || ${line} == \t* ]]; then
+            CONTAINS_CODE_BLOCK=true
         fi
         #echo "${line}"
         echo -e "${line}" >> ${path}
@@ -120,11 +126,11 @@ parseDiagrams() {
     ifs=$IFS; IFS="\n"
     while read -r line; do
         if [[ ${line} == \<pre\>\<code\>\[\[\[sequence\]\]\] ]]; then
-            echo "检测到 Diagram"
+            #echo "检测到‘时序图’"
             line="<div id=\"diagram${idxDiagram}\" class=\"diagram\"></div>\n<script>\n  var diagram${idxDiagram} = Diagram.parse('' +"
             isDiagram=true
         elif [[ ${line} == \<pre\>\<code\>\[\[\[flow\]\]\] ]]; then
-            echo "检测到 Flowchart"
+            #echo "检测到‘流程图’"
             line="<div id=\"flowchart${idxFlow}\" class=\"diagram\"></div>\n<script>\n var flowchart${idxFlow} = flowchart.parse('' +"
             isFlow=true
         elif [[ ${line} == \[\[\[end\]\]\] ]]; then
@@ -155,13 +161,40 @@ parseDiagrams() {
 }
 # add for diagram & flowchart. end
 
+includeScripts() {
+    if [[ ${CONTAINS_CODE_BLOCK} == true ]]; then
+        echo "检测到‘代码块’，引入代码块高亮库"
+        cat >> ${FILE_OUT} << CODE
+        <link rel="stylesheet" href="${DIR_SCRIPT}/monokai_sublime.min.css">
+        <script src="${DIR_SCRIPT}/highlight.min.js"></script>
+        <script >hljs.initHighlightingOnLoad();</script>
+CODE
+    fi
+    if [[ ${CONTAINS_SEQUENCE_DIAGRAM} == true ]]; then
+        echo "检测到‘时序图’，引入时序图绘制库"
+        cat >> ${FILE_OUT} << CODE
+        <script src="${DIR_SCRIPT}/webfont.js"></script>
+        <script src="${DIR_SCRIPT}/snap.svg-min.js"></script>
+        <script src="${DIR_SCRIPT}/underscore-min.js"></script>
+        <script src="${DIR_SCRIPT}/sequence-diagram-min.js"></script>
+CODE
+    fi
+    if [[ ${CONTAINS_FLOWCHART} == true ]]; then
+        echo "检测到‘流程图’，引入流程图绘制库"
+        cat >> ${FILE_OUT} << CODE
+        <script src="${DIR_SCRIPT}/raphael.min.js"></script>
+        <script src="${DIR_SCRIPT}/flowchart-latest.js"></script>
+CODE
+    fi
+}
+
 main() {
     checkArgs "$@"
 
     local title=$(grep "^# " ${FILE_IN} | head -n1)
     if [ -n "${title}" ]; then
         TITLE=${title#*# }
-        echo "检测到一级标题：《${TITLE}》"
+        echo "检测到‘一级标题’：《${TITLE}》"
     fi
 
     markDiagrams ${FILE_IN}
@@ -182,28 +215,13 @@ cat > ${FILE_OUT} << CODE
 			    min-width: 200px;
 			    max-width: 980px;
 			    margin: 0 auto;
-			    padding: 45px;
+			    padding: 10px;
 		    }
 	    </style>
         <!-- 排版样式.END -->
-
-        <!-- 代码高亮库.START -->
-        <link rel="stylesheet" href="${DIR_SCRIPT}/monokai_sublime.min.css">
-        <script src="${DIR_SCRIPT}/highlight.min.js"></script>
-        <script >hljs.initHighlightingOnLoad();</script>
-        <!-- 代码高亮库.END -->
-
-        <!-- 时序图绘制库.START -->
-        <script src="${DIR_SCRIPT}/webfont.js"></script>
-        <script src="${DIR_SCRIPT}/snap.svg-min.js"></script>
-        <script src="${DIR_SCRIPT}/underscore-min.js"></script>
-        <script src="${DIR_SCRIPT}/sequence-diagram-min.js"></script>
-        <!-- 时序图绘制库.END -->
-
-        <!-- 流程图绘制库.START -->
-        <script src="${DIR_SCRIPT}/raphael.min.js"></script>
-        <script src="${DIR_SCRIPT}/flowchart-latest.js"></script>
-        <!-- 流程图绘制库.END -->
+CODE
+includeScripts
+cat >> ${FILE_OUT} << CODE
     </head>
     <body>
 	    <article class="markdown-body">

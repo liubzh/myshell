@@ -1,0 +1,145 @@
+<!doctype html>
+<html>
+    <head>
+	    <meta charset="utf-8">
+	    <meta name="viewport" content="width=device-width, initial-scale=1, minimal-ui">
+	    <title>Markdown 解释器环境搭建</title>
+
+        <!-- 排版样式.START -->
+	    <link rel="stylesheet" href="/home/liubingzhao/myshell/markdown/scripts/github-markdown_customized.css">
+	    <style>
+		    body {
+			    box-sizing: border-box;
+			    min-width: 200px;
+			    max-width: 980px;
+			    margin: 0 auto;
+			    padding: 10px;
+		    }
+	    </style>
+        <!-- 排版样式.END -->
+        <link rel="stylesheet" href="/home/liubingzhao/myshell/markdown/scripts/monokai_sublime.min.css">
+        <script src="/home/liubingzhao/myshell/markdown/scripts/highlight.min.js"></script>
+        <script >hljs.initHighlightingOnLoad();</script>
+    </head>
+    <body>
+	    <article class="markdown-body">
+<h1>Markdown 解释器环境搭建</h1>
+
+<h2>python-markdown2</h2>
+
+<p>Github: https://github.com/trentm/python-markdown2</p>
+
+<p>基础解释器选择 markdown2</p>
+
+<p>安装方法如下：</p>
+
+<div class="codehilite"><pre><code>sudo pip install markdown2
+</code></pre></div>
+
+<p><strong>NOTE</strong> 需要 sudo 权限</p>
+
+<h2>npm</h2>
+
+<p>Github: https://github.com/npm/npm</p>
+
+<p>安装方法如下：</p>
+
+<div class="codehilite"><pre><code>sudo apt-get install npm
+</code></pre></div>
+
+<h2>bower</h2>
+
+<p>Github: https://github.com/bower/bower</p>
+
+<p>安装方法如下：</p>
+
+<div class="codehilite"><pre><code>sudo npm install -g bower
+</code></pre></div>
+
+<p><strong>NOTE</strong> 需要 sudo 权限</p>
+
+<h2>sequence-diagrams.js</h2>
+
+<p>Github: https://github.com/bramp/js-sequence-diagrams</p>
+
+<p>建一个绘制图标专用的 bower-home 目录，然后克隆代码：</p>
+
+<div class="codehilite"><pre><code><span class="nv">$ </span>mkdir ~/github/bower-home-diagram
+<span class="nv">$ </span><span class="nb">cd</span> ~/github/bower-home-diagram
+<span class="nv">$ </span>git clone https://github.com/bramp/js-sequence-diagrams.git
+<span class="nv">$ </span>bower install js-sequence-diagrams
+<span class="nv">$ </span><span class="nb">cd </span>bower_components
+<span class="nv">$ </span>ls
+bower-webfontloader  js-sequence-diagrams  raphael   underscore
+eve-raphael          lodash                snap.svg
+<span class="nv">$ </span><span class="nb">pwd</span>
+</code></pre></div>
+
+<p>可以看到下载好的组件，这个路径就定为我们的 bower-home</p>
+
+<p>执行 <code>bower install</code> 可能会遇到以下错误：</p>
+
+<div class="codehilite"><pre><code>/usr/bin/env: node: No such file or directory
+</code></pre></div>
+
+<p>原因是环境变量中无法找到 node 命令，可用以下方式解决：</p>
+
+<div class="codehilite"><pre><code><span class="nv">$ </span>sudo ln -s /usr/bin/nodejs /usr/bin/node
+</code></pre></div>
+
+<h2>jquery</h2>
+
+<p>如果需要使用 jquery 需安装，这里使用 bower 进行安装：</p>
+
+<div class="codehilite"><pre><code>bower install jquery
+</code></pre></div>
+
+<hr>
+
+<p><strong>以上这些步骤都是让我们了解到我们用到了哪些项目，使用最新版本需要慎重，测试没问题再进行使用。</strong></p>
+
+<h2>为确保绘制正常，我们使用官网推荐的 js 库：</h2>
+
+<p>详情见：https://bramp.github.io/js-sequence-diagrams/</p>
+
+<p>在介绍中直接下载引用：</p>
+
+<div class="codehilite"><pre><code><span class="nt">&lt;script </span><span class="na">src=</span><span class="s">&quot;webfont.js&quot;</span><span class="nt">&gt;&lt;/script&gt;</span>
+<span class="nt">&lt;script </span><span class="na">src=</span><span class="s">&quot;snap.svg-min.js&quot;</span><span class="nt">&gt;&lt;/script&gt;</span>
+<span class="nt">&lt;script </span><span class="na">src=</span><span class="s">&quot;underscore-min.js&quot;</span><span class="nt">&gt;&lt;/script&gt;</span>
+<span class="nt">&lt;script </span><span class="na">src=</span><span class="s">&quot;sequence-diagram-min.js&quot;</span><span class="nt">&gt;&lt;/script&gt;</span>
+</code></pre></div>
+
+<h2>flowchart</h2>
+
+<p>Github: https://github.com/adrai/flowchart.js</p>
+
+<p>绘制流程图需要使用 flowchart.js，安装方式如下：</p>
+
+<div class="codehilite"><pre><code>bower install flowchart
+</code></pre></div>
+
+<h2>HTML 转换为 PDF 文档</h2>
+
+<div class="codehilite"><pre><code>sudo apt install wkhtmltopdf
+wkhtmltopdf --help
+</code></pre></div>
+
+<p><strong>经过测试，wkhtmltopdf 这个命令版本不同也可能造成导出绘制 UML 图失败，所以当不能正常输出时，考虑更新版本</strong></p>
+
+<h2>HTML 转换为 MHT 文件</h2>
+
+<p>HTML 转 MHT 我使用 Firefox 浏览器安装插件 UnMHT，使用插件另存为 .mht 格式，这样我们便可以方便传输离线网页文件了。</p>
+
+<h2>其它</h2>
+
+<p>另外：此目录下的 md 和 md.sh</p>
+
+<p>md: 这个是引用的当前目录 scripts 下的库文件，已经经过测试，可以正常使用</p>
+
+<p>md.sh: 是尝试使用最新版本的库进行配置，也就是以上提到的 bower 进行安装，但相互协作尚未通过验证，可后续进行学习。</p>
+        <br>
+        <hr style="height:1px;border:none;border-top:1px dashed #f6f8fa;" />
+        <p>Originally created by <a href="liubingzhao@aliyun.com" title="liubingzhao@aliyun.com">Binzo</a>.</p>
+    </body>
+</html>

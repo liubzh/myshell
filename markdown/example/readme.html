@@ -6,35 +6,26 @@
 	    <title>Markdown语法帮助文档</title>
 
         <!-- 排版样式.START -->
-	    <link rel="stylesheet" href="/home/binzo/myshell_git/myshell/markdown/scripts/github-markdown_customized.css">
+	    <link rel="stylesheet" href="/home/liubingzhao/myshell/markdown/scripts/github-markdown_customized.css">
 	    <style>
 		    body {
 			    box-sizing: border-box;
 			    min-width: 200px;
 			    max-width: 980px;
 			    margin: 0 auto;
-			    padding: 45px;
+			    padding: 10px;
 		    }
 	    </style>
         <!-- 排版样式.END -->
-
-        <!-- 代码高亮库.START -->
-        <link rel="stylesheet" href="/home/binzo/myshell_git/myshell/markdown/scripts/monokai_sublime.min.css">
-        <script src="/home/binzo/myshell_git/myshell/markdown/scripts/highlight.min.js"></script>
+        <link rel="stylesheet" href="/home/liubingzhao/myshell/markdown/scripts/monokai_sublime.min.css">
+        <script src="/home/liubingzhao/myshell/markdown/scripts/highlight.min.js"></script>
         <script >hljs.initHighlightingOnLoad();</script>
-        <!-- 代码高亮库.END -->
-
-        <!-- 时序图绘制库.START -->
-        <script src="/home/binzo/myshell_git/myshell/markdown/scripts/webfont.js"></script>
-        <script src="/home/binzo/myshell_git/myshell/markdown/scripts/snap.svg-min.js"></script>
-        <script src="/home/binzo/myshell_git/myshell/markdown/scripts/underscore-min.js"></script>
-        <script src="/home/binzo/myshell_git/myshell/markdown/scripts/sequence-diagram-min.js"></script>
-        <!-- 时序图绘制库.END -->
-
-        <!-- 流程图绘制库.START -->
-        <script src="/home/binzo/myshell_git/myshell/markdown/scripts/raphael.min.js"></script>
-        <script src="/home/binzo/myshell_git/myshell/markdown/scripts/flowchart-latest.js"></script>
-        <!-- 流程图绘制库.END -->
+        <script src="/home/liubingzhao/myshell/markdown/scripts/webfont.js"></script>
+        <script src="/home/liubingzhao/myshell/markdown/scripts/snap.svg-min.js"></script>
+        <script src="/home/liubingzhao/myshell/markdown/scripts/underscore-min.js"></script>
+        <script src="/home/liubingzhao/myshell/markdown/scripts/sequence-diagram-min.js"></script>
+        <script src="/home/liubingzhao/myshell/markdown/scripts/raphael.min.js"></script>
+        <script src="/home/liubingzhao/myshell/markdown/scripts/flowchart-latest.js"></script>
     </head>
     <body>
 	    <article class="markdown-body">
@@ -150,7 +141,7 @@
 <p><a href="http://example.com/" title="optional title here">link text</a>
 在文中直接引用链接，直接使用尖括号，把链接加入到尖括号中就可以实现，如下：</p>
 
-<p><a href="http://example.com/">http://example.com/</a> or <a href="&#109;&#x61;i&#x6c;t&#x6f;&#58;&#97;&#100;&#100;&#x72;&#x65;&#x73;&#115;&#64;&#101;&#120;&#97;&#109;&#112;&#108;&#101;&#x2e;c&#x6f;&#x6d;">&#97;&#100;&#100;&#x72;&#x65;&#x73;&#115;&#64;&#101;&#120;&#97;&#109;&#112;&#108;&#101;&#x2e;c&#x6f;&#x6d;</a>
+<p><a href="http://example.com/">http://example.com/</a> or <a href="&#109;&#x61;&#x69;&#108;t&#111;:&#97;&#x64;&#100;&#114;&#x65;&#x73;&#x73;&#64;&#x65;&#x78;&#97;&#x6d;&#112;&#x6c;&#101;&#46;&#x63;&#111;&#x6d;">&#97;&#x64;&#100;&#114;&#x65;&#x73;&#x73;&#64;&#x65;&#x78;&#97;&#x6d;&#112;&#x6c;&#101;&#46;&#x63;&#111;&#x6d;</a>
 插入互联网上图片，格式如下：</p>
 
 <p><img src="icon.png" alt="这里写图片描述">
@@ -192,14 +183,14 @@
 
 <p>以下是一段 bash 代码块：</p>
 
-<div class="codehilite"><pre><code><span class="nb">local</span> <span class="nv">mds</span><span class="o">=</span><span class="k">$(</span>find . -name *.md<span class="k">)</span>
-<span class="nb">local</span> <span class="nv">count</span><span class="o">=</span><span class="k">$(</span><span class="nb">echo</span> <span class="si">${</span><span class="nv">mds</span><span class="si">}</span> <span class="p">|</span> wc -w<span class="k">)</span>
-<span class="k">if</span> <span class="o">[</span> <span class="si">${</span><span class="nv">count</span><span class="si">}</span> -eq <span class="m">1</span> <span class="o">]</span><span class="p">;</span> <span class="k">then</span>
-    <span class="nv">FILE_IN</span><span class="o">=</span><span class="si">${</span><span class="nv">mds</span><span class="si">}</span>
-    <span class="nb">echo</span> <span class="s2">&quot;检索到 md 文档： </span><span class="si">${</span><span class="nv">mds</span><span class="si">}</span><span class="s2">&quot;</span>
+<div class="codehilite"><pre><code><span class="nb">local </span><span class="nv">mds</span><span class="o">=</span><span class="k">$(</span>find . -name *.md<span class="k">)</span>
+<span class="nb">local </span><span class="nv">count</span><span class="o">=</span><span class="k">$(</span><span class="nb">echo</span> <span class="k">${</span><span class="nv">mds</span><span class="k">}</span> | wc -w<span class="k">)</span>
+<span class="k">if</span> <span class="o">[</span> <span class="k">${</span><span class="nv">count</span><span class="k">}</span> -eq 1 <span class="o">]</span>; <span class="k">then</span>
+<span class="k">    </span><span class="nv">FILE_IN</span><span class="o">=</span><span class="k">${</span><span class="nv">mds</span><span class="k">}</span>
+    <span class="nb">echo</span> <span class="s2">&quot;检索到 md 文档： ${mds}&quot;</span>
 <span class="k">else</span>
-    printUsage
-    <span class="nb">exit</span> 1
+<span class="k">    </span>printUsage
+    <span class="nb">exit </span>1
 <span class="k">fi</span>
 </code></pre></div>
 
@@ -255,6 +246,26 @@
 'Bob-->Alice: I am good thanks!\n' +
 '');
   diagram1.drawSVG("diagram1", {theme: 'simple'});
+</script>
+
+<div id="diagram2" class="diagram"></div>
+<script>
+  var diagram2 = Diagram.parse('' +
+'Alice->Bob: Hello Bob, how are you?\n' +
+'Note right of Bob: Bob thinks\n' +
+'Bob-->Alice: I am good thanks!\n' +
+'');
+  diagram2.drawSVG("diagram2", {theme: 'simple'});
+</script>
+
+<div id="diagram3" class="diagram"></div>
+<script>
+  var diagram3 = Diagram.parse('' +
+'Alice->Bob: Hello Bob, how are you?\n' +
+'Note right of Bob: Bob thinks\n' +
+'Bob-->Alice: I am good thanks!\n' +
+'');
+  diagram3.drawSVG("diagram3", {theme: 'simple'});
 </script>
 
 <p>或者流程图：</p>
