@@ -7,7 +7,7 @@
 ######## Script Information. END ########
 
 function _adb() {
-    local my_opt="push pull sync shell emu logcat forward reverse jdwp install install-multiple uninstall bugreport restore disable-verity enable-verity keygen help version wait-for start-server kill-server get-state get-serialno get-devpath remount reboot sideload root unroot usb tcpip ppp reconnect"
+    local my_opt="push pull sync shell emu logcat forward reverse jdwp install install-multiple uninstall bugreport restore disable-verity enable-verity keygen help version wait-for start-server kill-server get-state get-serialno get-devpath remount reboot sideload root unroot usb tcpip ppp reconnect devices"
     local v_opts="brief color long printable process raw tag thread threadtime time usec"
     local logcat_opts="-s -r -n -v -D -c -t -T -g -L -b -B -S -G -p -P"
     local cur prev opts

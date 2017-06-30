@@ -115,6 +115,8 @@ function choose_adb_device() {
     if [ ${count} -eq 1 ]; then
         # 如果只有一个可访问设备，则无需选择
         selection=${devices}
+    elif [ ${count} -lt 1 ]; then
+        return
     else
         echo "多个设备请选择"
     fi

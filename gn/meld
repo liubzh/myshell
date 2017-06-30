@@ -58,7 +58,13 @@ function main() {
                 break
             done
         done
+        # 默认 android 库
         local target=${PROJECTS_ROOT}/${selection}/L*/a*/gionee
+        # 判断是否为 package 库
+        mypwd=$(pwd)
+        if [[ ${mypwd} == */packages* ]]; then
+            target=${PROJECTS_ROOT}/${selection}/L*/p*/gionee
+        fi
         local results=$(find ${target} -name "$(basename ${FILE_PATH_1})")
         local count=$(printf "${results}\n" | wc -l)
         if [ ${count} -gt 1 ]; then

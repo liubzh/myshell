@@ -8,7 +8,7 @@
 
 function _g() {
     # Arguments start with '-'
-    local my_opt_short="-C2 -c -h"
+    local my_opt_short="-C2 -c -h -E"
     # Arguments start with '--'
     local my_opt_long="--context=2 --count --exclude --exclude-dir --help --include --noi"
     local my_log_file="crash_log kernel_log events_log main_log radio_log radio_log"

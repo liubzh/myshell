@@ -109,12 +109,12 @@ fi
 # java
 # 如果想对所有用户进行配置
 # 可以考虑写进 /etc/profile文件
-JAVA_HOME="$HOME/Development/java/jdk"
-JRE_HOME="$JAVA_HOME/jre"
-if [ -d "$JAVA_HOME" ]; then
-    export CLASSPATH=.:$JAVA_HOME/lib:$JAVA_HOME/jre/lib:$CLASSPATH
-    export PATH=$JAVA_HOME/bin:$JRE_HOME/bin:$PATH
-fi
+#JAVA_HOME="$HOME/Development/java/jdk"
+#JRE_HOME="$JAVA_HOME/jre"
+#if [ -d "$JAVA_HOME" ]; then
+#    export CLASSPATH=.:$JAVA_HOME/lib:$JAVA_HOME/jre/lib:$CLASSPATH
+#    export PATH=$JAVA_HOME/bin:$JRE_HOME/bin:$PATH
+#fi
 
 # eclipse for python
 ECLIPSE="$HOME/Development/python/eclipse/eclipse"
@@ -124,7 +124,7 @@ fi
 
 # Android Studio
 ANDROID_SDK_HOME="$HOME/Development/android/sdk"
-export PATH=$ANDROID_SDK_HOME/platform-tools:$ANDROID_SDK_HOME/tools:$PATH
+export PATH=$ANDROID_SDK_HOME/platform-tools:$ANDROID_SDK_HOME/tools:${ANDROID_SDK_HOME}/tools/bin:$PATH
 ANDROID_STUDIO="$HOME/Development/android/android-studio/bin/studio.sh"
 if [ -f $ANDROID_STUDIO ]; then
     alias android-studio=$ANDROID_STUDIO
@@ -135,3 +135,20 @@ WECHAT="$HOME/Applications/electronic-wechat/electronic-wechat"
 if [ -f $WECHAT ]; then
     alias wechat="$WECHAT"
 fi
+
+# ----- MTK ----- begin
+# gat
+MTK_GAT="${HOME}/Applications/gat-linux-x86_64-3/gat"
+if [ -f ${MTK_GAT} ]; then
+    alias gat="${MTK_GAT}"
+fi
+MTK_LOGVIEW="${HOME}/Applications/gat-linux-x86_64-3/modules/MediatekLogView/MediatekLogView"
+if [ -f ${MTK_LOGVIEW} ]; then
+    alias logviewer="${MTK_LOGVIEW}"
+fi
+# flash_tool
+MTK_FLASH_TOOL="${HOME}/Applications/SP_Flash_Tool/flash_tool.sh"
+if [ -f ${MTK_FLASH_TOOL} ]; then
+    alias flash_tool="${MTK_FLASH_TOOL}"
+fi
+# ----- MTK ----- end

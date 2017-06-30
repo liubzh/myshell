@@ -1,6 +1,6 @@
 #!/bin/bash
 
-help()
+print_help()
 {
     echoI "Help: n | Binzo's customized 'nautilus'"
     cat << Help
@@ -18,11 +18,9 @@ if [ -z $1 ]; then # 缺省参数
 elif [ -d $1 ]; then # 有效路径
     nautilus $1
 elif [ "$1" = "--help" -o "$1" = "-h" ]; then
-    help
-elif [ "$1" = "99" ]; then
-    nautilus ftp://read@10.10.100.99/liubzh
-elif [ "$1" = "100" ]; then
-    nautilus ftp://write@10.10.100.100/
+    print_help
+elif [[ $1 == ftp* ]]; then
+    nautilus "$1"
 else
     echoE "n $1: 没有此目录！"
 fi

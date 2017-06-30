@@ -9,6 +9,7 @@
 function init_global_variables() {
     PRE_TEXTDOMAINDIR=$TEXTDOMAINDIR
     PRE_TEXTDOMAIN=$TEXTDOMAIN
+    MK_DIR=`pwd`
 }
 
 function print_help() {
@@ -114,7 +115,7 @@ function main() {
         local log_file=/tmp/mk.log
         ${my_cmd} | tee ${log_file}
         echo --------
-        grep "^Install:" ${log_file}
+        grep "Install: " ${log_file}
     elif [ -f TmakeGionee ]; then
         # If currently in the android project root directory.
         if [ -z "$1" ]; then

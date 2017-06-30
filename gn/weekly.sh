@@ -1,12 +1,13 @@
 #!/bin/bash
 
+# Author: liubingzhao
+# Date: 2017-06-02
+
 # 此脚本是用于写周报的
 # 1. 在redmine上进入个人页面，点击‘活动’
 # 2. 复制所有要过滤内容到文件
 # 3. 运行此脚本
 
-# $1: fileIn
-# $2: fileOut
 function main() {
     local fileIn="$1"
     local fileOut="$2"
@@ -49,12 +50,12 @@ function main() {
             echo "${line}" >> "${fileOut}"
         else
             # ---截取BugId---
-            line=${line%%: *}
-            line=${line%% (*}
+            bugid=${line%%: *}
+            bugid=${bugid%% (*}
             # ---去重---
-            exists=$(tail -n1 ${fileOut} | grep "${line}")
+            exists=$(tail -n1 ${fileOut} | grep "${bugid}")
             if [ -z "${exists}" ]; then
-                printf "  ${line}" >> "${fileOut}"
+                printf "  ${bugid}" >> "${fileOut}"
             fi
         fi
     done < "${fileIn}"
@@ -68,13 +69,11 @@ function main() {
         if [[ ${line} == 201* ]]; then
             the_date=${line%%:*}
             week=${the_date//-/}; week=$(date '+%a' --date="${week}")
-            printf "周${week}（${the_date}）\n" >> ${fileOut}
+            printf "周${week}（${the_date}）：\n" >> ${fileOut}
         fi
-        if [ -z "${line}" ]; then
-            continue
-        fi
+        if [ -z "${line}" ]; then continue; fi
         bugs=${line#*:}
-            printf "1、${bugs}\n2、\n3、\n" >> "${fileOut}"
+        printf "1、${bugs}\n2、\n3、\n" >> "${fileOut}"
     done < <(sort ${fileOut})
 }
 
