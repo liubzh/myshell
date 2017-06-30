@@ -2,11 +2,15 @@
 
 function check_fastboot() {
     if [ -z "`fastboot devices`" ]; then
+        # fastboot 未找到设备，判断是否处于 adb 模式
         adb reboot bootloader
+        echo "正在尝试切换到 FASTBOOT 模式，请稍后"
         if [ $? -ne 0 ]; then
-            echo "未找到可用设备，如已连接，请确认是否处于 FASTBOOT | ADB 模式"
+            echo "未找到可用设备，请确认设备是否处于 FASTBOOT | ADB 模式"
             exit 1
         fi
+    else
+        :  # 如果 `fastboot devices` 有输出，直接进行烧录
     fi
 }
 
