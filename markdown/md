@@ -186,6 +186,23 @@ CODE
         <script src="${DIR_SCRIPT}/flowchart-latest.js"></script>
 CODE
     fi
+    echo "检测到‘备注’，引入备注弹框脚本"
+    cat >> ${FILE_OUT} << CODE
+        <style type="text/css">
+            #box {
+                background-color: rgba(0,0,0,0.95);
+                width: 260px;
+                height: 150px;
+                position: absolute;
+                border:3px solid white;
+                border-radius: 8px;
+                overflow: auto;
+                color:#fff;
+                padding:10px;
+                visibility:hidden;
+            }
+        </style>
+CODE
 }
 
 main() {
@@ -203,28 +220,28 @@ cat > ${FILE_OUT} << CODE
 <!doctype html>
 <html>
     <head>
-	    <meta charset="utf-8">
-	    <meta name="viewport" content="width=device-width, initial-scale=1, minimal-ui">
-	    <title>${TITLE}</title>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, minimal-ui">
+        <title>${TITLE}</title>
 
         <!-- 排版样式.START -->
-	    <link rel="stylesheet" href="${DIR_SCRIPT}/github-markdown_customized.css">
-	    <style>
-		    body {
-			    box-sizing: border-box;
-			    min-width: 200px;
-			    max-width: 980px;
-			    margin: 0 auto;
-			    padding: 10px;
-		    }
-	    </style>
+        <link rel="stylesheet" href="${DIR_SCRIPT}/github-markdown_customized.css">
+        <style type="text/css">
+            body {
+                box-sizing: border-box;
+                min-width: 200px;
+                max-width: 980px;
+                margin: 0 auto;
+                padding: 10px;
+            }
+        </style>
         <!-- 排版样式.END -->
 CODE
 includeScripts
 cat >> ${FILE_OUT} << CODE
     </head>
     <body>
-	    <article class="markdown-body">
+        <article class="markdown-body">
 CODE
 
 markdown2 --encoding=utf-8 --html4tags --extras=fenced-code-blocks,cuddled-lists,metadata,tables,spoiler ${FILE_IN} >> ${FILE_OUT}
@@ -232,6 +249,60 @@ markdown2 --encoding=utf-8 --html4tags --extras=fenced-code-blocks,cuddled-lists
 parseDiagrams ${FILE_OUT}
 
 cat >> ${FILE_OUT} << CODE
+        <div id="box"></div>
+        <script>
+            var boxWidth = 260;
+            var boxHeight = 150;
+            var boxId = 'box';
+            var tipObj = null;
+            var boxHtml = "";
+            var oBox = document.getElementById(boxId);
+
+            function box(obj, isResize, html) {
+                tipObj = obj;
+                boxHtml = html;
+                oBox.style.width= boxWidth + 'px';
+                oBox.style.height=boxHeight + 'px';
+                oBox.style.position = "absolute";
+                oBox.style.display = "block";
+                var L1 = boxWidth; //oBox.offsetWidth;    //获取元素自身的宽度
+                var H1 = boxHeight; //oBox.offsetHeight;    //获取元素自身的高度
+                var Left = (document.documentElement.clientWidth-L1)/2; //获取实际页面的left值。（页面宽度减去元素自身宽度/2）
+                var Top = (document.documentElement.clientHeight-H1)/2;   //获取实际页面的top值。（页面宽度减去元素自身高度/2）
+                //Left+=document.body.scrollLeft;
+                //Top+=document.body.scrollTop;
+                oBox.style.left = Left + 'px';
+                oBox.style.top = Top + 'px';
+
+                oBox.onclick = function() {
+                    oBox.style.visibility = "hidden";
+                };
+
+                if (obj != null) {
+                    var Top = obj.offsetTop - 20 - boxHeight;
+                    if ( Top < 10 ) {
+                        Top = obj.offsetTop + 20;
+                    }
+                    oBox.style.top = Top + 'px';
+                    oBox.innerHTML = html;
+                    if (isResize == false) {
+                        // isResize: 如果是 window resize 事件，不改变显示状态
+                        oBox.style.visibility = "visible";
+                    }
+                }
+            }
+            window.onresize = function() {
+                box(tipObj, true, boxHtml);
+            }
+            box(null, true, ""); // 加载时执行一次
+            /*
+            // 示例如下：
+            var t1 =document.getElementById("tip1");
+            t1.onclick = function() {
+                box(this, false, this.innerText + "<br><br>这是“tip1”......<br>测试一下这个备注窗口<br>折行也是可以的");
+            }
+            */
+        </script>
         <br>
         <hr style="height:1px;border:none;border-top:1px dashed #f6f8fa;" />
         <p>Originally created by <a href="liubingzhao@aliyun.com" title="liubingzhao@aliyun.com">Binzo</a>.</p>
