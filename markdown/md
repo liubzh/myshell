@@ -29,12 +29,14 @@ Help
 
 FILE_IN="$1"
 FILE_OUT="$2"
+FILE_TMP_SCRIPT=/tmp/tip.js
 DIR_SCRIPT="$(dirname $0)/scripts"
 TITLE="Binzo's Article"
 
 CONTAINS_CODE_BLOCK=false
 CONTAINS_SEQUENCE_DIAGRAM=false
 CONTAINS_FLOWCHART=false
+CONTAINS_NOTE=false
 
 function checkArgs () {
     while [ $# -gt 0 ];do
@@ -68,6 +70,26 @@ function checkArgs () {
         local fname=$(basename ${FILE_IN})
         FILE_OUT=$(dirname ${FILE_IN})/${fname%.md*}.html
     fi
+    if [ -f ${FILE_TMP_SCRIPT} ]; then
+        rm ${FILE_TMP_SCRIPT}
+    fi
+}
+
+function genTempTipScript() {
+    cat >> ${FILE_TMP_SCRIPT} << CODE
+            var t${idx} =document.getElementById("tip${idx}");
+            t${idx}.onclick = function() {
+                if (tipId == "tip${idx}") {
+                    if (oBox.style.visibility == "visible") {
+                        oBox.style.visibility = "hidden";
+                        tipId = null;
+                        return;
+                    }
+                }
+                box(this, false, this.innerText + "<br>${note}");
+                tipId = "tip${idx}";
+            }
+CODE
 }
 
 # add for diagram & flowchart. begin
@@ -78,6 +100,7 @@ markDiagrams() {
         rm ${path}
     fi
     local processing=false
+    local isnote=false
     ifs=$IFS; IFS="\n"
     while read -r line; do
         if [[ ${line} == \`\`\`sequence ]]; then
@@ -93,6 +116,34 @@ markDiagrams() {
             processing=false
         elif [[ ${line} == \`\`\`* || ${line} == \t* ]]; then
             CONTAINS_CODE_BLOCK=true
+        elif [[ ${line} == *\)\)\(* ]]; then
+            CONTAINS_NOTE=true
+            temp=${line}
+            while [[ ${line} == *\)\)\(* ]]; do
+                temp=${temp#*\(\(}
+                keyword=${temp%%\)\)*}
+                temp=${temp#*\)\)\(}
+                index=${temp%%\)*}
+                line=${line/\(\(${keyword}\)\)\(${index}\)/<code id=\"tip${index}\">${keyword}</code>}
+                #echo ${line}
+            done
+        elif [[ ${line} =~ \(\([0-9]+\)\) ]]; then
+            isnote=true
+            note=""  # 清空note变量，多个备注复用
+            local idx=${line#*\(\(}
+            idx=${idx%\)\)*}
+            continue # 备注内容不需要写入HTML，continue
+        elif [[ ${line} =~ \(\(/\)\) ]]; then
+            isnote=false
+            genTempTipScript
+            continue # 备注内容不需要写入HTML，continue
+        elif ${isnote}; then
+            if [ -z "${note}" ]; then
+                note="${line}"
+            else
+                note="${note}<br>${line}"
+            fi
+            continue # 备注内容不需要写入HTML，continue
         fi
         #echo "${line}"
         echo -e "${line}" >> ${path}
@@ -186,23 +237,23 @@ CODE
         <script src="${DIR_SCRIPT}/flowchart-latest.js"></script>
 CODE
     fi
-    echo "检测到‘备注’，引入备注弹框脚本"
-    cat >> ${FILE_OUT} << CODE
-        <style type="text/css">
-            #box {
-                background-color: rgba(0,0,0,0.95);
-                width: 260px;
-                height: 150px;
-                position: absolute;
-                border:3px solid white;
-                border-radius: 8px;
-                overflow: auto;
-                color:#fff;
-                padding:10px;
-                visibility:hidden;
-            }
-        </style>
+    if ${CONTAINS_NOTE}; then
+        echo "检测到‘备注’，引入备注弹框脚本"
+        cat >> ${FILE_OUT} << CODE
+            <style type="text/css">
+                #box {
+                    background-color: rgba(0,0,0,0.95);
+                    position: absolute;
+                    border:3px solid white;
+                    border-radius: 8px;
+                    overflow: auto;
+                    color:#fff;
+                    padding:10px;
+                    visibility:hidden;
+                }
+            </style>
 CODE
+    fi
 }
 
 main() {
@@ -248,12 +299,14 @@ markdown2 --encoding=utf-8 --html4tags --extras=fenced-code-blocks,cuddled-lists
 
 parseDiagrams ${FILE_OUT}
 
+if ${CONTAINS_NOTE}; then
 cat >> ${FILE_OUT} << CODE
         <div id="box"></div>
         <script>
             var boxWidth = 260;
-            var boxHeight = 150;
+            var boxHeight = 100;
             var boxId = 'box';
+            var tipId = null;
             var tipObj = null;
             var boxHtml = "";
             var oBox = document.getElementById(boxId);
@@ -279,7 +332,7 @@ cat >> ${FILE_OUT} << CODE
                 };
 
                 if (obj != null) {
-                    var Top = obj.offsetTop - 20 - boxHeight;
+                    var Top = obj.offsetTop - 5 - boxHeight;
                     if ( Top < 10 ) {
                         Top = obj.offsetTop + 20;
                     }
@@ -297,12 +350,22 @@ cat >> ${FILE_OUT} << CODE
             box(null, true, ""); // 加载时执行一次
             /*
             // 示例如下：
-            var t1 =document.getElementById("tip1");
-            t1.onclick = function() {
-                box(this, false, this.innerText + "<br><br>这是“tip1”......<br>测试一下这个备注窗口<br>折行也是可以的");
+            var tip =document.getElementById("tip");
+            tip.onclick = function() {
+                if (tipId == "tip") {
+                    if (oBox.style.visibility == "visible") {
+                        oBox.style.visibility = "hidden";
+                    }
+                }
+                box(this, false, this.innerText + "<br>这是“tip”<br>可以折行");
+                tipId = "tip";
             }
             */
+$(cat ${FILE_TMP_SCRIPT})
         </script>
+CODE
+fi
+        cat >> ${FILE_OUT} << CODE
         <br>
         <hr style="height:1px;border:none;border-top:1px dashed #f6f8fa;" />
         <p>Originally created by <a href="liubingzhao@aliyun.com" title="liubingzhao@aliyun.com">Binzo</a>.</p>
@@ -314,8 +377,6 @@ CODE
         echo "输出到文件： ${FILE_OUT}"
         #firefox ${FILE_OUT}
     fi
-    
-
 }
 
 main "$@"
