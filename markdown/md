@@ -31,7 +31,7 @@ FILE_IN="$1"
 FILE_OUT="$2"
 FILE_TMP_SCRIPT=/tmp/tip.js
 DIR_SCRIPT="$(dirname $0)/scripts"
-TITLE="Binzo's Article"
+TITLE="Binzo's Markdown"
 
 CONTAINS_CODE_BLOCK=false
 CONTAINS_SEQUENCE_DIAGRAM=false
@@ -86,7 +86,8 @@ function genTempTipScript() {
                         return;
                     }
                 }
-                box(this, false, this.innerText + "<br>${note}");
+                //box(this, false, this.innerText + "<br>${note}");
+                box(this, false, "${note}");
                 tipId = "tip${idx}";
             }
 CODE
@@ -114,7 +115,7 @@ markDiagrams() {
         elif [[ ${line} == \`\`\` && ${processing} == true ]]; then
             line="[[[end]]]\n\`\`\`"
             processing=false
-        elif [[ ${line} == \`\`\`* || ${line} == \t* ]]; then
+        elif [[ ${line} == \`\`\`* ]]; then
             CONTAINS_CODE_BLOCK=true
         elif [[ ${line} == *\)\)\(* ]]; then
             CONTAINS_NOTE=true
@@ -332,7 +333,7 @@ cat >> ${FILE_OUT} << CODE
                 };
 
                 if (obj != null) {
-                    var Top = obj.offsetTop - 5 - boxHeight;
+                    var Top = obj.offsetTop - 3 - boxHeight;
                     if ( Top < 10 ) {
                         Top = obj.offsetTop + 20;
                     }
