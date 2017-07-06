@@ -65,13 +65,25 @@ function main() {
         if [[ ${mypwd} == */packages* ]]; then
             target=${PROJECTS_ROOT}/${selection}/L*/p*/gionee
         fi
+        echo target=${target}
         local results=$(find ${target} -name "$(basename ${FILE_PATH_1})")
         local count=$(printf "${results}\n" | wc -l)
         if [ ${count} -gt 1 ]; then
+            # 将长的绝对路径截取简化
+            local selections=
+            while read line; do
+                line=${line#*/gionee/}
+                if [ -z "${selections}" ]; then
+                    selections="${line}"
+                else
+                    selections=$(printf "${selections}\n${line}")
+                fi
+            done < <(printf "${results}\n")
             echo "在 ${selection} 的 gionee 库下有多个查询结果，请选择："
             selection=
             while [ -z "${selection}" ]; do
-                select selection in $(printf "${results}\n" | sed "s:^.*/gionee/:: "); do
+                #select selection in $(printf "${results}\n" | sed "s:^.*/gionee/:: "); do
+                select selection in ${selections}; do
                     FILE_PATH_2=${target}/${selection}
                     break
                 done

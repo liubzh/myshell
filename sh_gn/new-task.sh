@@ -15,6 +15,7 @@ branch=
 tag=
 local_branch=
 local_tag_branch=
+recompile_tag=
 compile_only=false
 
 function print_help() {
@@ -26,6 +27,7 @@ Options:
   <-P|--product>   :    指定产品名称，如 G1601A、G1602A_sign、G1602A_platform 等
   <-b|--branch>    :    指定分支名称，如 origin/code_main_dev、origin/gbl8918_code_main_dev 等
   [-t|--tag]       :    指定TAG名称，如 G1602A-T0144-170424AA、G1602A-T0110-170401AA_PATCH 等
+  [-r|--recompile] :    指定编译失败以后需要切换的TAG名称，同 --tag
 Example:
   new-task.sh -d=G1602A_ -p=G1602A -P=G1602A_platform -b=origin/code_main_dev
 Help
@@ -68,6 +70,11 @@ function parse_and_check_args () {
                 local_tag_branch=mytag-${tag}
                 echo tag=${tag}
                 echo local_tag_branch=${local_tag_branch}
+                shift
+                ;;
+            -r*|--recompile*)
+                recompile_tag=${1#*=}
+                echo recompile_tag=${recompile_tag}
                 shift
                 ;;
             *)
@@ -321,14 +328,27 @@ function genTask() {
         return 0
     fi
 
-    echo "doCheckout ${branch}"                                          >> ${TARGET_SH}
+    if [ -n "${branch}" ]; then
+        echo "doCheckout ${branch}"                                          >> ${TARGET_SH}
+    fi
+    if [ -n "${local_tag_branch}" ]; then
+        echo "doCheckout ${local_tag_branch}"                                >> ${TARGET_SH}
+    fi
 
     read -p "编译User版本? (y/n)" ANSWER
     if [[ ${ANSWER} == y || ${ANSWER} == Y ]]; then
-        echo "doCompile ${project} ${product} user"                      >> ${TARGET_SH}
+        if [ -n "${recompile_tag}" ]; then
+            echo "doCompile ${project} ${product} user -r ${recompile_tag}"  >> ${TARGET_SH}
+        else
+            echo "doCompile ${project} ${product} user"                      >> ${TARGET_SH}
+        fi
     fi
 
-    echo "doCompile ${project} ${product} eng"                           >> ${TARGET_SH}
+    if [ -n "${recompile_tag}" ]; then
+        echo "doCompile ${project} ${product} eng -r ${recompile_tag}"       >> ${TARGET_SH}
+    else
+        echo "doCompile ${project} ${product} eng"                           >> ${TARGET_SH}
+    fi
 }
 
 function main() {

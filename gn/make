@@ -98,7 +98,7 @@ function main() {
         ;;
     esac
 
-    if [ -z "${MY_GN_PROJ}" ]; then
+    if [ -z "${MY_GN_PROD}" ]; then
         source_export
     fi
     if [ ! -f Android.mk ]; then
@@ -111,7 +111,7 @@ function main() {
         local root_dir=`pwd`
         MK_DIR=${MK_DIR#*${root_dir}/}
         # 在这里当前路径指定为android目录，方便复制编译结果(adb push out/xxx/.jar)。
-        my_cmd="./TmakeGionee -t ${MY_GN_PROJ} -p ${MK_DIR}"
+        my_cmd="./TmakeGionee -t ${MY_GN_PROD} -p ${MK_DIR}"
         local log_file=/tmp/mk.log
         ${my_cmd} | tee ${log_file}
         echo --------
@@ -119,12 +119,12 @@ function main() {
     elif [ -f TmakeGionee ]; then
         # If currently in the android project root directory.
         if [ -z "$1" ]; then
-            my_cmd="./TmakeGionee -t ${MY_GN_PROJ} -n"
+            my_cmd="./TmakeGionee -t ${MY_GN_PROD} -n"
         elif [ ! -d $1 ]; then
             echo "No such directory."
             return 1
         elif [ -f $1/Android.mk ]; then
-            my_cmd="./TmakeGionee -t ${MY_GN_PROJ} -p $1"
+            my_cmd="./TmakeGionee -t ${MY_GN_PROD} -p $1"
         fi
         if [ -n "${my_cmd}" ]; then
             echoW ${my_cmd}

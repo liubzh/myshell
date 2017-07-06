@@ -21,7 +21,7 @@ function _TmakeGionee() {
     elif [[ ${cur} == G* || ${cur} == B* ]]; then
         opts="${my_projects}"
     elif [[ ${prev} == *TmakeGionee ]] ; then
-        opts="${my_args_short}"
+        opts="${MY_GN_PROD}"
     elif [[ ${prev} == -i || ${prev} == --image ]] ; then
         opts="${my_modules}"
     fi

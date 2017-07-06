@@ -123,7 +123,7 @@ function parse_url_and_download() {
             line="http://${line#*http://}"
             line="${line%%.dbg*}.dbg"
             echo "开始下载第 ${index}/${count} 个"
-            wget -v "${line}" -P "${DIR_OUT}"
+            wget "${line}" -P "${DIR_OUT}"
             local ret=$?
             echo "ret=${ret} ${line}" >> "${DIR_OUT}/download.log"
         

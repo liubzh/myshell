@@ -333,7 +333,7 @@ cat >> ${FILE_OUT} << CODE
                 };
 
                 if (obj != null) {
-                    var Top = obj.offsetTop - 3 - boxHeight;
+                    var Top = obj.offsetTop - boxHeight;
                     if ( Top < 10 ) {
                         Top = obj.offsetTop + 20;
                     }
