@@ -5,117 +5,83 @@
 # Date: 2015-12-08
 ######## Script Information. END ########
 
-print_help()
-{
+function print_help() {
     echoI "Help: c | Binzo's customized 'cd'"
     cat << Help
-usage: c [NUM] [-h|--help] [p] [r] [DIRECTORY]
-    缺省参数   Return to the parent directory.
-              返回上级目录，相当于命令"cd .."。
-    [NUM]     返回上级n个目录。如"c 3"相当于"cd ../../.."
-    [p]       Enter my (P)roject directory. 
-              进入我的项目主目录，相当于"cd ~/Projects"
-    [r]       Enter (R)oot path of current project.
-              如果当前处在某个项目目录的子目录下，返回到项目根目录.
-              判断条件为"TmakeGionee"所在目录
-    [DIRECTORY]  Enter a specific directory. 
-                 cd到一个指定的目录.
+usage: c [-h|--help|?] [KEYWORD]
+    缺省参数   返回上级目录，相当于命令"cd .."
+    [KEYWORD]  返回到路径中指定关键字开头的目录
 Help
+    return $?
 }
 
-cd_repo_dir()
-{
-    mypwd=`pwd`
-    while [ -n "${mypwd}" ]; do
-        if [ -d "${mypwd}/.repo" ]; then
-            break;
-        else
-            mypwd=${mypwd%\/*}
-        fi
-    done
-    if [ -n "${mypwd}" ]; then
-        cd ${mypwd}
-    else
-        # 没有发现.repo目录，恢复到原来位置
-        echoW "路径中没有找到.repo目录！"
-    fi
-}
-
-# $1 寻找目录下存在$1的文件或目录
-function cd_dir()
-{
-    mypwd=`pwd`
-    while [ -n "${mypwd}" ]; do
-        if [ -d "${mypwd}/$1" -o -f "${mypwd}/$1" ]; then
-            break;
-        else
-            mypwd=${mypwd%\/*}
-        fi
-    done
-    if [ -n "${mypwd}" ]; then
-        cd "${mypwd}"
-    else
-        # 没有发现目标目录，恢复到原来位置
-        echoW "路径中没有找到$1目录！"
-    fi
-}
-
-function setproject() {
-    if [ -n "$1" ]; then
-        if [ -d $1 ]; then
-            if [[ $1 == /* ]]; then
-                MY_PROJECT=$1
-            else
-                MY_PROJECT=`pwd`/$1
+# $1 : 寻找绝对路径中以$1开头的目录
+function find_dir() {
+    if [ -n "${MYPROJECTDIR}" ]; then
+        local proj="${MYPROJECTDIR}/$1"
+        if [ -d "${proj}" ]; then
+            cd ${proj}/L*/a*
+            if [ -f ${proj}/export.sh ]; then
+                source ${proj}/export.sh
             fi
-        else
-            echoE "目录不存在"
+            return $?
         fi
-        echoI MY_PROJECT=$MY_PROJECT
-    else
-        echoE "未指定project参数"
+    fi
+    local dir_name
+    local target_dir=
+    local mypwd="$(dirname "$(pwd)")"
+    while [[ ${mypwd} != / ]]; do
+        dir_name=$(basename "${mypwd}")
+        if [[ ${dir_name} == ${1}* ]]; then
+            target_dir="${mypwd}"
+            break
+        fi
+        mypwd=$(dirname "${mypwd}")
+    done
+    if [ -n "${target_dir}" ]; then
+        cd "${target_dir}"
+        return $?
     fi
 }
 
-function getproject() {
-    echo $MY_PROJECT
+function main() {
+
+    # 判断参数个数
+    if [ $# -eq 0 ]; then
+        cd ..
+        return $?
+    elif [ $# -gt 1 ]; then
+        echoE "只可指定一个参数"
+        return 1
+    fi
+    while [ $# -gt 0 ];do
+        case "$1" in
+            -h|--help|\?)
+                print_help
+                return $?
+                ;;
+            -)
+                cd -
+                return $?
+                ;;
+            *)
+                if [ -d "$1" ]; then
+                    # 有效文件夹路径
+                    cd "$1"
+                    return $?
+                elif [ -f "$1" ]; then
+                    # 有效文件路径，直接进入文件所在的目录
+                    cd $(dirname $1)
+                    return $?
+                else
+                    find_dir "$1"
+                    return $?
+                fi
+                shift
+                ;;
+        esac
+    done
+
 }
 
-if [ -z $1 ]; then # 缺省参数
-    cd ..
-elif [ -d $1 ]; then # 有效路径
-    cd $1
-elif [ "$1" = "--help" -o "$1" = "-h" ]; then
-    print_help
-elif [ "$1" = "p" ]; then
-    if [ -z "$MY_PROJECT" ]; then
-        cd ~/Projects
-    else
-        cd $MY_PROJECT
-    fi
-elif [ "$1" = "r" ]; then
-    #cd_repo_dir
-    cd_dir TmakeGionee
-elif [ "$1" = "-" ]; then
-    # 返回上一次访问过的目录
-    cd -
-else
-    chkInt "$1"
-    # 参数为数字，返回N级目录
-    if (( $? == 0 && $1 < 20 )); then
-        mypwd=`pwd`
-        let num=$1
-        while [ ${num} -gt 0 ]; do
-            #echo ${mypwd}
-            mypwd=${mypwd%\/*}
-            let num=`expr ${num} - 1`
-            if [ -z "${mypwd}" ]; then
-                echoE "Number is too large."
-                return 1
-            fi
-        done
-        cd "${mypwd}"
-    else
-        echoE "c $1: 没有此目录！"
-    fi
-fi
+main "$@"

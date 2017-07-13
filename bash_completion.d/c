@@ -1,0 +1,34 @@
+#!/bin/bash
+# Written by liubzh
+
+function _c() {
+
+    if [ -z "${MYPROJECTDIR}" ]; then
+        return 1
+    fi
+
+    local cur prev opts
+
+    COMPREPLY=()
+
+    cur="${COMP_WORDS[COMP_CWORD]}"
+    prev="${COMP_WORDS[COMP_CWORD-1]}"
+
+    if [[ ${prev} == c ]] ; then
+        if [ -n "${cur}" ]; then
+            local item
+            for item in `ls -F ${MYPROJECTDIR}`; do
+                if [[ ${item} == */ ]]; then
+                    if [[ ${item} == ${cur}* ]]; then
+                        opts="${opts} ${item%/*}"
+                    fi
+                fi
+            done
+        fi
+        if [ -n "${opts}" ]; then
+            COMPREPLY=( $(compgen -W "${opts}" -- ${cur}) )
+            return 0
+        fi
+    fi
+}
+complete -o default -F _c c
