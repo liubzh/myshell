@@ -76,7 +76,7 @@ function checkArgs () {
 }
 
 function genTempTipScript() {
-    cat >> ${FILE_TMP_SCRIPT} << CODE
+    cat >> "${FILE_TMP_SCRIPT}" << CODE
             var t${idx} =document.getElementById("tip${idx}");
             t${idx}.onclick = function() {
                 if (tipId == "tip${idx}") {
@@ -97,8 +97,8 @@ CODE
 # $1: 输入文件路径-md文件
 markDiagrams() {
     local path=/tmp/tmp_diagrams.md
-    if [ -f ${path} ]; then
-        rm ${path}
+    if [ -f "${path}" ]; then
+        rm "${path}"
     fi
     local processing=false
     local isnote=false
@@ -147,17 +147,17 @@ markDiagrams() {
             continue # 备注内容不需要写入HTML，continue
         fi
         #echo "${line}"
-        echo -e "${line}" >> ${path}
-    done < ${1}
+        echo -e "${line}" >> "${path}"
+    done < "${1}"
     IFS=${ifs}
     FILE_IN=${path}
-    #echo ${path}
+    #echo "${path}"
 }
 
 parseDiagrams() {
-    local path=/tmp/tmp_diagrams.html
-    if [ -f ${path} ]; then
-        rm ${path}
+    local path="/tmp/tmp_diagrams.html"
+    if [ -f "${path}" ]; then
+        rm "${path}"
     fi
     local idxDiagram=1
     local isDiagram=false
@@ -202,21 +202,21 @@ parseDiagrams() {
         elif [[ ${isDiagram} == true || ${isFlow} == true ]]; then
             line=${line//&gt;/>}
             line=${line//&lt;/<}
-            echo "'${line}\n' +" >> ${path}
+            echo "'${line}\n' +" >> "${path}"
             continue
         fi
         #echo "${line}"
-        echo -e "${line}" >> ${path}
-    done < ${1}
+        echo -e "${line}" >> "${path}"
+    done < "${1}"
     IFS=${ifs}
-    mv ${path} ${1}
+    mv "${path}" "${1}"
 }
 # add for diagram & flowchart. end
 
 includeScripts() {
     if [[ ${CONTAINS_CODE_BLOCK} == true ]]; then
         echo "检测到‘代码块’，引入代码块高亮库"
-        cat >> ${FILE_OUT} << CODE
+        cat >> "${FILE_OUT}" << CODE
         <link rel="stylesheet" href="${DIR_SCRIPT}/monokai_sublime.min.css">
         <script src="${DIR_SCRIPT}/highlight.min.js"></script>
         <script >hljs.initHighlightingOnLoad();</script>
@@ -224,7 +224,7 @@ CODE
     fi
     if [[ ${CONTAINS_SEQUENCE_DIAGRAM} == true ]]; then
         echo "检测到‘时序图’，引入时序图绘制库"
-        cat >> ${FILE_OUT} << CODE
+        cat >> "${FILE_OUT}" << CODE
         <script src="${DIR_SCRIPT}/webfont.js"></script>
         <script src="${DIR_SCRIPT}/snap.svg-min.js"></script>
         <script src="${DIR_SCRIPT}/underscore-min.js"></script>
@@ -233,14 +233,14 @@ CODE
     fi
     if [[ ${CONTAINS_FLOWCHART} == true ]]; then
         echo "检测到‘流程图’，引入流程图绘制库"
-        cat >> ${FILE_OUT} << CODE
+        cat >> "${FILE_OUT}" << CODE
         <script src="${DIR_SCRIPT}/raphael.min.js"></script>
         <script src="${DIR_SCRIPT}/flowchart-latest.js"></script>
 CODE
     fi
     if ${CONTAINS_NOTE}; then
         echo "检测到‘备注’，引入备注弹框脚本"
-        cat >> ${FILE_OUT} << CODE
+        cat >> "${FILE_OUT}" << CODE
             <style type="text/css">
                 #box {
                     background-color: rgba(0,0,0,0.95);
@@ -268,7 +268,7 @@ main() {
 
     markDiagrams ${FILE_IN}
 
-cat > ${FILE_OUT} << CODE
+cat > "${FILE_OUT}" << CODE
 <!doctype html>
 <html>
     <head>
@@ -290,18 +290,18 @@ cat > ${FILE_OUT} << CODE
         <!-- 排版样式.END -->
 CODE
 includeScripts
-cat >> ${FILE_OUT} << CODE
+cat >> "${FILE_OUT}" << CODE
     </head>
     <body>
         <article class="markdown-body">
 CODE
 
-markdown2 --encoding=utf-8 --html4tags --extras=fenced-code-blocks,cuddled-lists,metadata,tables,spoiler ${FILE_IN} >> ${FILE_OUT}
+markdown2 --encoding=utf-8 --html4tags --extras=fenced-code-blocks,cuddled-lists,metadata,tables,spoiler "${FILE_IN}" >> "${FILE_OUT}"
 
-parseDiagrams ${FILE_OUT}
+parseDiagrams "${FILE_OUT}"
 
 if ${CONTAINS_NOTE}; then
-cat >> ${FILE_OUT} << CODE
+cat >> "${FILE_OUT}" << CODE
         <div id="box"></div>
         <script>
             var boxWidth = 260;
@@ -366,7 +366,7 @@ $(cat ${FILE_TMP_SCRIPT})
         </script>
 CODE
 fi
-        cat >> ${FILE_OUT} << CODE
+        cat >> "${FILE_OUT}" << CODE
         <br>
         <hr style="height:1px;border:none;border-top:1px dashed #f6f8fa;" />
         <p>Originally created by <a href="liubingzhao@aliyun.com" title="liubingzhao@aliyun.com">Binzo</a>.</p>
