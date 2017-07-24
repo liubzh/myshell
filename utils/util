@@ -37,3 +37,21 @@ function chkInt() {
         ;;
     esac
 }
+
+# $1 寻找目录下存在$1的目录并执行cd命令
+function cd_dir()
+{
+    mypwd=`pwd`
+    while [ -n "${mypwd}" ]; do
+        if [ -d "${mypwd}/$1" -o -f "${mypwd}/$1" ]; then
+            break;
+        else
+            mypwd=${mypwd%\/*}
+        fi
+    done
+    if [ -n "${mypwd}" ]; then
+        cd "${mypwd}"
+    else
+        echoW "路径中没有找到$1目录！"
+    fi
+}

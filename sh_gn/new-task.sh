@@ -181,11 +181,11 @@ function doCheckout() {
         local search_branch=$(git branch | grep "${local_branch}")
         if [ -n "${search_branch}" ]; then
             # 本地分支存在，切换到目标分支，更新到最新
-            exeCMD repo forall -pc git branch temp-branch ${remote_branch_or_tag}
-            exeCMD repo forall -pc git checkout temp-branch
+            exeCMD -n repo forall -pc git branch temp-branch ${remote_branch_or_tag}
+            exeCMD -n repo forall -pc git checkout temp-branch
             exeCMD repo forall -pc git branch -D ${local_branch}
             exeCMD repo forall -pc git branch ${local_branch} ${remote_branch_or_tag}
-            exeCMD repo forall -pc git checkout ${local_branch}
+            exeCMD -n repo forall -pc git checkout ${local_branch}
             exeCMD repo forall -pc git branch -D temp-branch
         else
             # 如果本地分支不存在，直接创建并更新代码

@@ -260,13 +260,13 @@ CODE
 main() {
     checkArgs "$@"
 
-    local title=$(grep "^# " ${FILE_IN} | head -n1)
+    local title=$(grep "^# " "${FILE_IN}" | head -n1)
     if [ -n "${title}" ]; then
         TITLE=${title#*# }
         echo "检测到‘一级标题’：《${TITLE}》"
     fi
 
-    markDiagrams ${FILE_IN}
+    markDiagrams "${FILE_IN}"
 
 cat > "${FILE_OUT}" << CODE
 <!doctype html>

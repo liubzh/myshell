@@ -52,6 +52,15 @@ function main() {
     GNLog)
         component=com.gionee.logger/com.gionee.logger.GNLogger
         ;;
+    DocumentsUI)
+        component=com.android.documentsui/com.android.documentsui.DocumentsActivity
+        ;;
+    FileManager)
+        component=com.gionee.filemanager/.FileExplorerTabActivity
+        ;;
+    MMI)
+        component=gn.com.android.mmitest/.GnMMITest
+        ;;
     esac
     if [ ${component} ]; then
         adb shell am start -n ${component}

@@ -7,7 +7,7 @@
 ######## Script Information. END ########
 
 function _launch_sh() {
-    local my_opts="GNLog"
+    local my_opts="GNLog DocumentsUI FileManager MMI"
     local cur prev opts
 
     COMPREPLY=()

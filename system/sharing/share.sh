@@ -7,12 +7,12 @@ function init_global_vars() {
 }
 
 function mk_sharing_dir() {
-    RW_SHARE_DIR=~/Shared
+    RW_SHARE_DIR=~/shared
     if [ ! -d ${RW_SHARE_DIR} ]; then
         echo "创建目录(可读、可写、不可见)：${RW_SHARE_DIR}"
         mkdir ${RW_SHARE_DIR}
     fi
-    RO_SHARE_DIR=~/Share
+    RO_SHARE_DIR=~/share
     if [ ! -d ${RO_SHARE_DIR} ]; then
         echo "创建目录(可见、只读、匿名)：${RO_SHARE_DIR}"
         mkdir ${RO_SHARE_DIR}
