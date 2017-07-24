@@ -3,7 +3,7 @@
 ######## Script Information. BGN ########
 # Author: liubingzhao.
 # Date: 2016-12-28
-# Introduction: Pick one or more from the pool.
+# Introduction: 使用 ADB 命令运行 APP
 ######## Script Information. END ########
 
 # All the global variables in this script.
