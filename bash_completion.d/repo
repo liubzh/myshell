@@ -1,0 +1,46 @@
+#!/bin/bash
+
+# Create by liubingzhao.
+
+# Relatives:
+# command: $MYSHELLDIR/command/v
+# data: $MYSHELLDIR/data/v_files
+
+function _repo() {
+    local git_opts="branch checkout clean diff fetch pull push reset status tag"
+    local repo_opts="diff forall status "
+    local cur prev opts
+
+    COMPREPLY=()
+
+    cur="${COMP_WORDS[COMP_CWORD]}"
+    prev="${COMP_WORDS[COMP_CWORD-1]}"
+    prev2="${COMP_WORDS[COMP_CWORD-2]}"
+    opts=
+
+    if [[ ${prev} == repo ]] ; then
+        opts="forall"
+    elif [[ ${prev} == forall ]]; then
+        opts="-pvc"
+    elif [[ ${prev} == -pvc ]]; then
+        opts="git"
+    elif [[ ${prev} == git ]]; then
+        opts="${git_opts}"
+    elif [[ ${prev} == clean ]]; then
+        opts="-df"
+    elif [[ ${prev} == reset ]]; then
+        opts="HEAD"
+    elif [[ ${prev} == checkout ]]; then
+        opts="."
+    elif [[ ${prev} == push ]]; then
+        opts="origin"
+    elif [[ ${prev2} == push && ${prev} == origin ]]; then
+        local mbranch=$(git branch | grep "^* mybranch-")
+        mbranch=${mbranch#*\* mybranch-}
+        opts="HEAD:refs/for/${mbranch}"
+    fi
+    if [ -n "${opts}" ]; then
+        COMPREPLY=( $(compgen -W "${opts}" -- ${cur}) )
+    fi
+}
+complete -o default -F _repo repo
