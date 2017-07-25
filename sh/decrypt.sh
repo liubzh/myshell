@@ -39,11 +39,22 @@ function parse_and_check_args () {
 
 # $1: 文件输入
 function decrypt() {
-    openssl enc -des-ede3-cfb -in "${1}" -out "${1%.enc*}.dec" -d -k "${THE_KEY}"
+    local file_in="${1}"
+    local file_out="${1%.enc*}"
+    local executable="f"
+    if [[ ${file_out} == *.x ]]; then
+        executable="t"
+        file_out="${file_out%.x*}"
+    fi
+    openssl enc -des-ede3-cfb -in "${file_in}" -out "${file_out}" -d -k "${THE_KEY}"
     if [ $? -eq 0 ]; then
-        echo "解密文件：${1} --> ${1%.enc*}.dec"
+        echo "解密文件：${file_in} --> ${file_out}"
+        if [[ ${executable} == t ]]; then
+            chmod +x "${file_out}"
+            echo "添加可执行权限：${file_out}"
+        fi
     else
-        echo "解密文件失败：${1}"
+        echo "解密文件失败：${file_in}"
     fi
 }
 

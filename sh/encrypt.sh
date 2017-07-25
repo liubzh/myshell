@@ -57,11 +57,17 @@ function encrypt() {
             exit 1
         fi
     fi
-    openssl enc -des-ede3-cfb -in "${1}" -out "${1}.enc" -k "${THE_KEY}"
+    local file_in="${1}"
+    local file_out="${1}.enc"
+    if [ -x "${file_in}" ]; then
+        # 如果文件有可执行权限，加标志 .x 进行标识
+        file_out="${1}.x.enc"
+    fi
+    openssl enc -des-ede3-cfb -in "${file_in}" -out "${file_out}" -k "${THE_KEY}"
     if [ $? -eq 0 ]; then
-        echo "加密文件：${1} --> ${1}.enc"
+        echo "加密文件：${file_in} --> ${file_out}"
     else
-        echo "加密文件失败：${1}"
+        echo "加密文件失败：${file_in}"
     fi
 }
 
