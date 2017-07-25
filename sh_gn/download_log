@@ -1,0 +1,36 @@
+#!/bin/bash
+
+# Originally created by liubingzhao on 2017-07-18
+
+# 配置脚本所在目录
+DIR_SCRIPTS=~/Projects/GNBJ7_TOOL_DEVELOPER/Auto_download_log
+# 配置下载到指定目录
+DIR_OUT=~/log
+# 配置脚本文件
+SCRIPT_MAIN=download_log.py
+# 在脚本目录下的 API_KEY 文件中配置 API_KEY，KEY 通过登陆 redmine 获取
+API_KEY=$(cat "${DIR_SCRIPTS}/API_KEY")
+
+URL_TMP_FILE=/tmp/url.tmp
+${DIR_SCRIPTS}/${SCRIPT_MAIN} -a ${API_KEY} -b "$@" > ${URL_TMP_FILE}
+
+COUNT=$(grep -Ev "^BUG_COUNT:|^ID:" "${URL_TMP_FILE}" | wc -l)
+INDEX=1
+
+while read line; do
+    if [[ ${line} == BUG_COUNT:* ]]; then
+        echo "一共发现 ${line#*:} 个 BUG"; echo
+    elif [[ ${line} == ID:* ]]; then
+        dir_out="${DIR_OUT}/${line#*:}"
+    elif [[ ${line} == ftp://* ]]; then
+        echo "开始下载第 ${INDEX}/${COUNT} 个文件"
+        echo "链接地址: ${line}"
+        if [ ! -d "${dir_out}" ]; then mkdir -p "${dir_out}"; fi
+        wget "${line}" -P "${dir_out}"
+        ((INDEX++))
+    fi
+done < "${URL_TMP_FILE}"
+
+if [ -f "${URL_TMP_FILE}" ]; then
+    rm ${URL_TMP_FILE}
+fi
