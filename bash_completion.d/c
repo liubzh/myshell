@@ -3,7 +3,7 @@
 
 function _c() {
 
-    if [ -z "${MYPROJECTDIR}" ]; then
+    if [ -z "${MYPROJECTDIR}" -o ! -d "${MYPROJECTDIR}" ]; then
         return 1
     fi
 

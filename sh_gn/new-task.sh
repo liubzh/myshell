@@ -5,7 +5,7 @@
 # Date: 2017-01-03
 ######## Script Information. END ########
 
-PROJECTS_ROOT=~/Projects
+PROJECTS_ROOT="${MYPROJECTDIR}"
 TARGET_SH=${PROJECTS_ROOT}/task.sh
 TARGET_LOG=${PROJECTS_ROOT}/task.log
 proj_dir=
@@ -109,7 +109,7 @@ function genFunctions() {
             return 0
         fi
     fi
-    cat > ${TARGET_SH} << 'CODE'
+    cat > "${TARGET_SH}" << 'CODE'
 #!/bin/bash
 
 # 计算两个时间点之间的时长

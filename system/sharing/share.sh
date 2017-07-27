@@ -1,18 +1,16 @@
 #!/bin/bash
 
 function init_global_vars() {
-    RW_SHARE_DIR=
-    RO_SHARE_DIR=
+    RW_SHARE_DIR=~/rwShare
+    RO_SHARE_DIR=~/roShare
     CONFIG_FILE=/etc/samba/smb.conf
 }
 
 function mk_sharing_dir() {
-    RW_SHARE_DIR=~/shared
     if [ ! -d ${RW_SHARE_DIR} ]; then
         echo "创建目录(可读、可写、不可见)：${RW_SHARE_DIR}"
         mkdir ${RW_SHARE_DIR}
     fi
-    RO_SHARE_DIR=~/share
     if [ ! -d ${RO_SHARE_DIR} ]; then
         echo "创建目录(可见、只读、匿名)：${RO_SHARE_DIR}"
         mkdir ${RO_SHARE_DIR}
@@ -28,13 +26,13 @@ function install_samba() {
 function write_config() {
 cat >> ${CONFIG_FILE} << CONFIGLINES
 # Added by ${USER} for sharing file to windows. begin
-[Shared]
+[${RW_SHARE_DIR}]
     comment = the directory shared to windows. 'not browseable' & 'writeable'
     path = ${RW_SHARE_DIR}
     valid users = ${USER}
     browseable = no
     writable = yes
-[Share]
+[${RO_SHARE_DIR}]
     comment = the directory shared to windows. 'read only' & 'guest ok'
     path = ${RO_SHARE_DIR}
     browseable = yes

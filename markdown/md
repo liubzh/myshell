@@ -16,7 +16,9 @@ printHelp() {
     echo "Help: md.sh | Binzo's customized 'markdown2'"
     cat << Help
 $(printUsage)
-
+markdown2安装：
+sudo apt-get install pip
+sudo pip install markdown2
 更多详细信息查看 markdown2 命令的帮助信息： markdown2 --help
  - github-markdown.css 来源： https://github.com/sindresorhus/github-markdown-css
    关于这里引用的 github-markdown_customized.css 改变了代码块/段的背景色为黑色
