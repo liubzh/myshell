@@ -52,6 +52,9 @@ function main() {
     GNLog)
         component=com.gionee.logger/com.gionee.logger.GNLogger
         ;;
+    LogFairy)
+        component=onekeylog.gionee.com.onekeylog/com.gionee.onekeylog.test.MainActivity
+        ;;
     DocumentsUI)
         component=com.android.documentsui/com.android.documentsui.DocumentsActivity
         ;;

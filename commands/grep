@@ -84,7 +84,7 @@ function parse_and_check_args ()
                     echoE "'${1}'" $(gettxt "should not contain '/'")
                     return 1
                 fi
-                myparams="${myparams} --exclude-dir=*$1*"
+                myparams="${myparams} --exclude-dir=$1"
                 shift
                 ;;
             *)

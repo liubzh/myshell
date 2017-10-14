@@ -7,18 +7,13 @@
 ######## Script Information. END ########
 
 function _launch_sh() {
-    local my_opts="GNLog DocumentsUI FileManager MMI"
+    local my_opts="GNLog DocumentsUI FileManager LogFairy MMI"
     local cur prev opts
 
     COMPREPLY=()
 
     cur="${COMP_WORDS[COMP_CWORD]}"
-    prev="${COMP_WORDS[COMP_CWORD-1]}"
-    opts=""
-
-    if [[ ${prev} == launch.sh ]]; then
-        opts="${my_opts}"
-    fi
+    opts="${my_opts}"
 
     if [ -n "${opts}" ]; then
         COMPREPLY=( $(compgen -W "${opts}" -- ${cur}) )

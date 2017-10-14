@@ -5,9 +5,11 @@
 function printUsage() {
     cat << TAGMARK
 
-Usage: md.sh [input-file] [output-file]
+Usage: md.sh [option] [input-file] [output-file]
     [input-file]     文件输入，markdown文件，比如：readme.md，缺省参数默认为当前目录唯一的 .md 文件。
     [output-file]    文件输出，html文件，比如：readme.html，缺省值为当前目录下与 md 同名的 html 文件。
+选项：
+    --no-table-head  不生成表格头 <thead> </thead>
 
 TAGMARK
 }
@@ -31,6 +33,7 @@ FILE_IN="$1"
 FILE_OUT="$2"
 DIR_SCRIPT="$(dirname $0)/scripts"
 TITLE="Binzo's Article"
+NO_TABLE_HEAD=false
 
 function checkArgs () {
     while [ $# -gt 0 ];do
@@ -39,11 +42,17 @@ function checkArgs () {
                 printHelp
                 exit 0
                 ;;
+            --no-table-head)
+                NO_TABLE_HEAD=true
+                shift
+                ;;
             *)
                 shift
                 ;;
         esac
     done
+    FILE_IN="$1"
+    FILE_OUT="$2"
 
     if [ -z "${FILE_IN}" ]; then
         # 如果 FILE_IN 缺省，判断当前目录下是否存在唯一 md 文件
@@ -101,6 +110,7 @@ parseDiagrams() {
     if [ -f ${path} ]; then
         rm ${path}
     fi
+    local isTableHead=false  # 当指定不要生成表格头的时候，将<thead></thead>过滤掉
     local idxDiagram=1
     local isDiagram=false
     local idxFlow=1
@@ -141,12 +151,26 @@ parseDiagrams() {
                 ((idxFlow++))
                 isFlow=false
             fi
+        # Added for NO_TABLE_HEAD. begin
+        elif [[ ${line} == \<thead\> ]]; then
+            #echo "<thead>"
+            isTableHead=true
+        elif [[ ${line} == \</thead\> ]]; then
+            #echo "</thead>"
+            isTableHead=false
+            continue
+        # Added for NO_TABLE_HEAD. end
         elif [[ ${isDiagram} == true || ${isFlow} == true ]]; then
             line=${line//&gt;/>}
             line=${line//&lt;/<}
             echo "'${line}\n' +" >> ${path}
             continue
         fi
+        # Added for NO_TABLE_HEAD. begin
+        if [[ ${NO_TABLE_HEAD} == true && ${isTableHead} == true ]]; then
+            continue
+        fi
+        # Added for NO_TABLE_HEAD. end
         #echo "${line}"
         echo -e "${line}" >> ${path}
     done < ${1}
@@ -217,6 +241,7 @@ cat >> ${FILE_OUT} << CODE
         <br>
         <hr style="height:1px;border:none;border-top:1px dashed #999999;" />
         <p>Originally created by <a href="liubingzhao@aliyun.com" title="liubingzhao@aliyun.com">Binzo</a>.</p>
+        </article>
     </body>
 </html>
 CODE
