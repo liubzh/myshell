@@ -102,12 +102,12 @@ function parse_and_check_args () {
 
 function genFunctions() {
     if [ -s "${TARGET_SH}" ]; then
-        read -p "目标文件 ${TARGET_SH} 存在且不为空，删除吗?(y/n/直接回车追加):" ANSWER
-        if [[ ${ANSWER} == Y || ${ANSWER} == y ]]; then
-            rm ${TARGET_SH}
-        else
+        #read -p "目标文件 ${TARGET_SH} 存在且不为空，删除吗?(y/n/直接回车追加):" ANSWER
+        #if [[ ${ANSWER} == Y || ${ANSWER} == y ]]; then
+        #    rm ${TARGET_SH}
+        #else
             return 0
-        fi
+        #fi
     fi
     cat > "${TARGET_SH}" << 'CODE'
 #!/bin/bash
@@ -290,17 +290,19 @@ function genTaskFooter() {
 
     # 删除所有关机的命令, 并确认是否执行完后关机
     sed -i '/^doShutdown*/d' ${TARGET_SH}
-    read -p "执行完后关机吗? (y/n)" ANSWER
-    if [[ ${ANSWER} == y || ${ANSWER} == Y ]]; then
-        echo 'doShutdown'                                                >> ${TARGET_SH}
-    fi
+    #read -p "执行完后关机吗? (y/n)" ANSWER
+    #if [[ ${ANSWER} == y || ${ANSWER} == Y ]]; then
+    #    echo 'doShutdown'                                                >> ${TARGET_SH}
+    #fi
+    echo 'doShutdown'                                                >> ${TARGET_SH}
 
     chmod +x ${TARGET_SH}
-    read -p "已写入${TARGET_SH}, 查看此文件吗? (y/n)" ANSWER
-    if [[ ${ANSWER} == y || ${ANSWER} == Y  ]]; then
-        vim ${TARGET_SH}
-    fi
-    echo "现在可以执行此脚本,或source这个脚本了."
+    #read -p "已写入${TARGET_SH}, 查看此文件吗? (y/n)" ANSWER
+    #if [[ ${ANSWER} == y || ${ANSWER} == Y  ]]; then
+    #    vim ${TARGET_SH}
+    #fi
+    echo "已写入 ${TARGET_SH}"
+    #echo "现在可以执行此脚本,或source这个脚本了."
 }
 
 function genTask() {
@@ -319,13 +321,17 @@ function genTask() {
     fi
     echo 'exeCMD cd L*/android*'                                         >> ${TARGET_SH}
 
-    read -p "如果只编译，不做任何其它操作请直接输入编译类型 user|eng ：" ANSWER
-    if [[ ${ANSWER} == user || ${ANSWER} == usr ]]; then
-        echo "doCompile ${project} ${product} user"                      >> ${TARGET_SH}
-        return 0
-    elif [[ ${ANSWER} == eng ]]; then
-        echo "doCompile ${project} ${product} eng"                       >> ${TARGET_SH}
-        return 0
+    read -p "只编译吗? (y/n)：" ANSWER
+    if [[ ${ANSWER} == y || ${ANSWER} == Y ]]; then
+        read -p "输入编译类型 user|eng ：" ANSWER
+        if [[ ${ANSWER} == user || ${ANSWER} == usr ]]; then
+            echo "doCompile ${project} ${product} user"                      >> ${TARGET_SH}
+            return 0
+        #elif [[ ${ANSWER} == eng ]]; then
+        else
+            echo "doCompile ${project} ${product} eng"                       >> ${TARGET_SH}
+            return 0
+        fi
     fi
 
     if [ -n "${branch}" ]; then

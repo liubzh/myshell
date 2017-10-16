@@ -11,7 +11,7 @@
 #DIR_SCRIPTS=~/Projects/GNBJ7_TOOL_DEVELOPER/Auto_download_log
 DIR_SCRIPTS=$(dirname "$0")/auto_download_log
 # 配置下载到指定目录
-DIR_OUT=~/roShare/Log/0-17G10
+DIR_OUT=~/roShare/Log/0-17G06
 # 配置脚本文件
 SCRIPT_MAIN=download_log.py
 
@@ -34,14 +34,15 @@ else
     read -t 20
 fi
 
-COUNT=$(grep -Ev "^BUG_COUNT:|^ID:" "${URL_TMP_FILE}" | wc -l)
+COUNT=$(grep -E "^ID:" "${URL_TMP_FILE}" | wc -l)
 INDEX=1
 
 while read line; do
     if [[ ${line} == BUG_COUNT:* ]]; then
         echo "一共发现 ${line#*:} 个 BUG"; echo
     elif [[ ${line} == ID:* ]]; then
-        dir_out="${DIR_OUT}/${line#*:}"
+        bug_id=${line#*ID:}; bug_id=${bug_id%,*}
+        dir_out="${DIR_OUT}/${bug_id}"
     elif [[ ${line} == ftp://* ]]; then
         echo "开始下载第 ${INDEX}/${COUNT} 个文件"
         #echo "链接地址: ${line}"
@@ -53,15 +54,30 @@ while read line; do
         fi
         wget "${line}" -P "${dir_out}"
         decompress.sh "${target_file}"
-        # 解压DB. BEGIN
-        while read db_file; do
-            if [[ ${db_file} != *.zip ]]; then
-                mv "${db_file}" "${db_file}.zip"
-            fi
-            echo "解压db: ${db_file}"
-            unzip "${db_file}.zip" -d "${db_file}.DEC"
-        done < <(find "${target_file}.DEC" -name "db.*")
-        # 解压DB. END
+        # 解压MTKDB. BEGIN
+        if [ -d "${target_file}.DEC" ]; then
+            while read db_file; do
+                if [ ! -d "${db_file}.DEC" ]; then
+                    echo "解压 dbg: '${db_file}'"
+                    aee_extract "${db_file}"
+                fi
+            done < <(find "${target_file}.DEC" -name "*.dbg")
+        fi
+        # 解压MTKDB. END
+        # 解压高通DB. BEGIN
+        if [ -d "${target_file}.DEC" ]; then
+            while read db_file; do
+                if [[ ${db_file} == *.dbg ]]; then
+                    continue  # 以此来判断是 MTK db, 高通默认没有 .dbg 后缀
+                fi
+                if [[ ${db_file} != *.zip ]]; then
+                    mv "${db_file}" "${db_file}.zip"
+                fi
+                echo "解压db: ${db_file}"
+                unzip "${db_file}.zip" -d "${db_file}.DEC"
+            done < <(find "${target_file}.DEC" -name "db.*")
+        fi
+        # 解压高通DB. END
         ((INDEX++))
     fi
 done < <(cat ${URL_TMP_FILE})

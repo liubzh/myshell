@@ -26,13 +26,13 @@ function install_samba() {
 function write_config() {
 cat >> ${CONFIG_FILE} << CONFIGLINES
 # Added by ${USER} for sharing file to windows. begin
-[${RW_SHARE_DIR}]
+[$(basename "${RW_SHARE_DIR}")]
     comment = the directory shared to windows. 'not browseable' & 'writeable'
     path = ${RW_SHARE_DIR}
     valid users = ${USER}
     browseable = no
     writable = yes
-[${RO_SHARE_DIR}]
+[$(basename "${RO_SHARE_DIR}")]
     comment = the directory shared to windows. 'read only' & 'guest ok'
     path = ${RO_SHARE_DIR}
     browseable = yes
@@ -64,10 +64,8 @@ function config_account() {
     local my_cmd ret
     my_cmd="sudo useradd ${USER}"
     echo "${my_cmd}, 添加用户${USER}"; ${my_cmd}
-    if [ $? -eq 0 ]; then 
-        my_cmd="sudo smbpasswd -a ${USER}"
-        echo "${my_cmd}, 输入密码"; ${my_cmd}
-    fi
+    my_cmd="sudo smbpasswd -a ${USER}"
+    echo "${my_cmd}, 为用户'${USER}'创建密码"; ${my_cmd}
     my_cmd="sudo service smbd restart"
     echo "${my_cmd}, 重启smb服务";     ${my_cmd}; return $?
 }
