@@ -321,17 +321,13 @@ function genTask() {
     fi
     echo 'exeCMD cd L*/android*'                                         >> ${TARGET_SH}
 
-    read -p "只编译吗? (y/n)：" ANSWER
-    if [[ ${ANSWER} == y || ${ANSWER} == Y ]]; then
-        read -p "输入编译类型 user|eng ：" ANSWER
-        if [[ ${ANSWER} == user || ${ANSWER} == usr ]]; then
-            echo "doCompile ${project} ${product} user"                      >> ${TARGET_SH}
-            return 0
-        #elif [[ ${ANSWER} == eng ]]; then
-        else
-            echo "doCompile ${project} ${product} eng"                       >> ${TARGET_SH}
-            return 0
-        fi
+    read -p "若想直接编译，输入编译类型 user|eng (回车跳过)：" ANSWER
+    if [[ ${ANSWER} == user || ${ANSWER} == usr ]]; then
+        echo "doCompile ${project} ${product} user"                      >> ${TARGET_SH}
+        return 0
+    else
+        echo "doCompile ${project} ${product} eng"                       >> ${TARGET_SH}
+        return 0
     fi
 
     if [ -n "${branch}" ]; then

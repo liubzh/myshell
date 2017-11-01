@@ -26,7 +26,7 @@ function print_help() {
   [-v|--verbose]: 输出 TRACE 等信息
 
 示例:
-  $ JE_NE_SWT.sh   --offset 3   --dir ~/Log   -filein /tmp/log_url.tmp
+  $ JE_NE_SWT.sh   --offset 3   --dir ~/Log   --filein /tmp/log_url.tmp
   分析下载列表中所有的log
   $ JE_NE_SWT.sh   --dir .   --time 10:30  --verbose
   分析当前目录下时间点为 10:30 左右的 db，--verbose 输出 trace
@@ -117,6 +117,26 @@ function confirm_dbg() {
     local theTime=
     local theLine=
     local expClass=
+
+    local switch_time_kernel_log    #转换时间之后的 kernel_log 路径
+    while read line; do
+        switch_time_kernel_log="${line}.time"
+        if [ ! -f "${switch_time_kernel_log}" ]; then
+            kernel_log_time -i "${line}" -o "${switch_time_kernel_log}"
+        fi
+    done < <(find "${target_log_dir}" -name kernel_log)
+
+    grep -r "FDLEAK" --include=kernel_log.time "${target_log_dir}"
+    #local fdleak=$(grep -r "FDLEAK" --include=kernel_log.time "${target_log_dir}")
+    #if [ -n "${fdleak}" ]; then
+    #    echo "kernel_log 中发现 ‘FDLEAK’"
+    #fi
+
+    local appError=$(grep -r "Application Error:" --include=events_log "${target_log_dir}" | wc -l)
+    if [ ${appError} -gt 0 ]; then
+        echo "events_log 中发现 ‘Application Error:’ 总数：${appError}"
+    fi
+
     while read line; do
         #echo "${line}"
         exp_time=$(grep "Exception Log Time:" "${line}")
@@ -151,22 +171,34 @@ function confirm_dbg() {
         echo "文件路径: ${theLine}"
         expClass=$(grep "Exception Class:" "${theLine}")
         echo "${expClass}"
-        if [[ ${expClass} == *(JE)* ]]; then
-            local isTraceStart="false"
-            while read textLine; do
-                if [[ ${textLine} == Exception\ Log\ Time:* ]]; then
-                    if [[ ${VERBOSE} == yes ]]; then echo "${textLine}"; fi  #详情模式输出
-                elif [[ ${textLine} == *Exception:\ * ]]; then
-                    isTraceStart="true"
-                    echo "${textLine}"
-                    continue
-                elif [ -z "${textLine}" ]; then
-                    isTraceStart="false"   # 不输出分割线
-                fi
-                if [[ ${isTraceStart} == true ]]; then
-                    if [[ ${VERBOSE} == yes ]]; then echo "    ${textLine}"; fi  #详情模式输出
-                fi
-            done < "${theLine}"
+        if [[ ${VERBOSE} == yes ]]; then 
+            #详情模式输出
+            if [[ ${expClass} == *\(JE\)* ]]; then
+                cat "${theLine}"
+                return 0
+                echo "${expClass}"
+                local isTraceStart="false"
+                while read textLine; do
+                    if [[ ${textLine} == Exception\ Log\ Time:* ]]; then
+                        echo "${textLine}";
+                    elif [[ ${textLine} == *Exception:\ * ]]; then
+                        isTraceStart="true"
+                        echo "${textLine}"
+                        continue
+                    elif [ -z "${textLine}" ]; then
+                        isTraceStart="false"   # 不输出分割线
+                    fi
+                    if [[ ${isTraceStart} == true ]]; then
+                        echo "    ${textLine}"
+                    fi
+                done < "${theLine}"
+            elif [[ ${expClass} == *\(NE\)* ]]; then
+                cat "${theLine}"
+            elif [[ ${expClass} == *SWT* ]]; then
+                cat "${theLine}"
+            else
+                echo "未知类型"
+            fi
         fi
     else
         echo "未过滤到.dbg"

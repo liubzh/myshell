@@ -1,5 +1,13 @@
 #!/bin/bash
 
+# TP 点击事件: InputReader:
+# 08-24 09:43:44.865  1656  1777 D InputReader: AP_PROF:AppLaunch_dispatchPtr:Down:54898603, ID:0, Index:1860556824
+# 08-24 09:43:45.032  1656  1777 D InputReader: AP_PROF:AppLaunch_dispatchPtr:Up:54898771, ID:1, Index:1860560216
+
+# 按键：
+# 08-12 15:18:32.209  1777  2743 D WindowManager: interceptKeyTi keyCode=24 down=true repeatCount=0 keyguardOn=false mHomePressed=false canceled=false metaState:0
+# 08-12 15:18:32.581  1777  2744 D WindowManager: interceptKeyTq keycode=26 interactive=true keyguardActive=false policyFlags=22000000 down =false canceled = false isWakeKey=false mVolumeDownKeyTriggered =false mVolumeUpKeyTriggered =false result = 1 useHapticFeedback = false isInjected = false
+
 function main() {
     parse_and_check_args "$@" 
     if [ ! -d ${FILTER_DIR} ]; then
