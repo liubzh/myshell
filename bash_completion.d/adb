@@ -11,13 +11,17 @@ function _adb() {
     local v_opts="brief color long printable process raw tag thread threadtime time usec"
     local logcat_opts="-s -r -n -v -D -c -t -T -g -L -b -B -S -G -p -P"
     local reboot_opts="bootloader recovery sideload sideload-auto-reboot"
-    local cur prev opts
+    local cur prev prev2 opts
 
     COMPREPLY=()
 
     cur="${COMP_WORDS[COMP_CWORD]}"
-    prev="${COMP_WORDS[COMP_CWORD-1]}"
-    prev2="${COMP_WORDS[COMP_CWORD-2]}"
+    if (( COMP_CWORD >= 1 )); then
+        prev="${COMP_WORDS[COMP_CWORD-1]}"
+    fi
+    if (( COMP_CWORD >= 2 )); then
+        prev2="${COMP_WORDS[COMP_CWORD-2]}"
+    fi
     opts=""
 
     if [[ ${prev} == adb ]] ; then
@@ -29,6 +33,7 @@ function _adb() {
     elif [[ ${prev} == reboot ]]; then
         opts=${reboot_opts}
     fi
+
     if [[ ${prev2} == push ]]; then
         # If command is "adb push", and argument is like *out*/system/*,
         # autocut and complete the next argument.
@@ -38,10 +43,13 @@ function _adb() {
             fi
         fi
     fi
+
     if [ -n "${opts}" ]; then
         COMPREPLY=( $(compgen -W "${opts}" -- ${cur}) )
+        return 0
+    else
+        return 1
     fi
-    return 0
 }
 
 complete -o default -F _adb adb

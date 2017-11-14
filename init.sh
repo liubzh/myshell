@@ -58,6 +58,9 @@ function main() {
     if [[ $TARGET_SYSTEM == windows ]]; then
         target_file="${HOME}/.bash_profile"
     fi
+    if [[ $(uname) == Darwin ]]; then
+        target_file="${HOME}/.bash_profile"
+    fi
     local content="source ${HOME}/myshell/source"
 
     if [ ! -f ${target_file} ]; then

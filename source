@@ -133,8 +133,14 @@ if [ -f $ECLIPSE ]; then
 fi
 
 # Android Studio
-ANDROID_SDK_HOME="$HOME/Develop/android/sdk"
-export PATH=$ANDROID_SDK_HOME/platform-tools:$ANDROID_SDK_HOME/tools:${ANDROID_SDK_HOME}/tools/bin:$PATH
+if [[ $(uname) == Darwin ]]; then
+    ANDROID_SDK_HOME="${HOME}/Library/Android/sdk"
+else
+    ANDROID_SDK_HOME="${HOME}/Develop/android/sdk"
+fi
+if [ -d "${ANDROID_SDK_HOME}" ]; then
+    export PATH=${ANDROID_SDK_HOME}/platform-tools:${ANDROID_SDK_HOME}/tools:${ANDROID_SDK_HOME}/tools/bin:$PATH
+fi
 ANDROID_STUDIO="$HOME/Develop/android/android-studio/bin/studio.sh"
 if [ -f $ANDROID_STUDIO ]; then
     alias android-studio=$ANDROID_STUDIO

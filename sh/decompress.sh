@@ -75,6 +75,9 @@ function main() {
         elif [[ ${item} == *.7z ]]; then
             7z x "${item}" -r -o"${target_dir}"
             ret=$?
+        elif [[ ${item} == *.tar.gz ]]; then
+            tar -xzvf "${item}" -C "${target_dir}"
+            ret=$?
         else
             echo "不支持的压缩类型或者不需要解压"
             exit 1
