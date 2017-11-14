@@ -58,17 +58,17 @@ alias v="source ${MYCOMMANDDIR}/vim"
 alias adb="source ${MYCOMMANDDIR}/adb"
 alias add-f="source ${MYCOMMANDDIR}/add-f"
 #alias add-phone="source ${MYCOMMANDDIR}/add-phone"
-alias rm-f="source ${MYCOMMANDDIR}/rm-f"
-alias share="source ${MYCOMMANDDIR}/share"
-alias switch-git="source ${MYCOMMANDDIR}/switch-git"
-alias switch-locale="source ${MYCOMMANDDIR}/switch-locale"
+#alias rm-f="source ${MYCOMMANDDIR}/rm-f"
+#alias share="source ${MYCOMMANDDIR}/share"
+#alias switch-git="source ${MYCOMMANDDIR}/switch-git"
+#alias switch-locale="source ${MYCOMMANDDIR}/switch-locale"
 
 # gn
-MYGNDIR="${MYSHELLDIR}/gn"
-alias m="source ${MYGNDIR}/make"
-alias switch-proj="source ${MYGNDIR}/switch-proj"
-alias mnt="source ${MYGNDIR}/mnt"
-alias meld="source ${MYGNDIR}/bcompare"
+#MYGNDIR="${MYSHELLDIR}/gn"
+#alias m="source ${MYGNDIR}/make"
+#alias switch-proj="source ${MYGNDIR}/switch-proj"
+#alias mnt="source ${MYGNDIR}/mnt"
+#alias meld="source ${MYGNDIR}/bcompare"
 
 # kt
 #MYKTSH=$MYSHELLDIR/kt
@@ -80,11 +80,18 @@ alias meld="source ${MYGNDIR}/bcompare"
 #alias rm-='source $MYKTSH/rm $*'
 #alias mm-='source $MYKTSH/mm $*'
 
+# For mac only. copied from ubuntu.
+if [[ $(uname) == Darwin ]]; then
+    alias ll='ls -alF'
+    alias la='ls -A'
+    alias l='ls -CF'
+fi
+
 # ftp servers:
-alias 99='nautilus ftp://10.10.100.99/liubzh'
+#alias 99='nautilus ftp://10.10.100.99/liubzh'
 #alias 100='nautilus ftp://10.10.100.100/liubzh'
-alias 100='nautilus ftp://10.10.100.100'
-alias 90='source $MYKTSH/90 $*'
+#alias 100='nautilus ftp://10.10.100.100'
+#alias 90='source $MYKTSH/90 $*'
 
 # Other
 #alias cq='clearquest &'
@@ -100,7 +107,7 @@ source ${MYCOMPLETEDIR}/g
 source ${MYCOMPLETEDIR}/launch.sh
 source ${MYCOMPLETEDIR}/repo
 source ${MYCOMPLETEDIR}/switch-proj
-source ${MYCOMPLETEDIR}/TmakeGionee
+#source ${MYCOMPLETEDIR}/TmakeGionee
 source ${MYCOMPLETEDIR}/v
 
 # python
@@ -152,6 +159,7 @@ if [ -f $WECHAT ]; then
     alias wechat="$WECHAT"
 fi
 
+function mtk_tools() {
 # ----- MTK ----- begin
 # gat
 MTK_GAT="${HOME}/Applications/gat-linux-x86_64-3/gat"
@@ -168,3 +176,4 @@ if [ -f ${MTK_FLASH_TOOL} ]; then
     alias flash_tool="${MTK_FLASH_TOOL}"
 fi
 # ----- MTK ----- end
+}
