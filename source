@@ -25,6 +25,10 @@ function my_source()
 LOCALIZATION_ENABLED=true
 # Config the supporting of localization
 function gettxt() {
+    if [ -z "$(which gettext)" ]; then
+        echo "$@"  # 判断 gettext 是否可用
+        return 1
+    fi
     if $LOCALIZATION_ENABLED; then
         gettext -s "$@"
     else
@@ -80,12 +84,20 @@ alias add-f="source ${MYCOMMANDDIR}/add-f"
 #alias rm-='source $MYKTSH/rm $*'
 #alias mm-='source $MYKTSH/mm $*'
 
-# For mac only. copied from ubuntu.
+# MacOS only. BEGIN
+# alias copied from ubuntu. begin
 if [[ $(uname) == Darwin ]]; then
     alias ll='ls -alF'
     alias la='ls -A'
     alias l='ls -CF'
 fi
+# alias copied from ubuntu. end
+# bcompare. begin
+if [ -f "/Applications/Beyond Compare.app/Contents/MacOS/bcomp" ]; then
+    alias bcompare='/Applications/Beyond\ Compare.app/Contents/MacOS/bcomp'
+fi
+# bcompare. end
+# MacOS only. END
 
 # ftp servers:
 #alias 99='nautilus ftp://10.10.100.99/liubzh'
