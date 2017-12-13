@@ -78,6 +78,9 @@ function main() {
         elif [[ ${item} == *.tar.gz ]]; then
             tar -xzvf "${item}" -C "${target_dir}"
             ret=$?
+        elif [[ ${item} == *.jar ]]; then
+            unzip "${item}" -d "${target_dir}"
+            ret=$?
         else
             echo "不支持的压缩类型或者不需要解压"
             exit 1

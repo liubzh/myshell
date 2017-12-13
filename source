@@ -44,6 +44,7 @@ source ${MYSHELLDIR}/utils/colored_echo.sh
 # Add executive files to PATH
 export PATH=${MYSHELLDIR}/sh:$PATH
 export PATH=${MYSHELLDIR}/sh_gn:$PATH
+export PATH=${MYSHELLDIR}/xg:$PATH
 
 # Add markdown to PATH
 export PATH=${MYSHELLDIR}/markdown:$PATH
@@ -169,6 +170,12 @@ fi
 WECHAT=${HOME}/Applications/wechat/electronic-wechat*/electronic-wechat
 if [ -f $WECHAT ]; then
     alias wechat="$WECHAT"
+fi
+
+# dex-tools
+DEX_TOOLS=${HOME}/Develop/android/decompile/dex2jar
+if [ -d ${DEX_TOOLS} ]; then
+    export PATH=${DEX_TOOLS}:${PATH}
 fi
 
 function mtk_tools() {
