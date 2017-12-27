@@ -23,6 +23,13 @@ clone.sh
 Help
 }
 
+function project_list() {
+    echo "TOUCH_ROM_PluginDev      : git clone ssh://${USER_NAME}@maria.xg.com:29418/TOUCH_ROM_PluginDev"
+    echo "TOUCH_ROM_launcher       : git clone ssh://${USER_NAME}@maria.xg.com:29418/TOUCH_ROM_launcher"
+    echo "TOUCH_ROM_PuppyLauncher  : git clone ssh://${USER_NAME}@maria.xg.com:29418/TOUCH_ROM_PuppyLauncher"
+    echo "TOUCH_ROM_HomeControl    : git clone ssh://${USER_NAME}@maria.xg.com:29418/TOUCH_ROM_HomeControl"
+}
+
 # Parse and validate the arguments.
 # return 0: ok
 # return 1: print help.
@@ -78,10 +85,6 @@ function check_git_config() {
     fi
 }
 
-function project_list() {
-    echo "TOUCH_ROM_PluginDev : git clone ssh://${USER_NAME}@maria.xg.com:29418/TOUCH_ROM_PluginDev"
-}
-
 function pick_project_and_clone() {
     local line projects item
     while read line; do
@@ -102,13 +105,8 @@ function pick_project_and_clone() {
     ${cmd}
     local result=$?
     if [ ${result} -eq 0 ]; then
-        if [ -z "$(which curl)" ]; then
-            echo "你没有安装 curl，添加 hook 需要库，请安装后进入 git 目录单独执行以下命令即可："
-            echo "curl -Lo .git/hooks/commit-msg http://maria.xg.com/gerrit/tools/hooks/commit-msg"
-            exit 4
-        fi
         cd "${item}"
-        curl -Lo .git/hooks/commit-msg http://maria.xg.com/gerrit/tools/hooks/commit-msg
+        scp -p -P 29418 liubingzhao@maria.xg.com:hooks/commit-msg .git/hooks/
     fi
 }
 

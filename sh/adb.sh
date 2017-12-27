@@ -90,7 +90,7 @@ function parse_and_check_args ()
         case "$1" in
         -h|--help|\?)
             print_help ${command_name}
-            return 1    # exit.
+            exit 0    # 直接退出
             ;;
         *)
             shift
@@ -101,16 +101,17 @@ function parse_and_check_args ()
 
 # 连接多个设备情况需选择
 function choose_adb_device() {
+    local delimiter="__:__"  # 约定分隔符
     local devices=
     while read line; do
         if [[ ${line} == *\ device\ * ]]; then
             line=${line// /_}
             local device_id=${line%%_*}
             local device=${line#*device:}
-            devices="${devices} ${device}__${device_id}"  # 约定分隔符__
+            devices="${devices} ${device}${delimiter}${device_id}"
         fi
     done < <(${ADB} devices -l)
-    local count=$(echo ${devices} | grep -o "__" | wc -l)  # 约定分隔符__
+    local count=$(echo ${devices} | grep -o "${delimiter}" | wc -l)
     local selection=
     if [ ${count} -eq 1 ]; then
         # 如果只有一个可访问设备，则无需选择
@@ -126,14 +127,17 @@ function choose_adb_device() {
             break
         done
     done
-    selection=${selection##*__}  # 约定分隔符__
+    selection=${selection##*${delimiter}}  # 约定分隔符_:_
     TARGET_DEVICE=" -s ${selection} "
 }
 
 function main() {
     ADB=$ANDROID_SDK_HOME/platform-tools/adb
+    if [ ! -f ${ADB} ]; then
+        echo "adb 命令不存在：${ADB}"
+        exit 1
+    fi
     parse_and_check_args "$@"
-    chk_return
 
     TARGET_DEVICE=
     choose_adb_device

@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# MacOS: Darwin, Windows: MINGW, Default: Linux
+THE_OS=$(uname)
+
 # My shell scripts evironment variable. It's important.
 export MYSHELLDIR="${HOME}/myshell"
 export MYSHELLDATADIR="${HOME}/myshell_data"
@@ -60,13 +63,15 @@ alias f="source ${MYCOMMANDDIR}/find"
 alias g="source ${MYCOMMANDDIR}/grep"
 #alias n="source ${MYCOMMANDDIR}/nautilus"
 alias v="source ${MYCOMMANDDIR}/vim"
-alias adb="source ${MYCOMMANDDIR}/adb"
 alias add-f="source ${MYCOMMANDDIR}/add-f"
 #alias add-phone="source ${MYCOMMANDDIR}/add-phone"
 #alias rm-f="source ${MYCOMMANDDIR}/rm-f"
 #alias share="source ${MYCOMMANDDIR}/share"
 #alias switch-git="source ${MYCOMMANDDIR}/switch-git"
 #alias switch-locale="source ${MYCOMMANDDIR}/switch-locale"
+
+# sh
+alias adb="${MYSHELLDIR}/sh/adb.sh"
 
 # gn
 #MYGNDIR="${MYSHELLDIR}/gn"
@@ -85,20 +90,25 @@ alias add-f="source ${MYCOMMANDDIR}/add-f"
 #alias rm-='source $MYKTSH/rm $*'
 #alias mm-='source $MYKTSH/mm $*'
 
-# MacOS only. BEGIN
 # alias copied from ubuntu. begin
-if [[ $(uname) == Darwin ]]; then
+if [[ ${THE_OS} == Darwin || ${THE_OS} == MINGW* ]]; then
     alias ll='ls -alF'
     alias la='ls -A'
     alias l='ls -CF'
 fi
 # alias copied from ubuntu. end
-# bcompare. begin
-if [ -f "/Applications/Beyond Compare.app/Contents/MacOS/bcomp" ]; then
-    alias bcompare='/Applications/Beyond\ Compare.app/Contents/MacOS/bcomp'
+
+# added for bcompare. begin
+if [[ ${THE_OS} == Darwin ]]; then
+    if [ -f "/Applications/Beyond Compare.app/Contents/MacOS/bcomp" ]; then
+        alias bcompare='/Applications/Beyond\ Compare.app/Contents/MacOS/bcomp'
+    fi
+elif [[ ${THE_OS} == MINGW* ]]; then
+    if [ -f "C:/Program Files/Beyond Compare 4/BCompare.exe" ]; then
+        alias bcompare='C:/Program\ Files/Beyond\ Compare\ 4/BCompare.exe'
+    fi
 fi
-# bcompare. end
-# MacOS only. END
+# added for bcompare. end
 
 # ftp servers:
 #alias 99='nautilus ftp://10.10.100.99/liubzh'
@@ -152,9 +162,11 @@ if [ -f $ECLIPSE ]; then
     alias eclipse='$MY_ECLIPSE'
 fi
 
-# Android Studio
-if [[ $(uname) == Darwin ]]; then
+# For Android. BEGIN
+if [[ ${THE_OS} == Darwin ]]; then
     ANDROID_SDK_HOME="${HOME}/Library/Android/sdk"
+elif [[ ${THE_OS} == MINGW* ]]; then
+    ANDROID_SDK_HOME="D:/Android/Sdk"
 else
     ANDROID_SDK_HOME="${HOME}/Develop/android/sdk"
 fi
@@ -165,6 +177,7 @@ ANDROID_STUDIO="$HOME/Develop/android/android-studio/bin/studio.sh"
 if [ -f $ANDROID_STUDIO ]; then
     alias android-studio=$ANDROID_STUDIO
 fi
+# For Android. END
 
 # wechat
 WECHAT=${HOME}/Applications/wechat/electronic-wechat*/electronic-wechat
@@ -178,21 +191,21 @@ if [ -d ${DEX_TOOLS} ]; then
     export PATH=${DEX_TOOLS}:${PATH}
 fi
 
-function mtk_tools() {
 # ----- MTK ----- begin
-# gat
-MTK_GAT="${HOME}/Applications/gat-linux-x86_64-3/gat"
-if [ -f ${MTK_GAT} ]; then
-    alias gat="${MTK_GAT}"
-fi
-MTK_LOGVIEW="${HOME}/Applications/gat-linux-x86_64-3/modules/MediatekLogView/MediatekLogView"
-if [ -f ${MTK_LOGVIEW} ]; then
-    alias logviewer="${MTK_LOGVIEW}"
-fi
-# flash_tool
-MTK_FLASH_TOOL="${HOME}/Applications/SP_Flash_Tool/flash_tool.sh"
-if [ -f ${MTK_FLASH_TOOL} ]; then
-    alias flash_tool="${MTK_FLASH_TOOL}"
-fi
-# ----- MTK ----- end
+function mtk_tools() {
+    # gat
+    MTK_GAT="${HOME}/Applications/gat-linux-x86_64-3/gat"
+    if [ -f ${MTK_GAT} ]; then
+        alias gat="${MTK_GAT}"
+    fi
+    MTK_LOGVIEW="${HOME}/Applications/gat-linux-x86_64-3/modules/MediatekLogView/MediatekLogView"
+    if [ -f ${MTK_LOGVIEW} ]; then
+        alias logviewer="${MTK_LOGVIEW}"
+    fi
+    # flash_tool
+    MTK_FLASH_TOOL="${HOME}/Applications/SP_Flash_Tool/flash_tool.sh"
+    if [ -f ${MTK_FLASH_TOOL} ]; then
+        alias flash_tool="${MTK_FLASH_TOOL}"
+    fi
 }
+# ----- MTK ----- end
