@@ -104,8 +104,8 @@ if [[ ${THE_OS} == Darwin ]]; then
         alias bcompare='/Applications/Beyond\ Compare.app/Contents/MacOS/bcomp'
     fi
 elif [[ ${THE_OS} == MINGW* ]]; then
-    if [ -f "C:/Program Files/Beyond Compare 4/BCompare.exe" ]; then
-        alias bcompare='C:/Program\ Files/Beyond\ Compare\ 4/BCompare.exe'
+    if [ -f "D:/Beyond Compare 4/BCompare.exe" ]; then
+        alias bcompare='/c/Program\ Files/Beyond\ Compare\ 4/BCompare.exe'
     fi
 fi
 # added for bcompare. end

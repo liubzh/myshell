@@ -132,6 +132,10 @@ function choose_adb_device() {
 }
 
 function main() {
+    if [ -z "${ANDROID_SDK_HOME}" ]; then
+        echo "需要定义环境变量: ANDROID_SDK_HOME"
+        exit 2
+    fi
     ADB=$ANDROID_SDK_HOME/platform-tools/adb
     if [ ! -f ${ADB} ]; then
         echo "adb 命令不存在：${ADB}"

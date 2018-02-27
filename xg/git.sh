@@ -24,10 +24,11 @@ Help
 }
 
 function project_list() {
-    echo "TOUCH_ROM_PluginDev      : git clone ssh://${USER_NAME}@maria.xg.com:29418/TOUCH_ROM_PluginDev"
-    echo "TOUCH_ROM_launcher       : git clone ssh://${USER_NAME}@maria.xg.com:29418/TOUCH_ROM_launcher"
-    echo "TOUCH_ROM_PuppyLauncher  : git clone ssh://${USER_NAME}@maria.xg.com:29418/TOUCH_ROM_PuppyLauncher"
+    echo "TOUCH_ROM_DeskClock      : git clone ssh://${USER_NAME}@maria.xg.com:29418/TOUCH_ROM_DeskClock"
     echo "TOUCH_ROM_HomeControl    : git clone ssh://${USER_NAME}@maria.xg.com:29418/TOUCH_ROM_HomeControl"
+    echo "TOUCH_ROM_PluginDev      : git clone ssh://${USER_NAME}@maria.xg.com:29418/TOUCH_ROM_PluginDev"
+    echo "TOUCH_ROM_PuppyLauncher  : git clone ssh://${USER_NAME}@maria.xg.com:29418/TOUCH_ROM_PuppyLauncher"
+    echo "TOUCH_ROM_PuppyAI        : git clone ssh://${USER_NAME}@maria.xg.com:29418/TOUCH_ROM_PuppyAI"
 }
 
 # Parse and validate the arguments.
