@@ -28,19 +28,19 @@ function main() {
 
         package_name="${line#*:}"
         package_name="${package_name#* }"
-        echo "PACKAGE INFO: ${line}"
+        echo "${line}"
 
         html_url="http://sj.qq.com/myapp/detail.htm?apkName=${package_name}"
-        echo "APP PAGE URL: ${html_url}"
+        #echo "网页地址：${html_url}"
 
         apk_url=$(curl "${html_url}" | grep downUrl:)
         apk_url=${apk_url#*\"}
         apk_url=${apk_url%\"*}
-        echo "APK URL: ${apk_url}"
+        echo "链接地址：${apk_url}"
 
         fsname=${apk_url#*fsname=}
         fsname=${fsname%.apk*}.apk
-        echo "FILE NAME: ${fsname}"
+        echo "文件名：${fsname}"
 
         pushd ${OUT_DIR} > /dev/null
         if [ -f "${fsname}" ]; then
@@ -50,10 +50,10 @@ function main() {
             ls ${package_name}*.apk > /dev/null 2> /dev/null
             if [ $? -eq 0 ]; then
                 # 若有旧版本存在，删除旧版本
-                echo REMOVE OLD VERSION: ${package_name}*.apk
+                echo 删除旧版本：${package_name}*.apk
                 rm ${package_name}*.apk
             fi
-            let retry=1
+            let retry=1 # 重试次数
             # 若下载失败，再重试一次
             while (( retry <= 2 )); do
                 curl "${apk_url}" -o "${fsname}" --progress
@@ -62,6 +62,7 @@ function main() {
                         rm "${fsname}"
                     fi
                 else
+                    echo
                     break
                 fi
                 (( retry++ ))
