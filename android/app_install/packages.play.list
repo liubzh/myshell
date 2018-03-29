@@ -1,12 +1,49 @@
-Tumblr: com.tumblr
-Twitter: com.twitter.android
-Facebook: com.facebook.katana
-WikiPedia: org.wikipedia
-Instagram: com.instagram.android
-Smart English: com.ef.core.engage.smartenglish
-Google Pinyin: com.google.android.inputmethod.pinyin
-Google Camera: com.google.android.GoogleCamera
-Google Docs: com.google.android.apps.docs
-Google Maps: com.google.android.apps.maps
-Google Translate: com.google.android.apps.translate
-Google Photos: com.google.android.apps.photos
+com.android.chrome
+com.android.vending
+com.ef.core.engage.smartenglish
+com.facebook.katana
+com.github.shadowsocks
+com.google.android.GoogleCamera
+com.google.android.apps.docs
+com.google.android.apps.docs.editors.docs
+com.google.android.apps.fireball
+com.google.android.apps.gcs
+com.google.android.apps.helprtc
+com.google.android.apps.maps
+com.google.android.apps.messaging
+com.google.android.apps.pdfviewer
+com.google.android.apps.photos
+com.google.android.apps.pixelmigrate
+com.google.android.apps.plus
+com.google.android.apps.tachyon
+com.google.android.apps.translate
+com.google.android.apps.turbo
+com.google.android.apps.walletnfcrel
+com.google.android.apps.wallpaper
+com.google.android.apps.youtube.vr
+com.google.android.calculator
+com.google.android.calendar
+com.google.android.contacts
+com.google.android.deskclock
+com.google.android.dialer
+com.google.android.gm
+com.google.android.gms
+com.google.android.googlequicksearchbox
+com.google.android.inputmethod.latin
+com.google.android.keep
+com.google.android.marvin.talkback
+com.google.android.music
+com.google.android.tts
+com.google.android.videos
+com.google.android.vr.home
+com.google.android.vr.inputmethod
+com.google.android.youtube
+com.google.ar.core
+com.google.vr.vrcore
+com.instagram.android
+com.topjohnwu.magisk
+com.tumblr
+com.twitter.android
+me.piebridge.brevent
+me.twrp.twrpapp
+org.wikipedia

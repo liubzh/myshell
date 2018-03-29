@@ -15,7 +15,7 @@ Help
 
 function main() {
     DATA_FILE=$(dirname "$0")/packages.list
-    OUT_DIR=$(dirname "$0")/out
+    OUT_DIR=$(dirname "$0")/apks
     if [ ! -d "${OUT_DIR}" ]; then
         mkdir "${OUT_DIR}"
     fi

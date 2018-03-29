@@ -1,7 +1,7 @@
 #!/bin/bash
 
 function main() {
-    OUT_DIR=$(dirname "$0")/out
+    OUT_DIR=$(dirname "$0")/apks
     if [ ! -d "${OUT_DIR}" ]; then
         return 1
     fi
@@ -20,7 +20,7 @@ function main() {
         if [[ ${version_code} == ${ver_code} ]]; then
             echo "已安装最新版本"
         else
-            echo "升级安装：${version_code} --> ${ver_code}"
+            echo "安装或升级：${ver_code} --> ${version_code}"
             adb install -r ${OUT_DIR}/${item}
         fi
     done

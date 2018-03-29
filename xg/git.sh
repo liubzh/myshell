@@ -24,11 +24,11 @@ Help
 }
 
 function project_list() {
-    echo "TOUCH_ROM_DeskClock      : git clone ssh://${USER_NAME}@maria.xg.com:29418/TOUCH_ROM_DeskClock"
-    echo "TOUCH_ROM_HomeControl    : git clone ssh://${USER_NAME}@maria.xg.com:29418/TOUCH_ROM_HomeControl"
-    echo "TOUCH_ROM_PluginDev      : git clone ssh://${USER_NAME}@maria.xg.com:29418/TOUCH_ROM_PluginDev"
-    echo "TOUCH_ROM_PuppyLauncher  : git clone ssh://${USER_NAME}@maria.xg.com:29418/TOUCH_ROM_PuppyLauncher"
-    echo "TOUCH_ROM_PuppyAI        : git clone ssh://${USER_NAME}@maria.xg.com:29418/TOUCH_ROM_PuppyAI"
+    echo "deskclock     : git clone ssh://${USER_NAME}@git.xgrobotics.com:29418/puppy/deskclock"
+    echo "homecontrol   : git clone ssh://${USER_NAME}@git.xgrobotics.com:29418/puppy/homecontrol"
+    echo "plugindev     : git clone ssh://${USER_NAME}@git.xgrobotics.com:29418/puppy/plugindev"
+    echo "puppylauncher : git clone ssh://${USER_NAME}@git.xgrobotics.com:29418/puppy/puppylauncher"
+    echo "puppyai       : git clone ssh://${USER_NAME}@git.xgrobotics.com:29418/puppy/puppyai"
 }
 
 # Parse and validate the arguments.
@@ -107,7 +107,7 @@ function pick_project_and_clone() {
     local result=$?
     if [ ${result} -eq 0 ]; then
         cd "${item}"
-        scp -p -P 29418 liubingzhao@maria.xg.com:hooks/commit-msg .git/hooks/
+        scp -p -P 29418 ${USER_NAME}@git.xgrobotics.com:hooks/commit-msg .git/hooks/; chmod +x .git/hooks/commit-msg
     fi
 }
 
@@ -115,7 +115,8 @@ function push() {
     local url=$(git config -l | grep "^remote.origin.url")
     local project_name=${url##*/}
     echo "project_name=${project_name}"
-    local cmd="git push ssh://liubingzhao@maria.xg.com:29418/${project_name} HEAD:refs/for/master"
+    #local cmd="git push ssh://${USER_NAME}@git.xgrobotics.com:29418/puppy/${project_name} HEAD:refs/for/master"
+    local cmd="git push ${url#*url=} HEAD:refs/for/master"
     echo "${cmd}"
     read -p "确定执行以上操作吗？回车继续..."
     ${cmd}

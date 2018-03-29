@@ -1,1 +1,3 @@
-android/out
+android/app_install/apks
+android/app_install/data_apks
+.DS_Store
