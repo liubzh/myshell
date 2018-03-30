@@ -310,6 +310,9 @@ cat > "${FILE_OUT}" << CODE
                 margin: 0 auto;
                 padding: 10px;
             }
+            table {
+                min-width: body.clientWidth;
+            }
         </style>
         <!-- 排版样式.END -->
 CODE

@@ -71,7 +71,7 @@ alias add-f="source ${MYCOMMANDDIR}/add-f"
 #alias switch-locale="source ${MYCOMMANDDIR}/switch-locale"
 
 # sh
-alias adb="${MYSHELLDIR}/sh/adb.sh"
+#alias adb="${MYSHELLDIR}/sh/adb.sh"
 
 # gn
 #MYGNDIR="${MYSHELLDIR}/gn"
@@ -128,7 +128,7 @@ source ${MYCOMPLETEDIR}/c
 source ${MYCOMPLETEDIR}/f
 source ${MYCOMPLETEDIR}/g
 source ${MYCOMPLETEDIR}/launch.sh
-source ${MYCOMPLETEDIR}/repo
+#source ${MYCOMPLETEDIR}/repo
 source ${MYCOMPLETEDIR}/switch-proj
 #source ${MYCOMPLETEDIR}/TmakeGionee
 source ${MYCOMPLETEDIR}/v

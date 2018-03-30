@@ -563,6 +563,7 @@
 .markdown-body table {
   display: block;
   width: 100%;
+  min-width: 980px; 
   overflow: auto;
 }
 
@@ -704,3 +705,13 @@
 .diagram {
     text-align:center
 }
+
+/* Added by binzo for table css. begin */
+/* Copyed from csdn */
+.markdown-body table tr{border:0;border-top:1px solid #DDD;background-color:#fff}
+.markdown-body table{border-collapse:collapse;display:table;width:100%;text-align:center;margin-bottom:24px}
+.markdown-body tbody{border:0}.markdown_views table tr:nth-child(2n){background-color:#F7F7F7}
+.markdown-body table tr td,
+.markdown-body table tr th{font-size:14px;color:#4f4f4f;line-height:22px;border:1px solid #DDD;padding:8px;text-align:left;word-wrap:break-word;word-break:normal;vertical-align:middle}
+.markdown-body table tr th{font-weight:700;background-color:#eff3f5}
+/* Added by binzo fpr table css. end */

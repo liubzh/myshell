@@ -11,7 +11,7 @@ cd "${TAR_DIR}"
 
 # 通过下载源码安装
 function git_clone() {
-    git clone https://github.com/symless/synergy.git
+    git clone https://github.com/symless/synergy-core.git
     cd synergy
     # 建立分支
     git tag

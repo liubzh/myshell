@@ -48,21 +48,27 @@ function main() {
         ;;
     esac
     local component
-    case "$1" in
-    GNLog)
+    case $(echo $1 | tr '[:lower:]' '[:upper:]') in
+    GNLOG)
         component=com.gionee.logger/com.gionee.logger.GNLogger
         ;;
-    LogFairy)
+    LOGFAIRY)
         component=onekeylog.gionee.com.onekeylog/com.gionee.onekeylog.test.MainActivity
         ;;
-    DocumentsUI)
+    DOCUMENTSUI)
         component=com.android.documentsui/com.android.documentsui.DocumentsActivity
         ;;
-    FileManager)
+    FILEMANAGER)
         component=com.gionee.filemanager/.FileExplorerTabActivity
         ;;
     MMI)
         component=gn.com.android.mmitest/.GnMMITest
+        ;;
+    PUPPYAI)
+        component=com.puppy.ai/.MainActivity
+        ;;
+    PUPPYAI_SETTINGS)
+        component=com.puppy.ai/.settings.PuppyAiSettings
         ;;
     esac
     if [ ${component} ]; then

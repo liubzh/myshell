@@ -75,7 +75,7 @@ function main() {
         elif [[ ${item} == *.7z ]]; then
             7z x "${item}" -r -o"${target_dir}"
             ret=$?
-        elif [[ ${item} == *.tar.gz ]]; then
+        elif [[ ${item} == *.tar.gz || ${item} == *.tgz ]]; then
             tar -xzvf "${item}" -C "${target_dir}"
             ret=$?
         elif [[ ${item} == *.jar ]]; then
