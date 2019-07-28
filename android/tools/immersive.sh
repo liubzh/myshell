@@ -7,9 +7,9 @@ adb shell settings get global policy_control
 
 if [[ ${immersive_type} == *navigation* ]]; then
     # 隐藏虚拟按键
-    #adb shell settings put global policy_control immersive.navigation=apps
+    adb shell settings put global policy_control "immersive.navigation=*"
     # 排除某个应用
-    adb shell settings put global policy_control "immersive.navigation=apps,-com.google.android.apps.nexuslauncher,-com.jiongji.android.card,-com.tencent.mm"
+    #adb shell settings put global policy_control "immersive.navigation=apps,-com.google.android.apps.nexuslauncher,-com.jiongji.android.card,-com.tencent.mm"
 elif [[ ${immersive_type} == *status* ]]; then
     # 隐藏状态栏
     #adb shell settings put global policy_control immersive.status=*

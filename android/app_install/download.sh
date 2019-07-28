@@ -28,12 +28,27 @@ function main() {
 
         package_name="${line#*:}"
         package_name="${package_name#* }"
+
+        if [[ ${line} == \#* ]]; then
+            ls ${OUT_DIR}/${package_name}*.apk > /dev/null 2> /dev/null
+            if [ $? -eq 0 ]; then
+                echo 删除忽略的 APK ：${OUT_DIR}/${package_name}*.apk
+                rm ${package_name}*.apk
+            fi
+            echo
+            continue  # 注释掉的行略过
+        fi
+        
         echo "${line}"
 
         html_url="http://sj.qq.com/myapp/detail.htm?apkName=${package_name}"
         #echo "网页地址：${html_url}"
 
         apk_url=$(curl "${html_url}" | grep downUrl:)
+        if [ -z "${apk_url}" ]; then
+            continue
+        fi
+
         apk_url=${apk_url#*\"}
         apk_url=${apk_url%\"*}
         echo "链接地址：${apk_url}"

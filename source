@@ -165,6 +165,7 @@ fi
 # For Android. BEGIN
 if [[ ${THE_OS} == Darwin ]]; then
     ANDROID_SDK_HOME="${HOME}/Library/Android/sdk"
+    ANDROID_NDK_HOME="${HOME}/Library/Android/android-ndk-r18"
 elif [[ ${THE_OS} == MINGW* ]]; then
     ANDROID_SDK_HOME="D:/Android/Sdk"
 else
@@ -172,6 +173,9 @@ else
 fi
 if [ -d "${ANDROID_SDK_HOME}" ]; then
     export PATH=${ANDROID_SDK_HOME}/platform-tools:${ANDROID_SDK_HOME}/tools:${ANDROID_SDK_HOME}/tools/bin:$PATH
+fi
+if [ -d "${ANDROID_NDK_HOME}" ]; then
+    export PATH=${ANDROID_NDK_HOME}:$PATH
 fi
 ANDROID_STUDIO="$HOME/Develop/android/android-studio/bin/studio.sh"
 if [ -f $ANDROID_STUDIO ]; then

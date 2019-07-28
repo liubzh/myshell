@@ -3,9 +3,9 @@ CSDN: net.csdn.csdnplus
 Keep: com.gotokeep.keep
 Office Mobile: com.microsoft.office.officehub
 ofo共享单车|小黄车: so.ofo.labofo
-QQ: com.tencent.mobileqq
+@ QQ: com.tencent.mobileqq
 QQ空间: com.qzone
-QQ浏览器: com.tencent.mtt
+# QQ浏览器: com.tencent.mtt
 QQ同步助手: com.tencent.qqpim
 QQ音乐: com.tencent.qqmusic
 QQ邮箱: com.tencent.androidqqmail
@@ -30,6 +30,7 @@ QQ邮箱: com.tencent.androidqqmail
 酷我音乐: cn.kuwo.player
 联通手机营业厅: com.sinovatech.unicom.ui
 铃声多多: com.shoujiduoduo.ringtone
+# 绿色守护: com.oasisfeng.greenify
 猫眼: com.sankuai.movie
 美团外卖: com.sankuai.meituan.takeoutnew
 米家: com.xiaomi.smarthome
@@ -46,7 +47,7 @@ QQ邮箱: com.tencent.androidqqmail
 腾讯新闻: com.tencent.news
 铁路12306: com.MobileTicket
 网易云音乐: com.netease.cloudmusic
-微信: com.tencent.mm
+@ 微信: com.tencent.mm
 微信读书: com.tencent.weread
 微云: com.qq.qcloud
 唯乐: com.yf.smart.weloopx.dist
@@ -57,4 +58,16 @@ QQ邮箱: com.tencent.androidqqmail
 招商银行: cmb.pb
 招商银行掌上生活: com.cmbchina.ccd.pluto.cmbActivity
 支付宝: com.eg.android.AlipayGphone
-中华万年历: cn.etouch.ecalendar
+# 中华万年历: cn.etouch.ecalendar 频繁唤醒,舍弃
+# from google play. begin
+Instagram: com.instagram.android
+# Magisk: com.topjohnwu.magisk
+# ShadowSocks: com.github.shadowsocks
+Tumblr: com.tumblr
+Twitter: com.twitter.android
+# Twrp: me.twrp.twrpapp
+Facebook: com.facebook.katana
+Wikipedia: org.wikipedia
+# 黑阈: me.piebridge.brevent
+英孚英语: com.ef.core.engage.smartenglish
+# from google play. end

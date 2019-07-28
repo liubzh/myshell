@@ -1,0 +1,47 @@
+#!/bin/bash
+
+######## Script Information. BGN ########
+# Author: liubingzhao.
+# Date: 2018-02-24
+# Introduction: 自动为手机安装 APK
+######## Script Information. END ########
+
+function print_help() {
+    cat << Help
+kill.sh | 将列表中的所有应用杀死
+Usage: kill.sh
+Help
+}
+
+CMD="kill"
+
+function exe_cmd() {
+adb shell <<!
+su
+${CMD}
+exit
+!
+}
+
+function main() {
+    DATA_FILE=$(dirname "$0")/packages.list
+    local ps_info pid pkg
+    while read line; do
+        ps_info=(${line})
+        pid=${ps_info[1]}
+        pkg=${ps_info[8]}
+        if [[ ${pkg} == su || ${pkg} == sh ]]; then
+            continue
+        elif [[ ${pkg} == [*] ]]; then
+            continue
+        fi
+        if [ -n "$(grep ${pkg} ${DATA_FILE})" ]; then
+            CMD="${CMD} ${pid}"
+            echo ${pid} ${pkg}
+        fi
+    done < <(adb shell ps -A | grep "^u0_")
+    echo "${CMD}"
+    #exe_cmd
+}
+
+main "$@"

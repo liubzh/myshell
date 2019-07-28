@@ -70,6 +70,12 @@ function main() {
     PUPPYAI_SETTINGS)
         component=com.puppy.ai/.settings.PuppyAiSettings
         ;;
+    AUTOFOCUS)
+        component=com.malata.engineermode/.actions.FocusTest
+        ;;
+    MALATA)
+        component=com.malata.engineermode/.ItemMainActivity
+        ;;
     esac
     if [ ${component} ]; then
         adb shell am start -n ${component}

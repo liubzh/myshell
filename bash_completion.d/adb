@@ -34,6 +34,8 @@ function _adb() {
         opts=${logcat_opts}
     elif [[ ${prev} == reboot ]]; then
         opts=${reboot_opts}
+    elif [[ ${prev} == connect ]]; then
+        opts="10.58.6.170"
     fi
 
     if [[ ${prev2} == push ]]; then
